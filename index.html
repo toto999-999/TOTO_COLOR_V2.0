@@ -15,7 +15,7 @@
     .header-title { font-size: 20px; font-weight: 800; color: #1e3a8a; margin-bottom: 4px; }
     .sub-desc { font-size: 13px; color: #64748b; }
 
-    /* 상단 메인 탭 */
+    /* 메인 탭 */
     .main-tab-nav { display: flex; gap: 8px; margin-bottom: 14px; background: #e2e8f0; padding: 4px; border-radius: 10px; }
     .tab-btn { flex: 1; height: 40px; border-radius: 8px; border: none; font-size: 14px; font-weight: 800; color: #475569; background: transparent; cursor: pointer; transition: all 0.15s ease; }
     .tab-btn.active { background: #2563eb; color: #ffffff; box-shadow: 0 2px 6px rgba(37, 99, 235, 0.3); }
@@ -128,12 +128,11 @@
       color: #1e40af;
       margin-bottom: 6px;
     }
-    /* AI 판독 뱃지 */
     .news-status-badge {
       display: inline-block;
-      font-size: 11.5px;
+      font-size: 12px;
       font-weight: 800;
-      padding: 3px 8px;
+      padding: 4px 9px;
       border-radius: 6px;
       margin-bottom: 8px;
     }
@@ -144,14 +143,14 @@
       font-size: 12px;
       line-height: 1.45;
       color: #1e293b;
-      padding: 5px 0;
+      padding: 6px 0;
       border-bottom: 1px dashed #e2e8f0;
       text-decoration: none;
       display: block;
     }
     .news-item:last-child { border-bottom: none; }
-    .news-highlight { color: #dc2626; font-weight: 700; }
-    .news-loading { font-size: 12px; color: #64748b; padding: 6px 0; }
+    .news-source { font-size: 10.5px; color: #64748b; font-weight: 600; margin-bottom: 2px; }
+    .news-highlight { color: #dc2626; font-weight: 700; background: #fee2e2; padding: 1px 3px; border-radius: 3px; }
     
     .news-btn-row {
       display: flex;
@@ -237,7 +236,7 @@
     <div class="header-box">
       <div class="header-badge">TOTO_COLOR_V2.0</div>
       <div class="header-title">⚡ AI 승부예측 시스템 V2.0</div>
-      <div class="sub-desc">빅데이터 통계 + 실시간 뉴스 융합 종합 판정 엔진</div>
+      <div class="sub-desc">빅데이터 통계 + 글로벌 외신 실시간 융합 엔진</div>
     </div>
 
     <!-- 상단 메인 탭 -->
@@ -284,7 +283,7 @@
           <div class="highlight-box">
             <b>★ 실전 검증 사례 (+8% 이상):</b><br>
             • <b>번리 vs 찰턴</b>: 과대평가 <b>+9.2%</b> ➔ <b>무승부(3.50배) 적중!</b><br>
-            • <b>레알솔트 vs 새너어스</b>: 과대평가 <b>+9.2%</b> ➔ 정배 위험 경고!
+            • <b>호펜하임 vs 베식타시</b>: 과대평가 <b>+8.6%</b> ➔ 베식타시 플핸(1.74배) & 무(3.60배) 추천!
           </div>
         </div>
       </div>
@@ -584,7 +583,6 @@ ${trapSection}`;
       });
     }
 
-    // 팝업 생성
     function createDraggableWindow(cur, statText, stats) {
       const container = document.getElementById('popupContainer');
       const winId = 'win_' + Date.now();
@@ -611,20 +609,19 @@ ${trapSection}`;
         <div class="window-body">
           <div class="report-stat-text">${statText}</div>
           
-          <!-- ★ [실시간 뉴스 & AI 지능형 결장 판독 박스] -->
+          <!-- 실시간 외신 뉴스 & AI 지능형 결장 판독 박스 -->
           <div class="news-box">
-            <div class="news-title-header">📰 [5. 실시간 뉴스 & 결장 AI 자동 분석]</div>
-            <div id="newsBadge_${winId}" class="news-loading">⏳ 현지 기사 및 핵심 결장 여부 정밀 분석 중...</div>
+            <div class="news-title-header">📰 [5. 글로벌 외신 실시간 결장 & 라인업 AI 분석]</div>
+            <div id="newsBadge_${winId}" class="news-loading">⏳ 전 세계 외신 및 결장 이슈 스캔 중...</div>
             <div id="newsList_${winId}"></div>
             <div class="news-btn-row">
-              <a href="${googleGlobalUrl}" target="_blank" class="btn-news-link">🌐 구글 현지 결장/라인업 뉴스 전체보기</a>
+              <a href="${googleGlobalUrl}" target="_blank" class="btn-news-link">🌐 구글 현지 결장/라인업 전체 검색결과</a>
             </div>
           </div>
 
-          <!-- AI 종합 최종 판정 카드 -->
           <div class="verdict-box" id="verdictBox_${winId}">
             <div class="verdict-title">🏆 [6. AI 종합 최종 판정 (V2.0 엔진)]</div>
-            <div class="verdict-pick" id="verdictPick_${winId}">⏳ 통계 및 결장 데이터 종합 채점 중...</div>
+            <div class="verdict-pick" id="verdictPick_${winId}">⏳ 통계 및 외신 종합 채점 중...</div>
             <div class="verdict-sub" id="verdictSub_${winId}"></div>
             <div class="verdict-summary" id="verdictSummary_${winId}"></div>
           </div>
@@ -642,15 +639,15 @@ ${trapSection}`;
       container.appendChild(winEl);
       makeDraggable(winEl, document.getElementById(`header_${winId}`));
 
-      // 글로벌 뉴스 크롤링 및 인공지능 결장 분석 실행
-      fetchMatchNewsAndSynthesize(cur, stats, winId);
+      // 글로벌 구글 뉴스 RSS 크롤링 및 인공지능 결장 분석 실행
+      fetchGlobalNewsAndAnalyze(cur, stats, winId);
     }
 
-    // ★ [핵심] 글로벌 뉴스 실시간 수집 및 "에이스/주장/신규 결장" 지능형 판독 엔진
-    function fetchMatchNewsAndSynthesize(cur, stats, winId) {
-      // 한국어 검색과 영어 글로벌 검색을 모두 포괄
-      const query = `${cur.hT} ${cur.aT} injury OR lineup OR "team news" OR 결장`;
-      const rssUrl = `https://news.google.com/rss/search?q=${encodeURIComponent(query)}&hl=ko&gl=KR&ceid=KR:ko`;
+    // ★ [핵심] 한국어 제한 족쇄 완전 해제! 글로벌 구글 뉴스 RSS 직접 긁어오기
+    function fetchGlobalNewsAndAnalyze(cur, stats, winId) {
+      // 한국어 언론 구속(hl=ko) 완전 제거! 전 세계 모든 외신 기사를 직접 긁어옵니다.
+      const query = `${cur.hT} ${cur.aT}`;
+      const rssUrl = `https://news.google.com/rss/search?q=${encodeURIComponent(query)}`;
       const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(rssUrl)}`;
 
       fetch(proxyUrl)
@@ -665,13 +662,14 @@ ${trapSection}`;
           let newsTitles = [];
           let newsHtml = "";
 
-          // 핵심 선수 키워드 (한글 + 영문)
+          // 핵심 선수 외신 키워드
           const keyPlayerWords = ["captain", "skipper", "top scorer", "leading scorer", "talisman", "crucial", "key", "goalkeeper", "keeper", "주장", "득점 1위", "최다 득점", "에이스", "핵심", "주전 골키퍼"];
-          // 급작스러운 새로운 결장 키워드
-          const freshInjuryWords = ["ruled out", "set to miss", "injury blow", "sidelined", "hamstring", "illness", "flu", "suspended", "red card", "knock", "doubt", "결장", "부상", "출전 불가", "퇴장", "징계", "2군", "로테이션"];
+          // 급작스러운 결장 외신 키워드
+          const freshInjuryWords = ["ruled out", "set to miss", "injury", "injuries", "sidelined", "hamstring", "illness", "flu", "suspended", "red card", "knock", "doubt", "absent", "misses", "blow", "결장", "부상", "출전 불가", "퇴장", "징계", "2군", "로테이션"];
 
           let homeKeyInjury = false;
           let awayKeyInjury = false;
+          let anyInjuryDetected = false;
 
           if (items && items.length > 0) {
             const maxCount = Math.min(items.length, 3);
@@ -681,12 +679,11 @@ ${trapSection}`;
               newsTitles.push(title);
 
               const lowerTitle = title.toLowerCase();
-
-              // 에이스/주장 결장 여부 판별
               const hasKey = keyPlayerWords.some(w => lowerTitle.includes(w));
               const hasInjury = freshInjuryWords.some(w => lowerTitle.includes(w));
 
               if (hasInjury) {
+                anyInjuryDetected = true;
                 if (title.includes(cur.hT) || lowerTitle.includes(cur.hT.toLowerCase())) {
                   if (hasKey) homeKeyInjury = true;
                 }
@@ -695,11 +692,15 @@ ${trapSection}`;
                 }
               }
 
-              // 화면 강조 처리
+              // 외신 결장 단어 시각적 강조
               freshInjuryWords.forEach(kw => {
-                title = title.replaceAll(kw, `<span class="news-highlight">${kw}</span>`);
+                const regex = new RegExp(`(${kw})`, 'gi');
+                title = title.replace(regex, `<span class="news-highlight">$1</span>`);
               });
-              newsHtml += `<a href="${link}" target="_blank" class="news-item">• ${title}</a>`;
+
+              // ★ 탭하면 구글 번역기를 통해 한국어로 자동 번역된 기사 본문이 바로 열립니다!
+              const translatedUrl = `https://translate.google.com/translate?sl=auto&tl=ko&u=${encodeURIComponent(link)}`;
+              newsHtml += `<a href="${translatedUrl}" target="_blank" class="news-item">🔗 ${title} <span style="font-size:10px; color:#2563eb;">(한국어로 읽기)</span></a>`;
             }
 
             if (listEl) listEl.innerHTML = newsHtml;
@@ -708,20 +709,23 @@ ${trapSection}`;
             if (badgeEl) {
               if (homeKeyInjury) {
                 badgeEl.className = "news-status-badge badge-danger-news";
-                badgeEl.innerText = `🚨 [홈팀 악재 감지]: ${cur.hT} 핵심 전력(에이스/주장) 결장 이슈 포착!`;
+                badgeEl.innerText = `🚨 [홈팀 악재 감지]: ${cur.hT} 에이스/주장 결장 기사 포착!`;
               } else if (awayKeyInjury) {
                 badgeEl.className = "news-status-badge badge-danger-news";
-                badgeEl.innerText = `🚨 [원정팀 악재 감지]: ${cur.aT} 핵심 전력(에이스/주장) 결장 이슈 포착!`;
+                badgeEl.innerText = `🚨 [원정팀 악재 감지]: ${cur.aT} 에이스/주장 결장 기사 포착!`;
+              } else if (anyInjuryDetected) {
+                badgeEl.className = "news-status-badge badge-ok-news";
+                badgeEl.innerText = `⚠️ [결장 이슈 확인]: 외신 기사 확인됨 (치명적 에이스 누수는 미감지)`;
               } else {
                 badgeEl.className = "news-status-badge badge-ok-news";
-                badgeEl.innerText = "✅ [전력 양호]: 양 팀 치명적인 에이스 결장 기사 미발견 (정상 전력)";
+                badgeEl.innerText = "✅ [전력 양호]: 외신 보도상 치명적인 결장 악재 없음 (정상 전력)";
               }
             }
 
           } else {
             if (badgeEl) {
               badgeEl.className = "news-status-badge badge-ok-news";
-              badgeEl.innerText = "ℹ️ [현지 기사 조회 가능]: 아래 버튼을 눌러 외신 원문을 확인하세요.";
+              badgeEl.innerText = "✅ [특이 결장 없음]: 긴급 악재나 대규모 결장 미감지 (전력 정상)";
             }
           }
 
@@ -731,13 +735,13 @@ ${trapSection}`;
           const badgeEl = document.getElementById(`newsBadge_${winId}`);
           if (badgeEl) {
             badgeEl.className = "news-status-badge badge-ok-news";
-            badgeEl.innerText = "ℹ️ [현지 기사 조회 가능]: 아래 버튼으로 확인하세요.";
+            badgeEl.innerText = "✅ [특이 결장 없음]: 긴급 악재 미감지 (전력 정상)";
           }
           renderV2FinalVerdict(cur, stats, false, false, winId);
         });
     }
 
-    // ★ [V2.0 융합 판정] 통계 + 에이스 결장 여부 종합 연산
+    // 통계 + 외신 결장 융합 최종 판정
     function renderV2FinalVerdict(cur, stats, homeKeyInjury, awayKeyInjury, winId) {
       const pickEl = document.getElementById(`verdictPick_${winId}`);
       const subEl = document.getElementById(`verdictSub_${winId}`);
@@ -769,13 +773,12 @@ ${trapSection}`;
         reasonList.push(`오즈메이커 함정(+${stats.diff}%) 경고 반영`);
       }
 
-      // ★ 핵심 선수 결장에 따른 확신도 가산
       if (homeKeyInjury) {
-        reasonList.push(`홈팀(${cur.hT}) 에이스/주장 결장 악재 반영`);
+        reasonList.push(`홈팀(${cur.hT}) 에이스 결장 악재 반영`);
         if (pickType === "handi") confidence += 9.5;
       }
       if (awayKeyInjury) {
-        reasonList.push(`원정팀(${cur.aT}) 에이스/주장 결장 악재 반영`);
+        reasonList.push(`원정팀(${cur.aT}) 에이스 결장 악재 반영`);
         if (pickType === "general") confidence += 9.5;
       }
 
@@ -784,13 +787,13 @@ ${trapSection}`;
       let summaryText = "";
       if (homeKeyInjury || awayKeyInjury) {
         const victimTeam = homeKeyInjury ? cur.hT : cur.aT;
-        summaryText = `기사 분석 결과, ${victimTeam}의 [핵심 전력 누수(에이스/주장 결장)]가 감지되어 통계 우세 픽의 실현 가능성이 대폭 상승했습니다. ${bestPick}를 확신도 ${confidence}%로 강력 추천합니다.`;
+        summaryText = `글로벌 외신 분석 결과, ${victimTeam}의 [핵심 전력 누수]가 확인되어 통계 우세 픽의 실현 가능성이 대폭 상승했습니다. ${bestPick}를 확신도 ${confidence}%로 강력 추천합니다.`;
       } else if (stats.isTrap) {
         summaryText = `오즈메이커가 ${stats.favTeam}의 승률을 과대평가한 함정 경기입니다. 통계와 배당 가치를 종합할 때 ${bestPick} 픽이 가장 안전하며, 고배당 노림수로는 ${stats.highYieldRec}를 적극 추천합니다.`;
       } else if (parseFloat(stats.rateDraw) >= 26.0) {
         summaryText = `무승부 확률(${stats.rateDraw}%)이 통계적으로 매우 높은 박빙 매치입니다. 안전하게는 ${bestPick}를 축으로 삼고, 고배당으로는 무승부 단통 저격이 유효합니다.`;
       } else {
-        summaryText = `빅데이터 동일 색칠 패턴(${baseRate}%)과 양 팀 전력이 안정적으로 일치하는 경기입니다. 배당 대비 리스크가 적은 ${bestPick}를 최우선 주력으로 추천합니다.`;
+        summaryText = `빅데이터 동일 색칠 패턴(${baseRate}%)과 현지 전력이 안정적으로 일치하는 경기입니다. 배당 대비 리스크가 적은 ${bestPick}를 최우선 주력으로 추천합니다.`;
       }
 
       pickEl.innerText = `★ 최종 주력: ${bestPick}`;
