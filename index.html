@@ -10,17 +10,12 @@
     body { background-color: #f1f5f9; padding: 14px; color: #1e293b; touch-action: pan-x pan-y pinch-zoom; }
     .container { max-width: 480px; margin: 0 auto; }
     
-    .header-box { text-align: center; padding: 10px 0 12px; position: relative; }
+    .header-box { text-align: center; padding: 10px 0 12px; }
     .header-badge { display: inline-block; background: #2563eb; color: #ffffff; font-size: 11px; font-weight: 800; padding: 2px 8px; border-radius: 20px; margin-bottom: 4px; }
     .header-title { font-size: 20px; font-weight: 800; color: #1e3a8a; margin-bottom: 4px; }
     .sub-desc { font-size: 13px; color: #64748b; }
 
-    .btn-ai-setup {
-      position: absolute; right: 0; top: 10px;
-      background: #ffffff; border: 1.5px solid #3b82f6; border-radius: 20px;
-      padding: 4px 10px; font-size: 11.5px; font-weight: 800; color: #2563eb; cursor: pointer;
-    }
-
+    /* 상단 메인 탭 */
     .main-tab-nav { display: flex; gap: 8px; margin-bottom: 14px; background: #e2e8f0; padding: 4px; border-radius: 10px; }
     .tab-btn { flex: 1; height: 40px; border-radius: 8px; border: none; font-size: 14px; font-weight: 800; color: #475569; background: transparent; cursor: pointer; transition: all 0.15s ease; }
     .tab-btn.active { background: #2563eb; color: #ffffff; box-shadow: 0 2px 6px rgba(37, 99, 235, 0.3); }
@@ -35,6 +30,7 @@
     .section-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; padding: 0 4px; }
     .section-title { font-size: 15px; font-weight: 800; color: #0f172a; }
 
+    /* 경기 목록 카드 */
     .match-list { display: flex; flex-direction: column; gap: 10px; }
     .match-card { background: #ffffff; border-radius: 12px; padding: 13px 15px; border: 1.5px solid #cbd5e1; box-shadow: 0 2px 5px rgba(0,0,0,0.04); cursor: pointer; }
     .match-card:active { background: #f8fafc; border-color: #2563eb; transform: scale(0.98); }
@@ -51,6 +47,7 @@
     .odd-box { flex: 1; text-align: center; padding: 5px 2px; border-radius: 5px; background: #f1f5f9; border: 1px solid #e2e8f0; font-size: 11.5px; font-weight: 600; color: #475569; }
     .odd-box.colored { background-color: #9bc2e6 !important; color: #0f172a !important; font-weight: 800 !important; border-color: #2b6cb0 !important; }
 
+    /* 베팅가이드 탭 */
     .guide-container { display: none; flex-direction: column; gap: 14px; }
     .guide-card { background: #ffffff; border-radius: 12px; padding: 16px; border: 1.5px solid #cbd5e1; box-shadow: 0 2px 6px rgba(0,0,0,0.05); }
     .guide-title { font-size: 15.5px; font-weight: 800; color: #1e3a8a; border-bottom: 2px solid #2563eb; padding-bottom: 8px; margin-bottom: 12px; display: flex; align-items: center; gap: 6px; }
@@ -63,6 +60,7 @@
     .tag-danger { background: #fee2e2; color: #991b1b; font-weight: 800; padding: 2px 6px; border-radius: 4px; }
     .highlight-box { background: #eff6ff; border-left: 4px solid #2563eb; padding: 10px 12px; border-radius: 4px; margin: 10px 0; font-size: 13px; line-height: 1.6; }
 
+    /* 플로팅 팝업창 */
     .floating-window {
       position: fixed;
       width: 92%;
@@ -116,6 +114,7 @@
 
     .report-stat-text { white-space: pre-wrap; margin-bottom: 8px; }
 
+    /* 뉴스 박스 */
     .news-box {
       background: #ffffff;
       border: 1.5px solid #93c5fd;
@@ -129,38 +128,41 @@
       color: #1e40af;
       margin-bottom: 6px;
     }
-    .news-status-badge {
-      display: inline-block;
-      font-size: 12px;
-      font-weight: 800;
-      padding: 4px 9px;
-      border-radius: 6px;
-      margin-bottom: 8px;
-    }
-    .badge-danger-news { background: #fee2e2; color: #b91c1c; border: 1px solid #f87171; }
-    .badge-ok-news { background: #dcfce7; color: #15803d; border: 1px solid #86efac; }
-    .badge-info-news { background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; }
-    
     .news-item {
       font-size: 12px;
       line-height: 1.45;
       color: #1e293b;
-      padding: 6px 0;
+      padding: 5px 0;
       border-bottom: 1px dashed #e2e8f0;
       text-decoration: none;
       display: block;
     }
     .news-item:last-child { border-bottom: none; }
-    .news-highlight { color: #dc2626; font-weight: 700; background: #fee2e2; padding: 1px 3px; border-radius: 3px; }
+    .news-highlight { color: #dc2626; font-weight: 700; }
+    .news-loading { font-size: 12px; color: #64748b; padding: 6px 0; }
     
-    .news-btn-row { display: flex; margin-top: 8px; }
-    .btn-news-link {
-      width: 100%; height: 34px; font-size: 12.5px; font-weight: 700;
-      border-radius: 6px; border: 1px solid #cbd5e1; background: #f1f5f9; color: #1e293b;
-      text-align: center; line-height: 32px; text-decoration: none; display: block;
+    /* 네이버 삭제 후 구글 단독 버튼 가로 꽉 차게 */
+    .news-btn-row {
+      display: flex;
+      margin-top: 8px;
     }
+    .btn-news-link {
+      width: 100%;
+      height: 34px;
+      font-size: 12.5px;
+      font-weight: 700;
+      border-radius: 6px;
+      border: 1px solid #cbd5e1;
+      background: #f1f5f9;
+      color: #1e293b;
+      text-align: center;
+      line-height: 32px;
+      text-decoration: none;
+      display: block;
+    }
+    .btn-news-link:active { background: #e2e8f0; }
 
-    /* 구글 Gemini AI 종합 브리핑 카드 */
+    /* AI 종합 최종 판정 카드 */
     .verdict-box {
       background: linear-gradient(135deg, #1e3a8a, #2563eb);
       color: #ffffff;
@@ -190,14 +192,13 @@
       margin-bottom: 6px;
     }
     .verdict-summary {
-      font-size: 12.5px;
-      line-height: 1.6;
+      font-size: 12px;
+      line-height: 1.55;
       color: #f1f5f9;
-      background: rgba(0, 0, 0, 0.25);
-      padding: 10px 12px;
+      background: rgba(0, 0, 0, 0.2);
+      padding: 8px 10px;
       border-radius: 6px;
       border-left: 3px solid #fde047;
-      white-space: pre-wrap;
     }
 
     .window-footer {
@@ -207,16 +208,15 @@
       text-align: right;
     }
     .btn-close-win {
-      width: 100%; height: 38px; background: #334155; color: #ffffff;
-      border: none; border-radius: 6px; font-size: 14px; font-weight: 700; cursor: pointer;
-    }
-
-    .ai-modal-overlay {
-      display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0,0,0,0.6); z-index: 3000; justify-content: center; align-items: center; padding: 20px;
-    }
-    .ai-modal-card {
-      background: #ffffff; border-radius: 14px; padding: 20px; width: 100%; max-width: 380px; box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+      width: 100%;
+      height: 38px;
+      background: #334155;
+      color: #ffffff;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
     }
   </style>
 </head>
@@ -224,13 +224,12 @@
 
   <div class="container">
     <div class="header-box">
-      <button class="btn-ai-setup" onclick="openAiKeyModal()">⚙️ AI 두뇌 키 등록</button>
       <div class="header-badge">TOTO_COLOR_V2.0</div>
       <div class="header-title">⚡ AI 승부예측 시스템 V2.0</div>
-      <div class="sub-desc">빅데이터 통계 + 실시간 외신 + 구글 AI 실시간 판독</div>
+      <div class="sub-desc">빅데이터 통계 + 실시간 뉴스 융합 종합 판정 엔진</div>
     </div>
 
-    <!-- 메인 탭 -->
+    <!-- 상단 메인 탭 -->
     <div class="main-tab-nav">
       <button class="tab-btn active" id="tabBtnMatches" onclick="switchMainTab('matches')">🔥 경기 분석</button>
       <button class="tab-btn" id="tabBtnGuide" onclick="switchMainTab('guide')">📖 베팅가이드</button>
@@ -274,7 +273,7 @@
           <div class="highlight-box">
             <b>★ 실전 검증 사례 (+8% 이상):</b><br>
             • <b>번리 vs 찰턴</b>: 과대평가 <b>+9.2%</b> ➔ <b>무승부(3.50배) 적중!</b><br>
-            • <b>호펜하임 vs 베식타시</b>: 과대평가 <b>+8.6%</b> ➔ 베식타시 플핸(1.74배) & 무(3.60배) 추천!
+            • <b>레알솔트 vs 새너어스</b>: 과대평가 <b>+9.2%</b> ➔ 정배 위험 경고!
           </div>
         </div>
       </div>
@@ -306,76 +305,11 @@
 
   <div id="popupContainer"></div>
 
-  <!-- AI 키 입력 모달 -->
-  <div class="ai-modal-overlay" id="aiKeyModal">
-    <div class="ai-modal-card">
-      <div style="font-size:16px; font-weight:800; color:#1e3a8a; margin-bottom:8px;">🤖 구글 Gemini AI 키 등록</div>
-      <div style="font-size:12.5px; color:#64748b; line-height:1.5; margin-bottom:12px;">
-        등록 시 AI가 <b>구글 실시간 검색</b>을 직접 돌려 결장자(에이스/후보)를 브리핑해 줍니다.
-      </div>
-      <input type="password" id="geminiKeyInput" placeholder="AIzaSy... 키를 붙여넣으세요" style="width:100%; height:42px; border:1.5px solid #cbd5e1; border-radius:8px; padding:0 10px; font-size:13px; margin-bottom:12px;">
-      <div style="display:flex; gap:8px;">
-        <button onclick="saveGeminiKey()" style="flex:1; height:40px; background:#2563eb; color:#fff; border:none; border-radius:8px; font-weight:700; cursor:pointer;">저장하기</button>
-        <button onclick="closeAiKeyModal()" style="flex:1; height:40px; background:#94a3b8; color:#fff; border:none; border-radius:8px; font-weight:700; cursor:pointer;">닫기</button>
-      </div>
-    </div>
-  </div>
-
   <script>
     let todayList = [];
     let pastDB = [];
     let topZIndex = 2000;
     let windowCascadeCount = 0;
-
-    // 토토 축약어 사전 복원
-    function cleanTeamName(name) {
-      if (!name) return "";
-      let n = name.trim();
-
-      const totoDict = {
-        "잘츠부르": "잘츠부르크",
-        "소시에다": "소시에다드",
-        "바르셀로": "바르셀로나",
-        "맨체스C": "맨체스터 시티",
-        "맨체스U": "맨체스터 유나이티드",
-        "C팰리스": "크리스탈 팰리스",
-        "A빌라": "아스톤 빌라",
-        "A마드리": "아틀레티코",
-        "L포즈난": "레흐 포즈난",
-        "찰턴A": "찰턴",
-        "브리스C": "브리스톨",
-        "뉴캐슬U": "뉴캐슬",
-        "리즈U": "리즈",
-        "노팅엄F": "노팅엄",
-        "셰필드U": "셰필드",
-        "웨스트햄": "웨스트햄"
-      };
-
-      if (totoDict[n]) return totoDict[n];
-      if (/^(AC|FC|AS|RB|PSV|AZ|CF|CD)\s*/i.test(n)) return n;
-
-      n = n.replace(/^[A-Za-z]\s*(?=[가-힣])/, "");
-      n = n.replace(/\s*[A-Za-z]$/, "");
-      return n.trim() || name.trim();
-    }
-
-    function openAiKeyModal() {
-      const savedKey = localStorage.getItem('toto_gemini_key') || '';
-      document.getElementById('geminiKeyInput').value = savedKey;
-      document.getElementById('aiKeyModal').style.display = 'flex';
-    }
-    function closeAiKeyModal() { document.getElementById('aiKeyModal').style.display = 'none'; }
-    function saveGeminiKey() {
-      const key = document.getElementById('geminiKeyInput').value.trim();
-      if (key) {
-        localStorage.setItem('toto_gemini_key', key);
-        alert("✔ 구글 Gemini AI 키가 안전하게 등록되었습니다!");
-      } else {
-        localStorage.removeItem('toto_gemini_key');
-        alert("AI 키가 해제되었습니다.");
-      }
-      closeAiKeyModal();
-    }
 
     function switchMainTab(tab) {
       const btnMatches = document.getElementById('tabBtnMatches');
@@ -635,10 +569,11 @@ ${trapSection}`;
 
       createDraggableWindow(cur, reportText, {
         rW, rX, rY, rZ, rateDraw, rateHdDraw, isTrap, diff, favTeam,
-        pickW_Name, pickW_Odd, pickY_Name, pickY_Odd, highYieldRec, genRec, hndRec
+        pickW_Name, pickW_Odd, pickY_Name, pickY_Odd, highYieldRec
       });
     }
 
+    // 플로팅 팝업 생성 (네이버 버튼 삭제 ➔ 구글 1개 버튼으로 시원하게 통일)
     function createDraggableWindow(cur, statText, stats) {
       const container = document.getElementById('popupContainer');
       const winId = 'win_' + Date.now();
@@ -655,31 +590,29 @@ ${trapSection}`;
       winEl.style.left = initLeft + 'px';
       winEl.style.zIndex = topZIndex;
 
-      const cleanH = cleanTeamName(cur.hT);
-      const cleanA = cleanTeamName(cur.aT);
-      const googleGlobalUrl = `https://www.google.com/search?q=${encodeURIComponent(cleanH + " " + cleanA + " injuries lineup team news")}`;
+      const googleGlobalUrl = `https://www.google.com/search?q=${encodeURIComponent(cur.hT + " " + cur.aT + " injuries lineup team news")}`;
 
       winEl.innerHTML = `
         <div class="window-header" id="header_${winId}">
-          <span>📊 ${cur.hT} vs ${cur.aT} [V2.6 AI]</span>
+          <span>📊 ${cur.hT} vs ${cur.aT} [V2.0]</span>
           <button class="btn-close-x" onclick="closeWindow('${winId}')">✕</button>
         </div>
         <div class="window-body">
           <div class="report-stat-text">${statText}</div>
           
+          <!-- 실시간 뉴스 박스 -->
           <div class="news-box">
-            <div class="news-title-header">📰 [5. 글로벌 외신 실시간 결장 & 라인업 AI 분석]</div>
-            <div id="newsBadge_${winId}" class="news-loading">⏳ 전 세계 외신 및 결장 이슈 스캔 중...</div>
-            <div id="newsList_${winId}"></div>
+            <div class="news-title-header">📰 [5. 해당 경기 실시간 뉴스 & 결장 이슈]</div>
+            <div id="newsList_${winId}" class="news-loading">⏳ 경기 관련 실시간 뉴스를 조회 중...</div>
             <div class="news-btn-row">
-              <a href="${googleGlobalUrl}" target="_blank" class="btn-news-link">🌐 구글 현지 결장/라인업 전체 검색결과</a>
+              <a href="${googleGlobalUrl}" target="_blank" class="btn-news-link">🌐 구글 현지 결장/라인업 뉴스 전체보기</a>
             </div>
           </div>
 
-          <!-- ★ 실시간 구글 검색이 탑재된 Gemini AI 브리핑 카드 -->
+          <!-- AI 종합 최종 판정 카드 -->
           <div class="verdict-box" id="verdictBox_${winId}">
-            <div class="verdict-title">🤖 [6. 구글 Gemini AI 실시간 검색 & 최종 승부 브리핑]</div>
-            <div class="verdict-pick" id="verdictPick_${winId}">⏳ AI 두뇌가 실시간 구글 검색으로 부상자 명단을 정밀 분석 중...</div>
+            <div class="verdict-title">🏆 [6. AI 종합 최종 판정 (V2.0 엔진)]</div>
+            <div class="verdict-pick" id="verdictPick_${winId}">⏳ 통계 및 뉴스 종합 분석 중...</div>
             <div class="verdict-sub" id="verdictSub_${winId}"></div>
             <div class="verdict-summary" id="verdictSummary_${winId}"></div>
           </div>
@@ -697,15 +630,12 @@ ${trapSection}`;
       container.appendChild(winEl);
       makeDraggable(winEl, document.getElementById(`header_${winId}`));
 
-      fetchGlobalNewsAndAnalyze(cur, stats, winId);
+      fetchMatchNewsAndSynthesize(cur, stats, `newsList_${winId}`, winId);
     }
 
-    // 5번 섹션 외신 뉴스 수집
-    function fetchGlobalNewsAndAnalyze(cur, stats, winId) {
-      const cleanH = cleanTeamName(cur.hT);
-      const cleanA = cleanTeamName(cur.aT);
-      const query = `${cleanH} ${cleanA}`;
-      const rssUrl = `https://news.google.com/rss/search?q=${encodeURIComponent(query)}`;
+    function fetchMatchNewsAndSynthesize(cur, stats, newsContainerId, winId) {
+      const query = `${cur.hT} ${cur.aT}`;
+      const rssUrl = `https://news.google.com/rss/search?q=${encodeURIComponent(query)}&hl=ko&gl=KR&ceid=KR:ko`;
       const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(rssUrl)}`;
 
       fetch(proxyUrl)
@@ -714,18 +644,11 @@ ${trapSection}`;
           const parser = new DOMParser();
           const xmlDoc = parser.parseFromString(data.contents, "text/xml");
           const items = xmlDoc.querySelectorAll("item");
-          const badgeEl = document.getElementById(`newsBadge_${winId}`);
-          const listEl = document.getElementById(`newsList_${winId}`);
+          const newsEl = document.getElementById(newsContainerId);
 
           let newsTitles = [];
           let newsHtml = "";
-
-          const keyPlayerWords = ["captain", "skipper", "top scorer", "leading scorer", "talisman", "crucial", "key", "goalkeeper", "keeper", "주장", "득점 1위", "최다 득점", "에이스", "핵심", "주전 골키퍼"];
-          const freshInjuryWords = ["ruled out", "set to miss", "injury", "injuries", "sidelined", "hamstring", "illness", "flu", "suspended", "red card", "knock", "doubt", "absent", "misses", "blow", "결장", "부상", "출전 불가", "퇴장", "징계", "2군", "로테이션"];
-
-          let homeKeyInjury = false;
-          let awayKeyInjury = false;
-          let anyInjuryDetected = false;
+          const keyWords = ["결장", "부상", "로테이션", "2군", "선발", "명단", "우승", "완패", "대승", "휴식", "경고", "퇴장"];
 
           if (items && items.length > 0) {
             const maxCount = Math.min(items.length, 3);
@@ -734,169 +657,44 @@ ${trapSection}`;
               let link = items[i].querySelector("link").textContent;
               newsTitles.push(title);
 
-              const lowerTitle = title.toLowerCase();
-              const hasKey = keyPlayerWords.some(w => lowerTitle.includes(w));
-              const hasInjury = freshInjuryWords.some(w => lowerTitle.includes(w));
-
-              if (hasInjury) {
-                anyInjuryDetected = true;
-                if (title.includes(cleanH) || lowerTitle.includes(cleanH.toLowerCase())) {
-                  if (hasKey) homeKeyInjury = true;
-                }
-                if (title.includes(cleanA) || lowerTitle.includes(cleanA.toLowerCase())) {
-                  if (hasKey) awayKeyInjury = true;
-                }
-              }
-
-              freshInjuryWords.forEach(kw => {
-                const regex = new RegExp(`(${kw})`, 'gi');
-                title = title.replace(regex, `<span class="news-highlight">$1</span>`);
+              keyWords.forEach(kw => {
+                title = title.replaceAll(kw, `<span class="news-highlight">${kw}</span>`);
               });
-
-              const translatedUrl = `https://translate.google.com/translate?sl=auto&tl=ko&u=${encodeURIComponent(link)}`;
-              newsHtml += `<a href="${translatedUrl}" target="_blank" class="news-item">🔗 ${title} <span style="font-size:10px; color:#2563eb;">(한국어로 읽기)</span></a>`;
+              newsHtml += `<a href="${link}" target="_blank" class="news-item">• ${title}</a>`;
             }
-
-            if (listEl) listEl.innerHTML = newsHtml;
-
-            if (badgeEl) {
-              if (homeKeyInjury) {
-                badgeEl.className = "news-status-badge badge-danger-news";
-                badgeEl.innerText = `🚨 [홈팀 악재 감지]: ${cleanH} 에이스/주장 결장 기사 포착!`;
-              } else if (awayKeyInjury) {
-                badgeEl.className = "news-status-badge badge-danger-news";
-                badgeEl.innerText = `🚨 [원정팀 악재 감지]: ${cleanA} 에이스/주장 결장 기사 포착!`;
-              } else if (anyInjuryDetected) {
-                badgeEl.className = "news-status-badge badge-ok-news";
-                badgeEl.innerText = `⚠️ [결장 기사 확인]: 외신 기사 확인됨 (핵심 주전 누수는 미감지)`;
-              } else {
-                badgeEl.className = "news-status-badge badge-ok-news";
-                badgeEl.innerText = "✅ [외신 전력 양호]: 치명적인 에이스 결장 기사 미발견";
-              }
-            }
-
+            if (newsEl) newsEl.innerHTML = newsHtml;
           } else {
-            // ★ [버그 수정] 기사가 0건일 때 무조건 '전력 정상'이라고 거짓말하지 않고 정직하게 표시!
-            if (badgeEl) {
-              badgeEl.className = "news-status-badge badge-info-news";
-              badgeEl.innerText = "🔍 [외신 RSS 미검색]: 아래 '구글 현지 결장 검색' 또는 6번 AI 분석을 확인하세요.";
-            }
+            if (newsEl) newsEl.innerHTML = "<div class='news-loading'>최근 한국어 기사가 없습니다. 아래 버튼으로 현지 뉴스를 확인하세요.</div>";
           }
 
-          callGeminiWithGoogleSearch(cur, stats, homeKeyInjury, awayKeyInjury, winId);
+          renderV2FinalVerdict(cur, stats, newsTitles, winId);
         })
         .catch(err => {
-          const badgeEl = document.getElementById(`newsBadge_${winId}`);
-          if (badgeEl) {
-            badgeEl.className = "news-status-badge badge-info-news";
-            badgeEl.innerText = "🔍 [외신 RSS 미검색]: 아래 버튼 또는 6번 구글 AI 분석을 확인하세요.";
-          }
-          callGeminiWithGoogleSearch(cur, stats, false, false, winId);
+          const newsEl = document.getElementById(newsContainerId);
+          if (newsEl) newsEl.innerHTML = "<div class='news-loading'>기사 자동 연동 지연 (아래 버튼으로 확인 가능)</div>";
+          renderV2FinalVerdict(cur, stats, [], winId);
         });
     }
 
-    // ★ [핵심] 구글 실시간 검색(Google Search Tool)을 탑재한 Gemini 2.0 Flash 호출!
-    function callGeminiWithGoogleSearch(cur, stats, homeKeyInjury, awayKeyInjury, winId) {
-      const apiKey = localStorage.getItem('toto_gemini_key');
+    function renderV2FinalVerdict(cur, stats, newsTitles, winId) {
       const pickEl = document.getElementById(`verdictPick_${winId}`);
       const subEl = document.getElementById(`verdictSub_${winId}`);
       const summaryEl = document.getElementById(`verdictSummary_${winId}`);
 
       if (!pickEl) return;
 
-      if (!apiKey) {
-        renderV2RuleVerdict(cur, stats, homeKeyInjury, awayKeyInjury, winId);
-        summaryEl.innerHTML += `<div style="margin-top:6px; color:#fde047; font-size:11px;">💡 우측 상단 [⚙️ AI 두뇌 키 등록]을 하시면 구글 AI가 실시간 구글 검색으로 부상자 7명을 직접 가려내 줍니다.</div>`;
-        return;
-      }
+      let homeNewsNegative = false;
+      let awayNewsNegative = false;
+      const negWords = ["결장", "부상", "로테이션", "2군", "퇴장", "휴식", "피로"];
 
-      const cleanH = cleanTeamName(cur.hT);
-      const cleanA = cleanTeamName(cur.aT);
-
-      // AI에게 구글 실시간 검색을 직접 지시
-      const prompt = 
-`당신은 전 세계 축구 리그의 모든 스쿼드를 꿰뚫고 있는 프로 스포츠 베팅 수석 애널리스트입니다.
-구글 검색을 수행하여, 축구 경기 [${cleanH} vs ${cleanA}] (리그: ${cur.l})의 최신 부상자/결장자 명단(Injuries & Team News)을 확인해주세요.
-
-[경기 및 배당 데이터]
-- 배당: 홈 ${cur.h} | 무 ${cur.d} | 원정 ${cur.a} (핸디 [${cur.o}] : 승 ${cur.hp} / 무 ${cur.hd} / 패 ${cur.ha})
-- 빅데이터 통계 요약: 일반 우세 ${stats.genRec}, 핸디 우세 ${stats.hndRec}, 무승부 확률 ${stats.rateDraw}%
-- 오즈메이커 함정 여부: ${stats.isTrap ? '경고 (+'+stats.diff+'% 과대평가됨)' : '적정 배당'}
-
-[필수 요청 사항]
-1. [구글 검색 결장 선수 판독]: 양 팀의 부상/결장 선수를 실시간 구글 검색으로 파악하고, 그 선수들이 '핵심 주전(에이스/주전GK/주포)'인지 '단순 벤치/후보'인지 명확하게 구분해주세요. (예: 7~8명 부상 발생 시 수비 붕괴 여부 등)
-2. [전력 누수 평가]: 양 팀의 실질적인 전력 손실 영향도를 1~2문장으로 평가해주세요.
-3. [최종 추천 픽]: 빅데이터와 결장 전력을 종합한 1순위 추천 픽(일반 or 핸디)과 확신도(%), 고배당 노림수
-4. [AI 총평]: 핵심 2줄 요약`;
-
-      // ★ 전 세계 표준 정식 모델 gemini-2.0-flash 사용!
-      const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
-
-      // ★ 구글 검색 도구(google_search) 탑재!
-      const reqPayload = {
-        contents: [{ parts: [{ text: prompt }] }],
-        tools: [{ google_search: {} }]
-      };
-
-      fetch(geminiUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(reqPayload)
-      })
-      .then(res => res.json())
-      .then(data => {
-        if (data.candidates && data.candidates[0].content) {
-          const aiText = data.candidates[0].content.parts[0].text;
-          pickEl.innerText = `★ 구글 실시간 검색 기반 AI 판독 완료!`;
-          subEl.innerHTML = `<b>구글 Search Grounding 연동</b> (부상자 및 주전/후보 실시간 판별)`;
-          summaryEl.innerText = aiText;
-        } else {
-          // 구글 검색 도구 미지원 키일 경우 일반 호출로 2차 시도
-          fallbackGeminiWithoutTools(cleanH, cleanA, cur, stats, apiKey, winId, homeKeyInjury, awayKeyInjury);
-        }
-      })
-      .catch(err => {
-        fallbackGeminiWithoutTools(cleanH, cleanA, cur, stats, apiKey, winId, homeKeyInjury, awayKeyInjury);
-      });
-    }
-
-    // 2차 백업 호출
-    function fallbackGeminiWithoutTools(cleanH, cleanA, cur, stats, apiKey, winId, homeKeyInjury, awayKeyInjury) {
-      const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
-      const pickEl = document.getElementById(`verdictPick_${winId}`);
-      const subEl = document.getElementById(`verdictSub_${winId}`);
-      const summaryEl = document.getElementById(`verdictSummary_${winId}`);
-
-      const simplePrompt = `축구 경기 [${cleanH} vs ${cleanA}] (배당: 홈 ${cur.h} / 원정 ${cur.a}). 빅데이터 통계상 ${stats.genRec}, ${stats.hndRec} 우세. 이 경기에서 핵심 선수의 결장 여부와 전력 손실을 감안한 최종 추천 픽과 확신도(%), 총평 3줄을 작성해주세요.`;
-
-      fetch(geminiUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ contents: [{ parts: [{ text: simplePrompt }] }] })
-      })
-      .then(res => res.json())
-      .then(data => {
-        if (data.candidates && data.candidates[0].content) {
-          pickEl.innerText = `★ 구글 Gemini AI 실시간 승부 브리핑`;
-          subEl.innerHTML = `<b>Gemini 1.5 AI 분석 완료</b>`;
-          summaryEl.innerText = data.candidates[0].content.parts[0].text;
-        } else {
-          renderV2RuleVerdict(cur, stats, homeKeyInjury, awayKeyInjury, winId);
-          if (data.error) {
-            summaryEl.innerHTML += `<div style="margin-top:6px; color:#f87171; font-size:11px;">⚠️ 구글 API 오류: ${data.error.message}</div>`;
+      newsTitles.forEach(t => {
+        negWords.forEach(w => {
+          if (t.includes(w)) {
+            if (t.includes(cur.hT)) homeNewsNegative = true;
+            if (t.includes(cur.aT)) awayNewsNegative = true;
           }
-        }
-      })
-      .catch(err => {
-        renderV2RuleVerdict(cur, stats, homeKeyInjury, awayKeyInjury, winId);
-        summaryEl.innerHTML += `<div style="margin-top:6px; color:#f87171; font-size:11px;">⚠️ 구글 연결 오류: API 키를 다시 확인하세요.</div>`;
+        });
       });
-    }
-
-    function renderV2RuleVerdict(cur, stats, homeKeyInjury, awayKeyInjury, winId) {
-      const pickEl = document.getElementById(`verdictPick_${winId}`);
-      const subEl = document.getElementById(`verdictSub_${winId}`);
-      const summaryEl = document.getElementById(`verdictSummary_${winId}`);
 
       let bestPick = "";
       let baseRate = 0;
@@ -914,33 +712,32 @@ ${trapSection}`;
 
       let confidence = baseRate;
       let reasonList = [];
+
       reasonList.push(`빅데이터 적중률 ${baseRate}% 기반`);
 
       if (stats.isTrap) {
         confidence += 8.5;
         reasonList.push(`오즈메이커 함정(+${stats.diff}%) 경고 반영`);
       }
-      if (homeKeyInjury) {
-        reasonList.push(`홈팀 에이스 결장 악재 반영`);
-        if (pickType === "handi") confidence += 9.5;
+
+      if (homeNewsNegative) {
+        reasonList.push(`홈팀(${cur.hT}) 결장/로테이션 악재 감지`);
+        if (pickType === "handi") confidence += 6.0;
       }
-      if (awayKeyInjury) {
-        reasonList.push(`원정팀 에이스 결장 악재 반영`);
-        if (pickType === "general") confidence += 9.5;
+      if (awayNewsNegative) {
+        reasonList.push(`원정팀(${cur.aT}) 결장/로테이션 악재 감지`);
+        if (pickType === "general") confidence += 6.0;
       }
 
       confidence = Math.min(96.5, Math.max(60.0, confidence)).toFixed(1);
 
       let summaryText = "";
-      if (homeKeyInjury || awayKeyInjury) {
-        const victimTeam = homeKeyInjury ? cur.hT : cur.aT;
-        summaryText = `기사 분석 결과, 결장 악재가 확인되어 통계 우세 픽의 실현 가능성이 대폭 상승했습니다. ${bestPick}를 확신도 ${confidence}%로 강력 추천합니다.`;
-      } else if (stats.isTrap) {
+      if (stats.isTrap) {
         summaryText = `오즈메이커가 ${stats.favTeam}의 승률을 과대평가한 함정 경기입니다. 통계와 배당 가치를 종합할 때 ${bestPick} 픽이 가장 안전하며, 고배당 노림수로는 ${stats.highYieldRec}를 적극 추천합니다.`;
       } else if (parseFloat(stats.rateDraw) >= 26.0) {
         summaryText = `무승부 확률(${stats.rateDraw}%)이 통계적으로 매우 높은 박빙 매치입니다. 안전하게는 ${bestPick}를 축으로 삼고, 고배당으로는 무승부 단통 저격이 유효합니다.`;
       } else {
-        summaryText = `빅데이터 동일 색칠 패턴(${baseRate}%)과 현지 전력이 안정적으로 일치하는 경기입니다. 배당 대비 리스크가 적은 ${bestPick}를 최우선 주력으로 추천합니다.`;
+        summaryText = `빅데이터 동일 색칠 패턴(${baseRate}%)과 현장 이슈가 안정적으로 일치하는 경기입니다. 배당 대비 리스크가 적은 ${bestPick}를 최우선 주력으로 추천합니다.`;
       }
 
       pickEl.innerText = `★ 최종 주력: ${bestPick}`;
