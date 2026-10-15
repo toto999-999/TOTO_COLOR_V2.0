@@ -15,7 +15,6 @@
     .header-title { font-size: 20px; font-weight: 800; color: #1e3a8a; margin-bottom: 4px; }
     .sub-desc { font-size: 13px; color: #64748b; }
 
-    /* AI 키 설정 버튼 */
     .btn-ai-setup {
       position: absolute; right: 0; top: 10px;
       background: #ffffff; border: 1.5px solid #3b82f6; border-radius: 20px;
@@ -52,7 +51,6 @@
     .odd-box { flex: 1; text-align: center; padding: 5px 2px; border-radius: 5px; background: #f1f5f9; border: 1px solid #e2e8f0; font-size: 11.5px; font-weight: 600; color: #475569; }
     .odd-box.colored { background-color: #9bc2e6 !important; color: #0f172a !important; font-weight: 800 !important; border-color: #2b6cb0 !important; }
 
-    /* 베팅가이드 탭 */
     .guide-container { display: none; flex-direction: column; gap: 14px; }
     .guide-card { background: #ffffff; border-radius: 12px; padding: 16px; border: 1.5px solid #cbd5e1; box-shadow: 0 2px 6px rgba(0,0,0,0.05); }
     .guide-title { font-size: 15.5px; font-weight: 800; color: #1e3a8a; border-bottom: 2px solid #2563eb; padding-bottom: 8px; margin-bottom: 12px; display: flex; align-items: center; gap: 6px; }
@@ -65,7 +63,6 @@
     .tag-danger { background: #fee2e2; color: #991b1b; font-weight: 800; padding: 2px 6px; border-radius: 4px; }
     .highlight-box { background: #eff6ff; border-left: 4px solid #2563eb; padding: 10px 12px; border-radius: 4px; margin: 10px 0; font-size: 13px; line-height: 1.6; }
 
-    /* 플로팅 팝업창 */
     .floating-window {
       position: fixed;
       width: 92%;
@@ -147,7 +144,7 @@
       font-size: 12px;
       line-height: 1.45;
       color: #1e293b;
-      padding: 5px 0;
+      padding: 6px 0;
       border-bottom: 1px dashed #e2e8f0;
       text-decoration: none;
       display: block;
@@ -162,7 +159,6 @@
       text-align: center; line-height: 32px; text-decoration: none; display: block;
     }
 
-    /* AI 종합 최종 판정 카드 */
     .verdict-box {
       background: linear-gradient(135deg, #1e3a8a, #2563eb);
       color: #ffffff;
@@ -213,7 +209,6 @@
       border: none; border-radius: 6px; font-size: 14px; font-weight: 700; cursor: pointer;
     }
 
-    /* AI 키 설정 모달 */
     .ai-modal-overlay {
       display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
       background: rgba(0,0,0,0.6); z-index: 3000; justify-content: center; align-items: center; padding: 20px;
@@ -230,7 +225,7 @@
       <button class="btn-ai-setup" onclick="openAiKeyModal()">⚙️ AI 두뇌 키 등록</button>
       <div class="header-badge">TOTO_COLOR_V2.0</div>
       <div class="header-title">⚡ AI 승부예측 시스템 V2.0</div>
-      <div class="sub-desc">빅데이터 통계 + 실시간 외신 + 구글 AI 실시간 판독</div>
+      <div class="sub-desc">빅데이터 통계 + 글로벌 외신 + 구글 AI 실시간 판독</div>
     </div>
 
     <!-- 메인 탭 -->
@@ -330,12 +325,44 @@
     let topZIndex = 2000;
     let windowCascadeCount = 0;
 
-    // ★ [약칭 자동 정제기] "L포즈난" -> "포즈난", "찰턴A" -> "찰턴", "브리스C" -> "브리스" 자동 변환!
+    // ★ [핵심 업그레이드] 토토 축약어 완벽 복원기
     function cleanTeamName(name) {
       if (!name) return "";
       let n = name.trim();
-      n = n.replace(/^[A-Za-z]\s*/, ""); // 앞의 단일 영문자 제거 (L포즈난 -> 포즈난)
-      n = n.replace(/\s*(FC|U|A|C|B)$/i, ""); // 뒤의 부속 문자 제거 (찰턴A -> 찰턴, 브리스C -> 브리스)
+
+      // 1. 대표적인 토토 축약어 사전 매핑
+      const totoDict = {
+        "잘츠부르": "잘츠부르크",
+        "소시에다": "소시에다드",
+        "바르셀로": "바르셀로나",
+        "맨체스C": "맨체스터 시티",
+        "맨체스U": "맨체스터 유나이티드",
+        "C팰리스": "크리스탈 팰리스",
+        "A빌라": "아스톤 빌라",
+        "A마드리": "아틀레티코",
+        "L포즈난": "레흐 포즈난",
+        "찰턴A": "찰턴",
+        "브리스C": "브리스톨",
+        "뉴캐슬U": "뉴캐슬",
+        "리즈U": "리즈",
+        "노팅엄F": "노팅엄",
+        "셰필드U": "셰필드",
+        "웨스트햄": "웨스트햄",
+        "헤르타B": "헤르타 베를린",
+        "베로나": "엘라스 베로나"
+      };
+
+      if (totoDict[n]) return totoDict[n];
+
+      // 2. AC, FC, AS, RB 등 알려진 정식 약칭은 절대 자르지 않고 완벽 보존!
+      if (/^(AC|FC|AS|RB|PSV|AZ|CF|CD)\s*/i.test(n)) {
+        return n;
+      }
+
+      // 3. 그 외 토토식 1글자 영문 약칭만 안전하게 분리
+      n = n.replace(/^[A-Za-z]\s*(?=[가-힣])/, "");
+      n = n.replace(/\s*[A-Za-z]$/, "");
+
       return n.trim() || name.trim();
     }
 
@@ -635,7 +662,7 @@ ${trapSection}`;
       winEl.style.left = initLeft + 'px';
       winEl.style.zIndex = topZIndex;
 
-      // ★ 약칭 정제된 검색어로 구글 링크 생성
+      // ★ 토토 약칭 정제기로 완벽한 팀 이름 생성
       const cleanH = cleanTeamName(cur.hT);
       const cleanA = cleanTeamName(cur.aT);
       const googleGlobalUrl = `https://www.google.com/search?q=${encodeURIComponent(cleanH + " " + cleanA + " injuries lineup team news")}`;
@@ -657,7 +684,7 @@ ${trapSection}`;
             </div>
           </div>
 
-          <!-- ★ 구글 Gemini AI 두뇌 종합 브리핑 카드 -->
+          <!-- 구글 Gemini AI 실시간 선수 판독 & 브리핑 카드 -->
           <div class="verdict-box" id="verdictBox_${winId}">
             <div class="verdict-title">🤖 [6. 구글 Gemini AI 실시간 선수 판독 & 최종 승부 브리핑]</div>
             <div class="verdict-pick" id="verdictPick_${winId}">⏳ AI 두뇌가 결장 선수의 주전/후보 여부를 판독 중...</div>
@@ -678,12 +705,11 @@ ${trapSection}`;
       container.appendChild(winEl);
       makeDraggable(winEl, document.getElementById(`header_${winId}`));
 
-      // 기사 수집 및 Gemini AI 정밀 판정 실행
       fetchGlobalNewsAndAnalyze(cur, stats, winId);
     }
 
-    // 글로벌 뉴스 수집 및 AI 브리핑 연동
     function fetchGlobalNewsAndAnalyze(cur, stats, winId) {
+      // ★ 완벽하게 복원된 정식 팀명으로 구글 뉴스 RSS 호출!
       const cleanH = cleanTeamName(cur.hT);
       const cleanA = cleanTeamName(cur.aT);
       const query = `${cleanH} ${cleanA}`;
@@ -722,10 +748,10 @@ ${trapSection}`;
 
               if (hasInjury) {
                 anyInjuryDetected = true;
-                if (title.includes(cur.hT) || lowerTitle.includes(cleanH.toLowerCase())) {
+                if (title.includes(cleanH) || lowerTitle.includes(cleanH.toLowerCase())) {
                   if (hasKey) homeKeyInjury = true;
                 }
-                if (title.includes(cur.aT) || lowerTitle.includes(cleanA.toLowerCase())) {
+                if (title.includes(cleanA) || lowerTitle.includes(cleanA.toLowerCase())) {
                   if (hasKey) awayKeyInjury = true;
                 }
               }
@@ -744,10 +770,10 @@ ${trapSection}`;
             if (badgeEl) {
               if (homeKeyInjury) {
                 badgeEl.className = "news-status-badge badge-danger-news";
-                badgeEl.innerText = `🚨 [홈팀 악재 감지]: ${cur.hT} 에이스/주장 결장 기사 포착!`;
+                badgeEl.innerText = `🚨 [홈팀 악재 감지]: ${cleanH} 에이스/주장 결장 기사 포착!`;
               } else if (awayKeyInjury) {
                 badgeEl.className = "news-status-badge badge-danger-news";
-                badgeEl.innerText = `🚨 [원정팀 악재 감지]: ${cur.aT} 에이스/주장 결장 기사 포착!`;
+                badgeEl.innerText = `🚨 [원정팀 악재 감지]: ${cleanA} 에이스/주장 결장 기사 포착!`;
               } else if (anyInjuryDetected) {
                 badgeEl.className = "news-status-badge badge-ok-news";
                 badgeEl.innerText = `⚠️ [결장 기사 확인]: 외신 기사 확인됨 (핵심 주전 누수는 미감지)`;
@@ -764,7 +790,6 @@ ${trapSection}`;
             }
           }
 
-          // ★ Gemini AI 두뇌 호출 (등록된 키가 있으면 진짜 AI가 결장 선수 분석!)
           callGeminiOrFallback(cur, stats, newsTitles, homeKeyInjury, awayKeyInjury, winId);
         })
         .catch(err => {
@@ -777,7 +802,6 @@ ${trapSection}`;
         });
     }
 
-    // ★ [핵심] Gemini AI를 직접 호출하여 결장자 주전/후보 여부를 판별하는 엔진
     function callGeminiOrFallback(cur, stats, newsTitles, homeKeyInjury, awayKeyInjury, winId) {
       const apiKey = localStorage.getItem('toto_gemini_key');
       const pickEl = document.getElementById(`verdictPick_${winId}`);
@@ -786,20 +810,21 @@ ${trapSection}`;
 
       if (!pickEl) return;
 
-      // 1. 등록된 Gemini API 키가 없을 경우: 기존 규칙 기반 V2.0 엔진 실행
       if (!apiKey) {
         renderV2RuleVerdict(cur, stats, homeKeyInjury, awayKeyInjury, winId);
         summaryEl.innerHTML += `<div style="margin-top:6px; color:#fde047; font-size:11px;">💡 우측 상단 [⚙️ AI 두뇌 키 등록]을 하시면 구글 AI가 기사 속 선수의 에이스/후보 여부까지 실시간 분석해 줍니다.</div>`;
         return;
       }
 
-      // 2. Gemini API 키가 있을 경우: 구글 제미나이 2.5 Flash 인공지능 직접 호출!
+      const cleanH = cleanTeamName(cur.hT);
+      const cleanA = cleanTeamName(cur.aT);
+
       const prompt = 
 `당신은 전 세계 축구 리그의 모든 스쿼드를 꿰뚫고 있는 프로 스포츠 베팅 수석 애널리스트입니다.
 아래 경기 데이터와 외신 기사를 분석하여, 결장 선수가 '핵심 주전'인지 '단순 벤치/후보'인지 분별하고 최종 베팅 결론을 내려주세요.
 
 [경기 정보]
-- 경기: ${cur.hT} vs ${cur.aT} (리그: ${cur.l})
+- 경기: ${cleanH} vs ${cleanA} (리그: ${cur.l})
 - 배당: 홈 ${cur.h} | 무 ${cur.d} | 원정 ${cur.a} (핸디 [${cur.o}] : 승 ${cur.hp} / 무 ${cur.hd} / 패 ${cur.ha})
 - 22,000건 통계 요약: 일반 우세 ${stats.genRec}, 핸디 우세 ${stats.hndRec}, 무승부 확률 ${stats.rateDraw}%
 - 오즈메이커 함정 여부: ${stats.isTrap ? '경고 (+'+stats.diff+'% 과대평가됨)' : '적정 배당'}
@@ -826,7 +851,6 @@ ${newsTitles.join('\n') || '특이 외신 기사 없음'}
       .then(data => {
         if (data.candidates && data.candidates[0].content) {
           const aiText = data.candidates[0].content.parts[0].text;
-          
           pickEl.innerText = `★ 구글 Gemini 실시간 AI 선수 판독 완료`;
           subEl.innerHTML = `<b>실시간 축구 두뇌 연동 완료</b> (에이스/벤치 가치 판독)`;
           summaryEl.innerText = aiText;
@@ -835,12 +859,10 @@ ${newsTitles.join('\n') || '특이 외신 기사 없음'}
         }
       })
       .catch(err => {
-        // AI 호출 실패 시 규칙 기반 엔진으로 즉시 대체
         renderV2RuleVerdict(cur, stats, homeKeyInjury, awayKeyInjury, winId);
       });
     }
 
-    // 규칙 기반 대체 판정 함수
     function renderV2RuleVerdict(cur, stats, homeKeyInjury, awayKeyInjury, winId) {
       const pickEl = document.getElementById(`verdictPick_${winId}`);
       const subEl = document.getElementById(`verdictSub_${winId}`);
@@ -869,11 +891,11 @@ ${newsTitles.join('\n') || '특이 외신 기사 없음'}
         reasonList.push(`오즈메이커 함정(+${stats.diff}%) 경고 반영`);
       }
       if (homeKeyInjury) {
-        reasonList.push(`홈팀(${cur.hT}) 에이스 결장 악재 반영`);
+        reasonList.push(`홈팀 에이스 결장 악재 반영`);
         if (pickType === "handi") confidence += 9.5;
       }
       if (awayKeyInjury) {
-        reasonList.push(`원정팀(${cur.aT}) 에이스 결장 악재 반영`);
+        reasonList.push(`원정팀 에이스 결장 악재 반영`);
         if (pickType === "general") confidence += 9.5;
       }
 
@@ -881,8 +903,7 @@ ${newsTitles.join('\n') || '특이 외신 기사 없음'}
 
       let summaryText = "";
       if (homeKeyInjury || awayKeyInjury) {
-        const victimTeam = homeKeyInjury ? cur.hT : cur.aT;
-        summaryText = `기사 분석 결과, ${victimTeam}의 [핵심 전력 누수]가 확인되어 통계 우세 픽의 실현 가능성이 대폭 상승했습니다. ${bestPick}를 확신도 ${confidence}%로 강력 추천합니다.`;
+        summaryText = `기사 분석 결과, 결장 악재가 확인되어 통계 우세 픽의 실현 가능성이 대폭 상승했습니다. ${bestPick}를 확신도 ${confidence}%로 강력 추천합니다.`;
       } else if (stats.isTrap) {
         summaryText = `오즈메이커가 ${stats.favTeam}의 승률을 과대평가한 함정 경기입니다. 통계와 배당 가치를 종합할 때 ${bestPick} 픽이 가장 안전하며, 고배당 노림수로는 ${stats.highYieldRec}를 적극 추천합니다.`;
       } else if (parseFloat(stats.rateDraw) >= 26.0) {
