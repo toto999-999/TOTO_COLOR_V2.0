@@ -141,27 +141,28 @@
     .news-highlight { color: #dc2626; font-weight: 700; }
     .news-loading { font-size: 12px; color: #64748b; padding: 6px 0; }
     
+    /* 네이버 삭제 후 구글 단독 버튼 가로 꽉 차게 */
     .news-btn-row {
       display: flex;
-      gap: 8px;
       margin-top: 8px;
     }
     .btn-news-link {
-      flex: 1;
-      height: 32px;
-      font-size: 12px;
+      width: 100%;
+      height: 34px;
+      font-size: 12.5px;
       font-weight: 700;
       border-radius: 6px;
       border: 1px solid #cbd5e1;
       background: #f1f5f9;
       color: #1e293b;
       text-align: center;
-      line-height: 30px;
+      line-height: 32px;
       text-decoration: none;
       display: block;
     }
+    .btn-news-link:active { background: #e2e8f0; }
 
-    /* ★ [V2.0 핵심] AI 종합 최종 판정 카드 */
+    /* AI 종합 최종 판정 카드 */
     .verdict-box {
       background: linear-gradient(135deg, #1e3a8a, #2563eb);
       color: #ffffff;
@@ -566,14 +567,13 @@
 ------------------------------------------
 ${trapSection}`;
 
-      // V2.0 팝업창 생성 및 종합 평가 인자 전달
       createDraggableWindow(cur, reportText, {
         rW, rX, rY, rZ, rateDraw, rateHdDraw, isTrap, diff, favTeam,
         pickW_Name, pickW_Odd, pickY_Name, pickY_Odd, highYieldRec
       });
     }
 
-    // ★ [TOTO_COLOR_V2.0 팝업 생성]
+    // 플로팅 팝업 생성 (네이버 버튼 삭제 ➔ 구글 1개 버튼으로 시원하게 통일)
     function createDraggableWindow(cur, statText, stats) {
       const container = document.getElementById('popupContainer');
       const winId = 'win_' + Date.now();
@@ -590,7 +590,6 @@ ${trapSection}`;
       winEl.style.left = initLeft + 'px';
       winEl.style.zIndex = topZIndex;
 
-      const naverSearchUrl = `https://search.naver.com/search.naver?query=${encodeURIComponent(cur.hT + " " + cur.aT + " 축구")}`;
       const googleGlobalUrl = `https://www.google.com/search?q=${encodeURIComponent(cur.hT + " " + cur.aT + " injuries lineup team news")}`;
 
       winEl.innerHTML = `
@@ -606,12 +605,11 @@ ${trapSection}`;
             <div class="news-title-header">📰 [5. 해당 경기 실시간 뉴스 & 결장 이슈]</div>
             <div id="newsList_${winId}" class="news-loading">⏳ 경기 관련 실시간 뉴스를 조회 중...</div>
             <div class="news-btn-row">
-              <a href="${naverSearchUrl}" target="_blank" class="btn-news-link">🔍 네이버 뉴스</a>
-              <a href="${googleGlobalUrl}" target="_blank" class="btn-news-link">🌐 구글 현지뉴스</a>
+              <a href="${googleGlobalUrl}" target="_blank" class="btn-news-link">🌐 구글 현지 결장/라인업 뉴스 전체보기</a>
             </div>
           </div>
 
-          <!-- ★ [TOTO_COLOR_V2.0 핵심] 통계+뉴스 융합 종합 최종 판정 카드 -->
+          <!-- AI 종합 최종 판정 카드 -->
           <div class="verdict-box" id="verdictBox_${winId}">
             <div class="verdict-title">🏆 [6. AI 종합 최종 판정 (V2.0 엔진)]</div>
             <div class="verdict-pick" id="verdictPick_${winId}">⏳ 통계 및 뉴스 종합 분석 중...</div>
@@ -632,11 +630,9 @@ ${trapSection}`;
       container.appendChild(winEl);
       makeDraggable(winEl, document.getElementById(`header_${winId}`));
 
-      // 실시간 뉴스 로드 및 V2.0 종합 판정 실행
       fetchMatchNewsAndSynthesize(cur, stats, `newsList_${winId}`, winId);
     }
 
-    // ★ [V2.0 엔진] 실시간 뉴스 크롤링 후 통계와 결합하여 종합 결론 생성
     function fetchMatchNewsAndSynthesize(cur, stats, newsContainerId, winId) {
       const query = `${cur.hT} ${cur.aT}`;
       const rssUrl = `https://news.google.com/rss/search?q=${encodeURIComponent(query)}&hl=ko&gl=KR&ceid=KR:ko`;
@@ -671,7 +667,6 @@ ${trapSection}`;
             if (newsEl) newsEl.innerHTML = "<div class='news-loading'>최근 한국어 기사가 없습니다. 아래 버튼으로 현지 뉴스를 확인하세요.</div>";
           }
 
-          // ★ 통계 + 뉴스 융합 최종 판정 실행
           renderV2FinalVerdict(cur, stats, newsTitles, winId);
         })
         .catch(err => {
@@ -681,7 +676,6 @@ ${trapSection}`;
         });
     }
 
-    // ★ [V2.0 핵심 알고리즘] 통계 수치와 뉴스 이슈를 믹스하여 확신도 & 총평 도출
     function renderV2FinalVerdict(cur, stats, newsTitles, winId) {
       const pickEl = document.getElementById(`verdictPick_${winId}`);
       const subEl = document.getElementById(`verdictSub_${winId}`);
@@ -689,7 +683,6 @@ ${trapSection}`;
 
       if (!pickEl) return;
 
-      // 1. 뉴스 키워드 감지 (홈/원정 악재 여부)
       let homeNewsNegative = false;
       let awayNewsNegative = false;
       const negWords = ["결장", "부상", "로테이션", "2군", "퇴장", "휴식", "피로"];
@@ -703,7 +696,6 @@ ${trapSection}`;
         });
       });
 
-      // 2. 기본 우세 픽 판별 (일반 vs 핸디)
       let bestPick = "";
       let baseRate = 0;
       let pickType = "";
@@ -718,7 +710,6 @@ ${trapSection}`;
         pickType = "general";
       }
 
-      // 3. 뉴스 및 함정 지수 보정으로 최종 확신도(Confidence) 계산
       let confidence = baseRate;
       let reasonList = [];
 
@@ -740,7 +731,6 @@ ${trapSection}`;
 
       confidence = Math.min(96.5, Math.max(60.0, confidence)).toFixed(1);
 
-      // 4. AI 3줄 총평 생성
       let summaryText = "";
       if (stats.isTrap) {
         summaryText = `오즈메이커가 ${stats.favTeam}의 승률을 과대평가한 함정 경기입니다. 통계와 배당 가치를 종합할 때 ${bestPick} 픽이 가장 안전하며, 고배당 노림수로는 ${stats.highYieldRec}를 적극 추천합니다.`;
@@ -750,7 +740,6 @@ ${trapSection}`;
         summaryText = `빅데이터 동일 색칠 패턴(${baseRate}%)과 현장 이슈가 안정적으로 일치하는 경기입니다. 배당 대비 리스크가 적은 ${bestPick}를 최우선 주력으로 추천합니다.`;
       }
 
-      // 화면에 출력
       pickEl.innerText = `★ 최종 주력: ${bestPick}`;
       subEl.innerHTML = `<b>최종 확신도: ${confidence}%</b> (${reasonList.join(" + ")})`;
       summaryEl.innerText = `💬 [AI 총평] ${summaryText}`;
