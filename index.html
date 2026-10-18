@@ -119,7 +119,7 @@
 
     .report-stat-text { white-space: pre-wrap; margin-bottom: 8px; }
 
-    /* 5번 뉴스 및 결장 요약 박스 (기사 목록 제거하고 심플하게) */
+    /* 5번 뉴스 및 결장 요약 박스 */
     .news-box {
       background: #ffffff;
       border: 1.5px solid #93c5fd;
@@ -140,7 +140,7 @@
       padding: 6px 10px;
       border-radius: 6px;
       line-height: 1.5;
-      margin-bottom: 8px;
+      margin-bottom: 6px;
     }
     .badge-danger-news { background: #fee2e2; color: #991b1b; border: 1px solid #f87171; }
     .badge-ok-news { background: #dcfce7; color: #166534; border: 1px solid #86efac; }
@@ -320,32 +320,40 @@
     let topZIndex = 2000;
     let windowCascadeCount = 0;
 
-    // 토토 축약어 완벽 복원
+    // ★ [대수술 2] 토토 축약어 ➔ 정식 한글/영문 팀명 사전 대폭 확장!
     function cleanTeamName(name) {
       if (!name) return "";
       let n = name.trim();
 
       const totoDict = {
-        "잘츠부르": "잘츠부르크",
-        "소시에다": "소시에다드",
-        "바르셀로": "바르셀로나",
-        "맨체스C": "맨체스터 시티",
-        "맨체스U": "맨체스터 유나이티드",
-        "C팰리스": "크리스탈 팰리스",
-        "A빌라": "아스톤 빌라",
-        "A마드리": "아틀레티코",
-        "L포즈난": "레흐 포즈난",
-        "찰턴A": "찰턴",
-        "브리스C": "브리스톨",
-        "뉴캐슬U": "뉴캐슬",
-        "리즈U": "리즈",
-        "노팅엄F": "노팅엄",
-        "셰필드U": "셰필드",
-        "웨스트햄": "웨스트햄",
-        "헤르타B": "헤르타 베를린",
-        "베로나": "엘라스 베로나",
-        "가시와R": "가시와 레이솔",
-        "나고야G": "나고야 그램퍼스"
+        "AT마드": "아틀레티코 마드리드 Atletico Madrid",
+        "에스파뇰": "에스파뇰 Espanyol",
+        "잘츠부르": "잘츠부르크 Salzburg",
+        "소시에다": "레알 소시에다드 Real Sociedad",
+        "바르셀로": "바르셀로나 Barcelona",
+        "맨체스C": "맨체스터 시티 Man City",
+        "맨체스U": "맨체스터 유나이티드 Man United",
+        "C팰리스": "크리스탈 팰리스 Crystal Palace",
+        "A빌라": "아스톤 빌라 Aston Villa",
+        "A마드리": "아틀레티코 마드리드 Atletico",
+        "L포즈난": "레흐 포즈난 Lech Poznan",
+        "찰턴A": "찰턴 Charlton",
+        "브리스C": "브리스톨 시티 Bristol City",
+        "뉴캐슬U": "뉴캐슬 유나이티드 Newcastle",
+        "리즈U": "리즈 유나이티드 Leeds",
+        "노팅엄F": "노팅엄 포레스트 Nottingham",
+        "셰필드U": "셰필드 유나이티드 Sheffield",
+        "웨스트햄": "웨스트햄 West Ham",
+        "헤르타B": "헤르타 베를린 Hertha",
+        "베로나": "엘라스 베로나 Verona",
+        "가시와R": "가시와 레이솔 Kashiwa Reysol",
+        "나고야G": "나고야 그램퍼스 Nagoya Grampus",
+        "호펜하임": "호펜하임 Hoffenheim",
+        "베식타시": "베식타시 Besiktas",
+        "루가노": "루가노 Lugano",
+        "츠르베나": "츠르베나 Crvena Zvezda",
+        "밀월": "밀월 Millwall",
+        "스완지C": "스완지 시티 Swansea"
       };
 
       if (totoDict[n]) return totoDict[n];
@@ -576,7 +584,7 @@
       const diff = (parseFloat(impliedProb) - parseFloat(favActualRate)).toFixed(1);
       const oppHnd = isHomeFav ? `원정 플핸 (${cur.ha}배)` : `홈 플핸 (${cur.hp}배)`;
 
-      // ★ [대표님 요청 반영] 과대평가 임계값을 정확히 +9.2%로 수정!
+      // ★ [대수술 1] 과대평가 +9.2% 이상 시 함정 발동
       let trapSection = "";
       let isTrap = false;
       if (parseFloat(diff) >= 9.2) {
@@ -642,7 +650,6 @@ ${trapSection}`;
       });
     }
 
-    // 팝업 생성
     function createDraggableWindow(cur, statText, stats) {
       const container = document.getElementById('popupContainer');
       const winId = 'win_' + Date.now();
@@ -659,9 +666,8 @@ ${trapSection}`;
       winEl.style.left = initLeft + 'px';
       winEl.style.zIndex = topZIndex;
 
-      const cleanH = cleanTeamName(cur.hT);
-      const cleanA = cleanTeamName(cur.aT);
-      const googleGlobalUrl = `https://www.google.com/search?q=${encodeURIComponent(cleanH + " " + cleanA + " injuries lineup team news")}`;
+      const cleanSearchQuery = cleanTeamName(cur.hT) + " " + cleanTeamName(cur.aT);
+      const googleGlobalUrl = `https://www.google.com/search?q=${encodeURIComponent(cleanSearchQuery + " injuries lineup team news")}`;
 
       winEl.innerHTML = `
         <div class="window-header" id="header_${winId}">
@@ -671,16 +677,16 @@ ${trapSection}`;
         <div class="window-body">
           <div class="report-stat-text">${statText}</div>
           
-          <!-- ★ [심플해진 5번 박스: 기사 목록 제거 ➔ AI 핵심 요약 & 구글 링크만 유지] -->
+          <!-- 5번 박스: 본문까지 스캔한 정밀 결장 요약 -->
           <div class="news-box">
             <div class="news-title-header">📰 [5. 실시간 결장 & 라인업 현황]</div>
-            <div id="newsBadge_${winId}" class="news-status-badge badge-ok-news">⏳ 결장 전력 분석 중...</div>
+            <div id="newsBadge_${winId}" class="news-status-badge badge-ok-news">⏳ 결장 전력 본문 정밀 스캔 중...</div>
             <div class="news-btn-row">
               <a href="${googleGlobalUrl}" target="_blank" class="btn-news-link">🌐 구글 현지 결장/라인업 전체 검색결과</a>
             </div>
           </div>
 
-          <!-- ★ 6번 AI 종합 최종 판정 카드 -->
+          <!-- 6번 AI 종합 최종 판정 카드 -->
           <div class="verdict-box" id="verdictBox_${winId}">
             <div class="verdict-title">🏆 [6. AI 종합 최종 판정]</div>
             <div class="verdict-pick" id="verdictPick_${winId}">⏳ AI 최종 결론 도출 중...</div>
@@ -701,15 +707,17 @@ ${trapSection}`;
       container.appendChild(winEl);
       makeDraggable(winEl, document.getElementById(`header_${winId}`));
 
-      // 결장 판독 및 V2.0 종합 판정 실행
-      fetchGlobalNewsAndAnalyze(cur, stats, winId);
+      // 본문까지 샅샅이 스캔하는 정밀 뉴스 크롤링 실행
+      fetchGlobalNewsAndAnalyzeDeep(cur, stats, winId);
     }
 
-    // 결장 정보 판독 및 종합 판정
-    function fetchGlobalNewsAndAnalyze(cur, stats, winId) {
+    // ★ [대수술 1] 제목뿐만 아니라 '본문 요약문(Description)'까지 샅샅이 스캔하는 정밀 엔진!
+    function fetchGlobalNewsAndAnalyzeDeep(cur, stats, winId) {
       const cleanH = cleanTeamName(cur.hT);
       const cleanA = cleanTeamName(cur.aT);
-      const query = `${cleanH} ${cleanA}`;
+      
+      // 구글 뉴스 RSS 질의
+      const query = `${cleanH} ${cleanA} injury OR lineup OR "team news" OR 결장`;
       const rssUrl = `https://news.google.com/rss/search?q=${encodeURIComponent(query)}`;
       const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(rssUrl)}`;
 
@@ -721,7 +729,8 @@ ${trapSection}`;
           const items = xmlDoc.querySelectorAll("item");
           const badgeEl = document.getElementById(`newsBadge_${winId}`);
 
-          let newsTitles = [];
+          let allTextCorpus = ""; // 기사 제목 + 본문 전체를 담을 텍스트 주머니
+
           const keyPlayerWords = ["captain", "skipper", "top scorer", "leading scorer", "talisman", "crucial", "key", "goalkeeper", "keeper", "주장", "득점 1위", "최다 득점", "에이스", "핵심", "주전 골키퍼"];
           const freshInjuryWords = ["ruled out", "set to miss", "injury", "injuries", "sidelined", "hamstring", "illness", "flu", "suspended", "red card", "knock", "doubt", "absent", "misses", "blow", "결장", "부상", "출전 불가", "퇴장", "징계", "2군", "로테이션"];
 
@@ -730,39 +739,46 @@ ${trapSection}`;
           let anyInjuryDetected = false;
 
           if (items && items.length > 0) {
-            const maxCount = Math.min(items.length, 3);
-            for (let i = 0; i < maxCount; i++) {
-              let title = items[i].querySelector("title").textContent;
-              newsTitles.push(title);
+            for (let i = 0; i < Math.min(items.length, 5); i++) {
+              let title = items[i].querySelector("title") ? items[i].querySelector("title").textContent : "";
+              let desc = items[i].querySelector("description") ? items[i].querySelector("description").textContent : "";
+              
+              // HTML 태그 벗겨내고 순수 텍스트만 추출
+              desc = desc.replace(/<[^>]*>?/gm, '');
+              
+              const fullText = (title + " " + desc).toLowerCase();
+              allTextCorpus += fullText + " ";
 
-              const lowerTitle = title.toLowerCase();
-              const hasKey = keyPlayerWords.some(w => lowerTitle.includes(w));
-              const hasInjury = freshInjuryWords.some(w => lowerTitle.includes(w));
+              const hasKey = keyPlayerWords.some(w => fullText.includes(w));
+              const hasInjury = freshInjuryWords.some(w => fullText.includes(w));
 
               if (hasInjury) {
                 anyInjuryDetected = true;
-                if (title.includes(cleanH) || lowerTitle.includes(cleanH.toLowerCase())) {
+                if (fullText.includes(cur.hT.toLowerCase()) || fullText.includes(cleanH.toLowerCase())) {
                   if (hasKey) homeKeyInjury = true;
                 }
-                if (title.includes(cleanA) || lowerTitle.includes(cleanA.toLowerCase())) {
+                if (fullText.includes(cur.aT.toLowerCase()) || fullText.includes(cleanA.toLowerCase())) {
                   if (hasKey) awayKeyInjury = true;
                 }
               }
             }
 
             if (badgeEl) {
-              if (homeKeyInjury) {
+              if (homeKeyInjury && awayKeyInjury) {
                 badgeEl.className = "news-status-badge badge-danger-news";
-                badgeEl.innerText = `🚨 [홈팀 악재 감지]: ${cleanH} 핵심 에이스 결장 이슈 확인`;
+                badgeEl.innerText = `🚨 [양 팀 결장]: ${cur.hT} 및 ${cur.aT} 양 팀 핵심 전력 누수 확인`;
+              } else if (homeKeyInjury) {
+                badgeEl.className = "news-status-badge badge-danger-news";
+                badgeEl.innerText = `🚨 [홈팀 악재 감지]: ${cur.hT} 핵심 에이스/골키퍼 결장 확인`;
               } else if (awayKeyInjury) {
                 badgeEl.className = "news-status-badge badge-danger-news";
-                badgeEl.innerText = `🚨 [원정팀 악재 감지]: ${cleanA} 핵심 에이스 결장 이슈 확인`;
+                badgeEl.innerText = `🚨 [원정팀 악재 감지]: ${cur.aT} 핵심 에이스/주장 결장 확인`;
               } else if (anyInjuryDetected) {
                 badgeEl.className = "news-status-badge badge-ok-news";
-                badgeEl.innerText = `⚠️ [결장자 확인됨]: 경미한 부상자 확인 (치명적 에이스 누수는 없음)`;
+                badgeEl.innerText = `⚠️ [결장자 확인됨]: 본문 속 부상자 확인 (치명적 에이스 누수는 미감지)`;
               } else {
                 badgeEl.className = "news-status-badge badge-ok-news";
-                badgeEl.innerText = "✅ [전력 양호]: 치명적인 에이스 결장 미감지 (정상 전력)";
+                badgeEl.innerText = "✅ [전력 양호]: 본문 스캔 결과 치명적인 에이스 결장 없음 (정상 전력)";
               }
             }
 
@@ -773,7 +789,7 @@ ${trapSection}`;
             }
           }
 
-          callGeminiOrFallback(cur, stats, newsTitles, homeKeyInjury, awayKeyInjury, winId);
+          callGeminiOrDeepVerdict(cur, stats, allTextCorpus, homeKeyInjury, awayKeyInjury, winId);
         })
         .catch(err => {
           const badgeEl = document.getElementById(`newsBadge_${winId}`);
@@ -781,11 +797,12 @@ ${trapSection}`;
             badgeEl.className = "news-status-badge badge-ok-news";
             badgeEl.innerText = "✅ [특이 결장 없음]: 긴급 악재 미감지 (정상 전력)";
           }
-          callGeminiOrFallback(cur, stats, [], false, false, winId);
+          callGeminiOrDeepVerdict(cur, stats, "", false, false, winId);
         });
     }
 
-    function callGeminiOrFallback(cur, stats, newsTitles, homeKeyInjury, awayKeyInjury, winId) {
+    // ★ [대수술 3] Gemini API + 구글 실시간 검색 Grounding 연동
+    function callGeminiOrDeepVerdict(cur, stats, newsCorpus, homeKeyInjury, awayKeyInjury, winId) {
       const apiKey = localStorage.getItem('toto_gemini_key');
       const pickEl = document.getElementById(`verdictPick_${winId}`);
       const subEl = document.getElementById(`verdictSub_${winId}`);
@@ -795,20 +812,21 @@ ${trapSection}`;
 
       if (!apiKey) {
         renderV2RuleVerdict(cur, stats, homeKeyInjury, awayKeyInjury, winId);
-        summaryEl.innerHTML += `<div style="margin-top:6px; color:#fde047; font-size:11px;">💡 우측 상단 [⚙️ AI 두뇌 키 등록] 시 구글 AI가 기사 속 선수의 에이스/후보 여부까지 실시간 분석해 줍니다.</div>`;
+        summaryEl.innerHTML += `<div style="margin-top:6px; color:#fde047; font-size:11px;">💡 우측 상단 [⚙️ AI 두뇌 키 등록] 시 구글 AI가 트랜스퍼마크트 결장자까지 스스로 실시간 검색해 줍니다.</div>`;
         return;
       }
 
       const cleanH = cleanTeamName(cur.hT);
       const cleanA = cleanTeamName(cur.aT);
 
-      // 구글 검색 도구 탑재 프롬프트 (Gemini가 최신 결장자를 직접 검색)
       const prompt = 
 `당신은 축구 스쿼드를 꿰뚫고 있는 프로 스포츠 베팅 수석 애널리스트입니다.
 경기: ${cleanH} vs ${cleanA} (${cur.l})
 배당: 홈 ${cur.h} | 무 ${cur.d} | 원정 ${cur.a} (핸디 [${cur.o}] : 승 ${cur.hp} / 무 ${cur.hd} / 패 ${cur.ha})
 빅데이터 통계 요약: 일반 우세 ${stats.genRec}, 핸디 우세 ${stats.hndRec}, 무승부 확률 ${stats.rateDraw}%
 오즈메이커 함정 여부: ${stats.isTrap ? '🚨 함정 경고 (+'+stats.diff+'% 과대평가됨! 정배 탈락 ➔ '+stats.oppHnd+' 추천)' : '적정 배당 (+'+stats.diff+'%)'}
+수집된 현지 텍스트:
+${newsCorpus.slice(0, 500) || '특이 외신 기사 없음'}
 
 임무:
 1. 이 경기의 최신 결장자/부상자를 파악하여, 결장자가 '핵심 주전(에이스/주전GK/주포)'인지 '단순 벤치/후보'인지 1문장으로 명확히 구분하세요.
@@ -823,7 +841,7 @@ ${trapSection}`;
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           contents: [{ parts: [{ text: prompt }] }],
-          tools: [{ googleSearch: {} }], // ★ 구글 검색 도구 가동!
+          tools: [{ googleSearch: {} }],
           generationConfig: { temperature: 0.2, maxOutputTokens: 600 }
         })
       })
@@ -843,7 +861,7 @@ ${trapSection}`;
       });
     }
 
-    // ★ [핵심 로직] 과대평가 +9.2% 이상일 때만 정배 탈락!
+    // 규칙 기반 판정 함수 (+9.2% 함정 탈락 반영)
     function renderV2RuleVerdict(cur, stats, homeKeyInjury, awayKeyInjury, winId) {
       const pickEl = document.getElementById(`verdictPick_${winId}`);
       const subEl = document.getElementById(`verdictSub_${winId}`);
@@ -854,7 +872,6 @@ ${trapSection}`;
       let reasonList = [];
       let summaryText = "";
 
-      // ★ +9.2% 이상일 때만 확실한 함정으로 간주하여 정배 탈락!
       if (stats.isTrap) {
         bestPick = `[핸디] ${stats.oppHnd}`;
         confidence = parseFloat(stats.rHnd) || 55.0;
@@ -872,7 +889,6 @@ ${trapSection}`;
         summaryText = `오즈메이커가 ${stats.favTeam}의 승률을 +${stats.diff}% 과대평가한 위험한 함정 경기입니다. 정배당을 과감히 버리고, 2배 안팎의 [${stats.oppHnd}]를 최종 주력으로 추천하며, 고배당 노림수로는 [일반 무승부 (${cur.d}배)]를 강력 추천합니다.`;
 
       } else {
-        // +9.2% 미만인 정상 경기일 때 통계 1위 우세 픽 유지
         if (parseFloat(stats.rY) >= parseFloat(stats.rW)) {
           bestPick = `[핸디] ${stats.pickY_Name} (${stats.pickY_Odd}배)`;
           confidence = parseFloat(stats.rY);
