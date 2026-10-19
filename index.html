@@ -21,7 +21,6 @@
       padding: 4px 10px; font-size: 11.5px; font-weight: 800; color: #2563eb; cursor: pointer;
     }
 
-    /* 상단 3개 메인 탭 */
     .main-tab-nav { display: flex; gap: 6px; margin-bottom: 14px; background: #e2e8f0; padding: 4px; border-radius: 10px; }
     .tab-btn { flex: 1; height: 40px; border-radius: 8px; border: none; font-size: 13.5px; font-weight: 800; color: #475569; background: transparent; cursor: pointer; transition: all 0.15s ease; }
     .tab-btn.active { background: #2563eb; color: #ffffff; box-shadow: 0 2px 6px rgba(37, 99, 235, 0.3); }
@@ -53,7 +52,7 @@
     .odd-box { flex: 1; text-align: center; padding: 5px 2px; border-radius: 5px; background: #f1f5f9; border: 1px solid #e2e8f0; font-size: 11.5px; font-weight: 600; color: #475569; }
     .odd-box.colored { background-color: #9bc2e6 !important; color: #0f172a !important; font-weight: 800 !important; border-color: #2b6cb0 !important; }
 
-    /* ★ [필터_검색 탭 전용 스타일] */
+    /* 필터_검색 패널 */
     .filter-panel { background: #ffffff; border-radius: 12px; padding: 16px; border: 1.5px solid #cbd5e1; margin-bottom: 14px; box-shadow: 0 2px 6px rgba(0,0,0,0.05); }
     .filter-group-title { font-size: 13.5px; font-weight: 800; color: #1e3a8a; margin-bottom: 8px; display: flex; align-items: center; gap: 4px; }
     
@@ -75,7 +74,6 @@
     .btn-run-filter { flex: 2; height: 44px; background: #2563eb; color: #ffffff; border: none; border-radius: 8px; font-size: 14.5px; font-weight: 800; cursor: pointer; }
     .btn-reset-filter { flex: 1; height: 44px; background: #64748b; color: #ffffff; border: none; border-radius: 8px; font-size: 13.5px; font-weight: 700; cursor: pointer; }
 
-    /* 필터 결과 통계 요약 카드 */
     .filter-stat-card { background: linear-gradient(135deg, #1e3a8a, #2563eb); color: #ffffff; border-radius: 12px; padding: 14px; margin-bottom: 14px; box-shadow: 0 4px 10px rgba(37,99,235,0.25); }
     .stat-header { font-size: 15px; font-weight: 900; color: #fde047; margin-bottom: 10px; border-bottom: 1px dashed rgba(255,255,255,0.3); padding-bottom: 6px; }
     .stat-row { display: flex; justify-content: space-around; text-align: center; font-size: 13px; line-height: 1.5; margin-bottom: 8px; }
@@ -137,9 +135,7 @@
       <button class="tab-btn" id="tabBtnGuide" onclick="switchMainTab('guide')">📖 베팅가이드</button>
     </div>
 
-    <!-- ======================================================== -->
     <!-- [탭 1] 경기 분석 영역 -->
-    <!-- ======================================================== -->
     <div id="tabContentMatches">
       <div class="sync-status-box" id="syncBox" style="display:none;">
         <span id="syncText">✔ 실시간 데이터 동기화 완료</span>
@@ -162,107 +158,28 @@
       </div>
     </div>
 
-    <!-- ======================================================== -->
-    <!-- [탭 2] ★ 신규 추가: 필터_검색 영역 -->
-    <!-- ======================================================== -->
+    <!-- [탭 2] 필터_검색 영역 -->
     <div id="tabContentFilter" style="display:none; flex-direction:column;">
       <div class="filter-panel">
-        
-        <!-- 1. 콤보박스 필터군 (W, X, Y, Z, L, O, T) -->
         <div class="filter-group-title">🎯 1. 콤보박스 조건 선택</div>
         <div class="filter-grid-combo">
-          <div class="combo-item">
-            <label>W (일반유형)</label>
-            <select id="fltW">
-              <option value="">전체</option>
-              <option value="정배당">정배당</option>
-              <option value="역배당">역배당</option>
-              <option value="무배당">무배당</option>
-            </select>
-          </div>
-          <div class="combo-item">
-            <label>X (일반결과)</label>
-            <select id="fltX">
-              <option value="">전체</option>
-              <option value="승">승</option>
-              <option value="무">무</option>
-              <option value="패">패</option>
-            </select>
-          </div>
-          <div class="combo-item">
-            <label>Y (핸디유형)</label>
-            <select id="fltY">
-              <option value="">전체</option>
-              <option value="정배당">정배당</option>
-              <option value="역배당">역배당</option>
-              <option value="무배당">무배당</option>
-            </select>
-          </div>
-          <div class="combo-item">
-            <label>Z (핸디결과)</label>
-            <select id="fltZ">
-              <option value="">전체</option>
-              <option value="승">승</option>
-              <option value="무">무</option>
-              <option value="패">패</option>
-            </select>
-          </div>
+          <div class="combo-item"><label>W (일반유형)</label><select id="fltW"><option value="">전체</option><option value="정배당">정배당</option><option value="역배당">역배당</option><option value="무배당">무배당</option></select></div>
+          <div class="combo-item"><label>X (일반결과)</label><select id="fltX"><option value="">전체</option><option value="승">승</option><option value="무">무</option><option value="패">패</option></select></div>
+          <div class="combo-item"><label>Y (핸디유형)</label><select id="fltY"><option value="">전체</option><option value="정배당">정배당</option><option value="역배당">역배당</option><option value="무배당">무배당</option></select></div>
+          <div class="combo-item"><label>Z (핸디결과)</label><select id="fltZ"><option value="">전체</option><option value="승">승</option><option value="무">무</option><option value="패">패</option></select></div>
         </div>
 
         <div class="filter-grid-sub">
-          <div class="combo-item">
-            <label>L열 (배종)</label>
-            <select id="fltL">
-              <option value="">전체</option>
-              <option value="정">정</option>
-              <option value="역">역</option>
-              <option value="무">무</option>
-            </select>
-          </div>
-          <div class="combo-item">
-            <label>O열 (핸디종류)</label>
-            <select id="fltO">
-              <option value="">전체</option>
-              <option value="-4">-4</option>
-              <option value="-3">-3</option>
-              <option value="-2.5">-2.5</option>
-              <option value="-2">-2</option>
-              <option value="-1.5">-1.5</option>
-              <option value="-1">-1</option>
-              <option value="1">1</option>
-              <option value="1.5">1.5</option>
-              <option value="2">2</option>
-              <option value="2.5">2.5</option>
-              <option value="3">3</option>
-              <option value="4">4</option>
-            </select>
-          </div>
-          <div class="combo-item">
-            <label>T열 (핸디배종)</label>
-            <select id="fltT">
-              <option value="">전체</option>
-              <option value="정">정</option>
-              <option value="역">역</option>
-              <option value="무">무</option>
-            </select>
-          </div>
+          <div class="combo-item"><label>L열 (배종)</label><select id="fltL"><option value="">전체</option><option value="정">정</option><option value="역">역</option><option value="무">무</option></select></div>
+          <div class="combo-item"><label>O열 (핸디종류)</label><select id="fltO"><option value="">전체</option><option value="-4">-4</option><option value="-3">-3</option><option value="-2.5">-2.5</option><option value="-2">-2</option><option value="-1.5">-1.5</option><option value="-1">-1</option><option value="1">1</option><option value="1.5">1.5</option><option value="2">2</option><option value="2.5">2.5</option><option value="3">3</option><option value="4">4</option></select></div>
+          <div class="combo-item"><label>T열 (핸디배종)</label><select id="fltT"><option value="">전체</option><option value="정">정</option><option value="역">역</option><option value="무">무</option></select></div>
         </div>
 
-        <!-- 2. 텍스트 입력 필터군 (C, D, F) -->
         <div class="filter-group-title">🔍 2. 추가 텍스트 검색 (비워두면 전체)</div>
         <div class="filter-grid-text">
-          <div class="text-item">
-            <label>C열 (리그명)</label>
-            <input type="text" id="fltC" placeholder="예: EPL, K리그, 라리가">
-          </div>
-          <div class="text-item">
-            <label>D열 (홈팀명)</label>
-            <input type="text" id="fltD" placeholder="예: 아스널, 번리, 레알">
-          </div>
-          <div class="text-item">
-            <label>F열 (원정팀명)</label>
-            <input type="text" id="fltF" placeholder="예: 첼시, 찰턴, 바르셀">
-          </div>
+          <div class="text-item"><label>C열 (리그명)</label><input type="text" id="fltC" placeholder="예: EPL, K리그, 라리가"></div>
+          <div class="text-item"><label>D열 (홈팀명)</label><input type="text" id="fltD" placeholder="예: 아스널, 번리, 레알"></div>
+          <div class="text-item"><label>F열 (원정팀명)</label><input type="text" id="fltF" placeholder="예: 첼시, 찰턴, 바르셀"></div>
         </div>
 
         <div class="filter-btn-row">
@@ -271,7 +188,7 @@
         </div>
       </div>
 
-      <!-- 필터 검색 통계 요약 카드 -->
+      <!-- 필터 요약 카드 -->
       <div id="filterStatCard" style="display:none;" class="filter-stat-card">
         <div class="stat-header" id="filterStatHeader">📊 필터 조건 검색 결과 요약</div>
         <div style="font-size:12px; margin-bottom:6px; color:#bfdbfe; font-weight:700;">■ 일반경기 실제 결과 (K열) 통계</div>
@@ -288,17 +205,14 @@
         </div>
       </div>
 
-      <!-- 필터 검색 경기 목록 -->
       <div class="match-list" id="filterMatchListContainer">
         <div style="text-align:center; padding:30px; color:#94a3b8; font-size:13.5px;">
-          조건을 선택하고 [조건 검색 실행] 버튼을 눌러주세요.
+          조건을 선택하고 [조건 검색 실행]을 누르세요.
         </div>
       </div>
     </div>
 
-    <!-- ======================================================== -->
     <!-- [탭 3] 베팅가이드 영역 -->
-    <!-- ======================================================== -->
     <div id="tabContentGuide" class="guide-container">
       <div class="guide-card">
         <div class="guide-title">🚦 1. 오즈메이커 과대평가(함정) 신호등</div>
@@ -345,7 +259,7 @@
 
   <div id="popupContainer"></div>
 
-  <!-- AI 키 입력 모달 -->
+  <!-- AI 키 모달 -->
   <div class="ai-modal-overlay" id="aiKeyModal">
     <div class="ai-modal-card">
       <div style="font-size:16px; font-weight:800; color:#1e3a8a; margin-bottom:8px;">🤖 구글 Gemini AI 키 등록</div>
@@ -366,38 +280,64 @@
     let topZIndex = 2000;
     let windowCascadeCount = 0;
 
+    // 핸디값 정규화 (-1.0, -1, +1 등 통일)
+    function normHandi(val) {
+      if (!val && val !== 0) return "";
+      let s = String(val).trim().replace("+", "");
+      let n = parseFloat(s);
+      return isNaN(n) ? s : String(n);
+    }
+
+    // ★ [핵심: 만능 데이터 변환기]
+    // 데이터가 직접 불러온 엑셀이든(Object), 전송받은 data.json이든(Array) 100% 정상 추출!
+    function getPastItem(p, index) {
+      if (Array.isArray(p)) {
+        // 배열 형태 [h, a, o, w, y, x, z, ...]
+        return {
+          h: parseFloat(p[0]) || 0,
+          a: parseFloat(p[1]) || 0,
+          o: normHandi(p[2]),
+          w: String(p[3] || "").trim(),
+          y: String(p[4] || "").trim(),
+          k: String(p[5] || "").trim(),
+          s: String(p[6] || "").trim(),
+          colL: String(p[7] || "").trim(),
+          colT: String(p[8] || "").trim(),
+          l: String(p[9] || "").trim(),
+          hT: String(p[10] || "").trim(),
+          aT: String(p[11] || "").trim(),
+          row: p[12] || (index + 19)
+        };
+      } else {
+        // 객체 형태 { h, a, o, w, y, k, s, ... }
+        return {
+          h: parseFloat(p.h || 0),
+          a: parseFloat(p.a || 0),
+          o: normHandi(p.o),
+          w: String(p.w || "").trim(),
+          y: String(p.y || "").trim(),
+          k: String(p.k || p.x || "").trim(),
+          s: String(p.s || p.z || "").trim(),
+          colL: String(p.colL || "").trim(),
+          colT: String(p.colT || "").trim(),
+          l: String(p.l || "").trim(),
+          hT: String(p.hT || "").trim(),
+          aT: String(p.aT || "").trim(),
+          row: p.row || (index + 19)
+        };
+      }
+    }
+
     function cleanTeamName(name) {
       if (!name) return "";
       let n = name.trim();
       const totoDict = {
-        "AT마드": "아틀레티코 마드리드 Atletico Madrid",
-        "에스파뇰": "에스파뇰 Espanyol",
-        "잘츠부르": "잘츠부르크 Salzburg",
-        "소시에다": "레알 소시에다드 Real Sociedad",
-        "바르셀로": "바르셀로나 Barcelona",
-        "맨체스C": "맨체스터 시티 Man City",
-        "맨체스U": "맨체스터 유나이티드 Man United",
-        "C팰리스": "크리스탈 팰리스 Crystal Palace",
-        "A빌라": "아스톤 빌라 Aston Villa",
-        "A마드리": "아틀레티코 마드리드 Atletico",
-        "L포즈난": "레흐 포즈난 Lech Poznan",
-        "찰턴A": "찰턴 Charlton",
-        "브리스C": "브리스톨 시티 Bristol City",
-        "뉴캐슬U": "뉴캐슬 유나이티드 Newcastle",
-        "리즈U": "리즈 유나이티드 Leeds",
-        "노팅엄F": "노팅엄 포레스트 Nottingham",
-        "셰필드U": "셰필드 유나이티드 Sheffield",
-        "웨스트햄": "웨스트햄 West Ham",
-        "헤르타B": "헤르타 베를린 Hertha",
-        "베로나": "엘라스 베로나 Verona",
-        "가시와R": "가시와 레이솔 Kashiwa Reysol",
-        "나고야G": "나고야 그램퍼스 Nagoya Grampus",
-        "호펜하임": "호펜하임 Hoffenheim",
-        "베식타시": "베식타시 Besiktas",
-        "루가노": "루가노 Lugano",
-        "츠르베나": "츠르베나 Crvena Zvezda",
-        "밀월": "밀월 Millwall",
-        "스완지C": "스완지 시티 Swansea"
+        "잘츠부르": "잘츠부르크", "소시에다": "소시에다드", "바르셀로": "바르셀로나",
+        "맨체스C": "맨체스터 시티", "맨체스U": "맨체스터 유나이티드", "C팰리스": "크리스탈 팰리스",
+        "A빌라": "아스톤 빌라", "A마드리": "아틀레티코", "L포즈난": "레흐 포즈난",
+        "찰턴A": "찰턴", "브리스C": "브리스톨", "뉴캐슬U": "뉴캐슬", "리즈U": "리즈",
+        "노팅엄F": "노팅엄", "셰필드U": "셰필드", "웨스트햄": "웨스트햄", "헤르타B": "헤르타 베를린",
+        "베로나": "엘라스 베로나", "가시와R": "가시와 레이솔", "나고야G": "나고야 그램퍼스"
       };
       if (totoDict[n]) return totoDict[n];
       if (/^(AC|FC|AS|RB|PSV|AZ|CF|CD)\s*/i.test(n)) return n;
@@ -424,7 +364,6 @@
       closeAiKeyModal();
     }
 
-    // ★ 3개 탭 전환 함수
     function switchMainTab(tab) {
       document.getElementById('tabBtnMatches').classList.remove('active');
       document.getElementById('tabBtnFilter').classList.remove('active');
@@ -519,7 +458,7 @@
     }
 
     // ==========================================================
-    // ★ [신규 기능] 필터_검색 실행 알고리즘 (W,X,Y,Z,L,O,T + C,D,F)
+    // 필터_검색 실행 알고리즘 (만능 추출기 탑재)
     // ==========================================================
     function executeAdvancedFilter() {
       const fltW = document.getElementById('fltW').value.trim();
@@ -527,7 +466,7 @@
       const fltY = document.getElementById('fltY').value.trim();
       const fltZ = document.getElementById('fltZ').value.trim();
       const fltL = document.getElementById('fltL').value.trim();
-      const fltO = document.getElementById('fltO').value.trim();
+      const fltO = normHandi(document.getElementById('fltO').value.trim());
       const fltT = document.getElementById('fltT').value.trim();
 
       const fltC = document.getElementById('fltC').value.trim().toLowerCase();
@@ -539,60 +478,31 @@
       let cHdWin = 0, cHdDraw = 0, cHdLoss = 0;
 
       for (let i = 0; i < pastDB.length; i++) {
-        const p = pastDB[i];
-        // p 구조: 객체 또는 배열
-        // 통일된 접근
-        const lName = String(p.l || p[0] || "").toLowerCase();
-        const hName = String(p.hT || p[1] || "").toLowerCase();
-        const aName = String(p.aT || p[2] || "").toLowerCase();
+        const item = getPastItem(pastDB[i], i);
 
-        const curH = parseFloat(p.h || p[3] || 0);
-        const curD = parseFloat(p.d || p[4] || 0);
-        const curA = parseFloat(p.a || p[5] || 0);
-        const actK = String(p.k || p[6] || "").trim();
-        const colL = String(p.colL || p[7] || "").trim();
-        const curO = String(p.o || p[8] || "").trim();
-        const curHp = parseFloat(p.hp || p[9] || 0);
-        const curHd = parseFloat(p.hd || p[10] || 0);
-        const curHa = parseFloat(p.ha || p[11] || 0);
-        const actS = String(p.s || p[12] || "").trim();
-        const colT = String(p.colT || p[13] || "").trim();
+        // 콤보박스 조건 검사
+        if (fltW && item.w !== fltW) continue;
+        if (fltX && item.k !== fltX && item.x !== fltX) continue;
+        if (fltY && item.y !== fltY) continue;
+        if (fltZ && item.s !== fltZ && item.z !== fltZ) continue;
+        if (fltL && item.colL !== fltL) continue;
+        if (fltO && item.o !== fltO) continue;
+        if (fltT && item.colT !== fltT) continue;
 
-        const curW = String(p.w || p[14] || "").trim();
-        const curX = String(p.x || p[15] || "").trim();
-        const curY = String(p.y || p[16] || "").trim();
-        const curZ = String(p.z || p[17] || "").trim();
-        const rNum = p.row || (i + 19);
+        // 텍스트 조건 검사
+        if (fltC && !item.l.toLowerCase().includes(fltC)) continue;
+        if (fltD && !item.hT.toLowerCase().includes(fltD)) continue;
+        if (fltF && !item.aT.toLowerCase().includes(fltF)) continue;
 
-        // 1. 콤보박스 조건 검사
-        if (fltW && curW !== fltW) continue;
-        if (fltX && curX !== fltX) continue;
-        if (fltY && curY !== fltY) continue;
-        if (fltZ && curZ !== fltZ) continue;
-        if (fltL && colL !== fltL) continue;
-        if (fltO && curO !== fltO) continue;
-        if (fltT && colT !== fltT) continue;
+        filtered.push(item);
 
-        // 2. 텍스트 입력 조건 검사 (비워두면 통과)
-        if (fltC && !lName.includes(fltC)) continue;
-        if (fltD && !hName.includes(fltD)) continue;
-        if (fltF && !aName.includes(fltF)) continue;
+        if (item.k === "승") cHomeWin++;
+        else if (item.k === "무") cDraw++;
+        else if (item.k === "패") cAwayWin++;
 
-        filtered.push({
-          row: rNum, l: lName, hT: p.hT || p[1], aT: p.aT || p[2],
-          h: curH, d: curD, a: curA, k: actK, colL: colL,
-          o: curO, hp: curHp, hd: curHd, ha: curHa, s: actS, colT: colT,
-          w: curW, x: curX, y: curY, z: curZ
-        });
-
-        // 결과 집계 (K열, S열)
-        if (actK === "승") cHomeWin++;
-        else if (actK === "무") cDraw++;
-        else if (actK === "패") cAwayWin++;
-
-        if (actS === "승") cHdWin++;
-        else if (actS === "무") cHdDraw++;
-        else if (actS === "패") cHdLoss++;
+        if (item.s === "승") cHdWin++;
+        else if (item.s === "무") cHdDraw++;
+        else if (item.s === "패") cHdLoss++;
       }
 
       const totalCount = filtered.length;
@@ -605,7 +515,6 @@
         return;
       }
 
-      // 통계 계산
       const rHW = ((cHomeWin / totalCount) * 100).toFixed(1);
       const rD = ((cDraw / totalCount) * 100).toFixed(1);
       const rAW = ((cAwayWin / totalCount) * 100).toFixed(1);
@@ -625,7 +534,6 @@
 
       statCard.style.display = 'block';
 
-      // 결과 경기 목록 렌더링 (최대 60개 표시)
       let listHtml = "";
       filtered.slice(-60).reverse().forEach(m => {
         listHtml += `
@@ -644,9 +552,9 @@
               <div class="odd-box ${m.k === '패' ? 'colored' : ''}">원정 ${m.a} [${m.k === '패' ? '적중' : ''}]</div>
             </div>
             <div class="odds-row">
-              <div class="odd-box ${m.s === '승' ? 'colored' : ''}">핸승 ${m.hp} [${m.s === '승' ? '적중' : ''}]</div>
-              <div class="odd-box ${m.s === '무' ? 'colored' : ''}">핸무 ${m.hd} [${m.s === '무' ? '적중' : ''}]</div>
-              <div class="odd-box ${m.s === '패' ? 'colored' : ''}">핸패 ${m.ha} [${m.s === '패' ? '적중' : ''}]</div>
+              <div class="odd-box ${m.s === '승' ? 'colored' : ''}">핸승 [${m.s === '승' ? '적중' : ''}]</div>
+              <div class="odd-box ${m.s === '무' ? 'colored' : ''}">핸무 [${m.s === '무' ? '적중' : ''}]</div>
+              <div class="odd-box ${m.s === '패' ? 'colored' : ''}">핸패 [${m.s === '패' ? '적중' : ''}]</div>
             </div>
           </div>
         `;
@@ -671,7 +579,9 @@
       document.getElementById('filterMatchListContainer').innerHTML = "<div style='text-align:center;padding:30px;color:#94a3b8;'>조건을 선택하고 [조건 검색 실행]을 누르세요.</div>";
     }
 
-    // 경기 터치 시 팝업창 분석
+    // ==========================================================
+    // 경기 터치 시 분석 실행 (★ 만능 데이터 추출기 적용 완료!)
+    // ==========================================================
     function analyzeMatch(idx) {
       const cur = todayList[idx];
 
@@ -713,29 +623,27 @@
       let cntDraw = 0, cntHdDraw = 0;
       let cntHomeWin = 0, cntAwayWin = 0;
 
-      for (let i = 0; i < pastDB.length; i++) {
-        const p = pastDB[i];
-        const pastH = parseFloat(p.h || p[3] || 0);
-        const pastA = parseFloat(p.a || p[5] || 0);
-        const pastO = String(p.o || p[8] || "").trim();
-        const pastW = String(p.w || p[14] || "").trim();
-        const pastY = String(p.y || p[16] || "").trim();
-        const actualX = String(p.k || p[6] || "").trim();
-        const actualZ = String(p.s || p[12] || "").trim();
+      const targetHandi = normHandi(cur.o);
 
-        if (Math.abs(pastH - cur.h) <= 0.25 && Math.abs(pastA - cur.a) <= 0.35) {
-          if ((!cur.o || pastO === cur.o) && (pastW === cur.w && pastY === cur.y)) {
+      for (let i = 0; i < pastDB.length; i++) {
+        // ★ 만능 추출기로 과거 데이터를 깨짐 없이 완벽하게 복원!
+        const item = getPastItem(pastDB[i], i);
+
+        if (Math.abs(item.h - cur.h) <= 0.25 && Math.abs(item.a - cur.a) <= 0.35) {
+          if ((!targetHandi || item.o === targetHandi) && (item.w === cur.w && item.y === cur.y)) {
             matchCount++;
-            if (actualX === pickW_Res) cntW_Hit++;
-            if (actualX === pickX_Res) cntX_Hit++;
-            if (actualX === pickW_Res || actualX === pickX_Res) cntGenTotal++;
-            if (actualZ === pickY_Res) cntY_Hit++;
-            if (actualZ === pickZ_Res) cntZ_Hit++;
-            if (actualZ === pickY_Res || actualZ === pickZ_Res) cntHndTotal++;
-            if (actualX === "무") cntDraw++;
-            if (actualX === "승") cntHomeWin++;
-            if (actualX === "패") cntAwayWin++;
-            if (actualZ === "무") cntHdDraw++;
+            if (item.k === pickW_Res) cntW_Hit++;
+            if (item.k === pickX_Res) cntX_Hit++;
+            if (item.k === pickW_Res || item.k === pickX_Res) cntGenTotal++;
+
+            if (item.s === pickY_Res) cntY_Hit++;
+            if (item.s === pickZ_Res) cntZ_Hit++;
+            if (item.s === pickY_Res || item.s === pickZ_Res) cntHndTotal++;
+
+            if (item.k === "무") cntDraw++;
+            if (item.k === "승") cntHomeWin++;
+            if (item.k === "패") cntAwayWin++;
+            if (item.s === "무") cntHdDraw++;
           }
         }
       }
@@ -773,7 +681,7 @@
       const diff = (parseFloat(impliedProb) - parseFloat(favActualRate)).toFixed(1);
       const oppHnd = isHomeFav ? `원정 플핸 (${cur.ha}배)` : `홈 플핸 (${cur.hp}배)`;
 
-      // ★ 과대평가 임계값 정확히 +9.2% 반영
+      // 과대평가 +9.2% 이상 시 함정 발동
       let trapSection = "";
       let isTrap = false;
       if (parseFloat(diff) >= 9.2) {
@@ -1051,14 +959,19 @@ ${newsCorpus.slice(0, 500) || '특이 외신 기사 없음'}
       if (stats.isTrap) {
         bestPick = `[핸디] ${stats.oppHnd}`;
         confidence = parseFloat(stats.rHnd) || 55.0;
+
         reasonList.push(`오즈메이커 함정(+${stats.diff}%)으로 정배(${stats.favTeam}) 탈락`);
         reasonList.push(`반대편 플핸 방어선 구축`);
+
         if (homeKeyInjury || awayKeyInjury) {
           reasonList.push(`결장 악재 반영`);
           confidence += 5.0;
         }
+
         confidence = Math.min(94.0, Math.max(62.0, confidence)).toFixed(1);
+
         summaryText = `오즈메이커가 ${stats.favTeam}의 승률을 +${stats.diff}% 과대평가한 위험한 함정 경기입니다. 정배당을 과감히 버리고, 2배 안팎의 [${stats.oppHnd}]를 최종 주력으로 추천하며, 고배당 노림수로는 [일반 무승부 (${cur.d}배)]를 강력 추천합니다.`;
+
       } else {
         if (parseFloat(stats.rY) >= parseFloat(stats.rW)) {
           bestPick = `[핸디] ${stats.pickY_Name} (${stats.pickY_Odd}배)`;
@@ -1067,13 +980,17 @@ ${newsCorpus.slice(0, 500) || '특이 외신 기사 없음'}
           bestPick = `[일반] ${stats.pickW_Name} (${stats.pickW_Odd}배)`;
           confidence = parseFloat(stats.rW);
         }
+
         reasonList.push(`빅데이터 적중률 ${confidence}% 기반`);
+
         if (homeKeyInjury || awayKeyInjury) {
           const victimTeam = homeKeyInjury ? cur.hT : cur.aT;
           reasonList.push(`${victimTeam} 결장 악재 반영`);
           confidence += 8.0;
         }
+
         confidence = Math.min(96.0, Math.max(60.0, confidence)).toFixed(1);
+
         if (parseFloat(stats.rateDraw) >= 26.0) {
           summaryText = `무승부 확률(${stats.rateDraw}%)이 통계적으로 매우 높은 박빙 매치입니다. 안전하게는 ${bestPick}를 축으로 삼고, 고배당으로는 무승부 단통 저격이 유효합니다.`;
         } else {
@@ -1099,9 +1016,11 @@ ${newsCorpus.slice(0, 500) || '특이 외신 기사 없음'}
         isDragging = true;
         startX = e.clientX || (e.touches && e.touches[0].clientX);
         startY = e.clientY || (e.touches && e.touches[0].clientY);
+
         const rect = element.getBoundingClientRect();
         initialLeft = rect.left;
         initialTop = rect.top;
+
         document.addEventListener('pointermove', onPointerMove);
         document.addEventListener('pointerup', onPointerUp);
       }
@@ -1110,8 +1029,10 @@ ${newsCorpus.slice(0, 500) || '특이 외신 기사 없음'}
         if (!isDragging) return;
         const currentX = e.clientX || (e.touches && e.touches[0].clientX);
         const currentY = e.clientY || (e.touches && e.touches[0].clientY);
+
         const deltaX = currentX - startX;
         const deltaY = currentY - startY;
+
         element.style.left = (initialLeft + deltaX) + 'px';
         element.style.top = (initialTop + deltaY) + 'px';
       }
@@ -1125,7 +1046,6 @@ ${newsCorpus.slice(0, 500) || '특이 외신 기사 없음'}
       handle.addEventListener('pointerdown', onPointerDown);
     }
 
-    // 엑셀 수동 로드 시 필터에 필요한 L, T, C, D, F, K, S열까지 온전히 파싱
     function loadExcelFileManual(e) {
       const file = e.target.files[0];
       if (!file) return;
@@ -1150,7 +1070,7 @@ ${newsCorpus.slice(0, 500) || '특이 외신 기사 없음'}
             const obj = {
               row: r + 1, l: String(row[2]||""), hT: String(row[3]||""), aT: String(row[5]||""),
               h: h, d: parseFloat(row[8])||0, a: a, k: resK, colL: colL,
-              o: String(row[14]||""), hp: parseFloat(row[15])||0, hd: parseFloat(row[16])||0, ha: parseFloat(row[17])||0,
+              o: normHandi(row[14]), hp: parseFloat(row[15])||0, hd: parseFloat(row[16])||0, ha: parseFloat(row[17])||0,
               s: resS, colT: colT,
               w: String(row[22]||""), x: String(row[23]||""), y: String(row[24]||""), z: String(row[25]||"")
             };
