@@ -35,7 +35,6 @@
     .section-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; padding: 0 4px; }
     .section-title { font-size: 15px; font-weight: 800; color: #0f172a; }
 
-    /* 경기 목록 카드 */
     .match-list { display: flex; flex-direction: column; gap: 10px; }
     .match-card { background: #ffffff; border-radius: 12px; padding: 13px 15px; border: 1.5px solid #cbd5e1; box-shadow: 0 2px 5px rgba(0,0,0,0.04); cursor: pointer; }
     .match-card:active { background: #f8fafc; border-color: #2563eb; transform: scale(0.98); }
@@ -280,7 +279,6 @@
     let topZIndex = 2000;
     let windowCascadeCount = 0;
 
-    // 핸디값 정규화 (-1.0, -1, +1 등 통일)
     function normHandi(val) {
       if (!val && val !== 0) return "";
       let s = String(val).trim().replace("+", "");
@@ -288,42 +286,53 @@
       return isNaN(n) ? s : String(n);
     }
 
-    // ★ [핵심: 만능 데이터 변환기]
-    // 데이터가 직접 불러온 엑셀이든(Object), 전송받은 data.json이든(Array) 100% 정상 추출!
+    // ★ [핵심: 만능 데이터 복원기] W, X, Y, Z, L, T, O, K, S 모든 열 완벽 지원!
     function getPastItem(p, index) {
       if (Array.isArray(p)) {
-        // 배열 형태 [h, a, o, w, y, x, z, ...]
+        // [h, a, o, w, x, y, z, colL, colT, k, s, l, hT, aT, row, d, hp, hd, ha]
         return {
           h: parseFloat(p[0]) || 0,
           a: parseFloat(p[1]) || 0,
           o: normHandi(p[2]),
           w: String(p[3] || "").trim(),
-          y: String(p[4] || "").trim(),
-          k: String(p[5] || "").trim(),
-          s: String(p[6] || "").trim(),
+          x: String(p[4] || "").trim(),
+          y: String(p[5] || "").trim(),
+          z: String(p[6] || "").trim(),
           colL: String(p[7] || "").trim(),
           colT: String(p[8] || "").trim(),
-          l: String(p[9] || "").trim(),
-          hT: String(p[10] || "").trim(),
-          aT: String(p[11] || "").trim(),
-          row: p[12] || (index + 19)
+          k: String(p[9] || "").trim(),
+          s: String(p[10] || "").trim(),
+          l: String(p[11] || "").trim(),
+          hT: String(p[12] || "").trim(),
+          aT: String(p[13] || "").trim(),
+          row: p[14] || (index + 19),
+          d: parseFloat(p[15]) || 0,
+          hp: parseFloat(p[16]) || 0,
+          hd: parseFloat(p[17]) || 0,
+          ha: parseFloat(p[18]) || 0
         };
       } else {
-        // 객체 형태 { h, a, o, w, y, k, s, ... }
+        // 객체 형태
         return {
           h: parseFloat(p.h || 0),
           a: parseFloat(p.a || 0),
           o: normHandi(p.o),
           w: String(p.w || "").trim(),
+          x: String(p.x || "").trim(),
           y: String(p.y || "").trim(),
-          k: String(p.k || p.x || "").trim(),
-          s: String(p.s || p.z || "").trim(),
+          z: String(p.z || "").trim(),
           colL: String(p.colL || "").trim(),
           colT: String(p.colT || "").trim(),
+          k: String(p.k || "").trim(),
+          s: String(p.s || "").trim(),
           l: String(p.l || "").trim(),
           hT: String(p.hT || "").trim(),
           aT: String(p.aT || "").trim(),
-          row: p.row || (index + 19)
+          row: p.row || (index + 19),
+          d: parseFloat(p.d || 0),
+          hp: parseFloat(p.hp || 0),
+          hd: parseFloat(p.hd || 0),
+          ha: parseFloat(p.ha || 0)
         };
       }
     }
@@ -458,7 +467,7 @@
     }
 
     // ==========================================================
-    // 필터_검색 실행 알고리즘 (만능 추출기 탑재)
+    // ★ [필터_검색 실행] W, X, Y, Z, L, O, T 및 C, D, F 완벽 매칭!
     // ==========================================================
     function executeAdvancedFilter() {
       const fltW = document.getElementById('fltW').value.trim();
@@ -480,22 +489,23 @@
       for (let i = 0; i < pastDB.length; i++) {
         const item = getPastItem(pastDB[i], i);
 
-        // 콤보박스 조건 검사
+        // 1. 콤보박스 조건 검사
         if (fltW && item.w !== fltW) continue;
-        if (fltX && item.k !== fltX && item.x !== fltX) continue;
+        if (fltX && item.x !== fltX) continue; // X열 검사!
         if (fltY && item.y !== fltY) continue;
-        if (fltZ && item.s !== fltZ && item.z !== fltZ) continue;
+        if (fltZ && item.z !== fltZ) continue; // Z열 검사!
         if (fltL && item.colL !== fltL) continue;
         if (fltO && item.o !== fltO) continue;
         if (fltT && item.colT !== fltT) continue;
 
-        // 텍스트 조건 검사
+        // 2. 텍스트 조건 검사
         if (fltC && !item.l.toLowerCase().includes(fltC)) continue;
         if (fltD && !item.hT.toLowerCase().includes(fltD)) continue;
         if (fltF && !item.aT.toLowerCase().includes(fltF)) continue;
 
         filtered.push(item);
 
+        // 실제 경기 결과 집계 (K열, S열)
         if (item.k === "승") cHomeWin++;
         else if (item.k === "무") cDraw++;
         else if (item.k === "패") cAwayWin++;
@@ -511,7 +521,7 @@
 
       if (totalCount === 0) {
         statCard.style.display = 'none';
-        listContainer.innerHTML = "<div style='text-align:center;padding:40px;color:#94a3b8;'>해당 조건에 일치하는 과거 경기가 없습니다.</div>";
+        listContainer.innerHTML = "<div style='text-align:center;padding:40px;color:#94a3b8;'>해당 조건에 일치하는 과거 경기가 없습니다.<br><small style='font-size:12px; color:#cbd5e1;'>PC 엑셀에서 [스마트폰으로 즉시 전송]을 한 번 실행해 주세요.</small></div>";
         return;
       }
 
@@ -541,20 +551,23 @@
             <div class="card-top">
               <div class="badge-wrap">
                 <span class="row-badge">${m.row}행</span>
-                <span class="league-badge">${m.l}</span>
+                <span class="league-badge">${m.l || '축구'}</span>
               </div>
               <span class="handi-badge">[${m.o}] 핸디 | L:${m.colL} T:${m.colT}</span>
             </div>
             <div class="teams">${m.hT} VS ${m.aT}</div>
-            <div class="odds-row">
-              <div class="odd-box ${m.k === '승' ? 'colored' : ''}">홈 ${m.h} [${m.k === '승' ? '적중' : ''}]</div>
-              <div class="odd-box ${m.k === '무' ? 'colored' : ''}">무 ${m.d} [${m.k === '무' ? '적중' : ''}]</div>
-              <div class="odd-box ${m.k === '패' ? 'colored' : ''}">원정 ${m.a} [${m.k === '패' ? '적중' : ''}]</div>
+            <div style="font-size:11.5px; color:#64748b; margin-bottom:4px;">
+              [W:${m.w} X:${m.x} | Y:${m.y} Z:${m.z}]
             </div>
             <div class="odds-row">
-              <div class="odd-box ${m.s === '승' ? 'colored' : ''}">핸승 [${m.s === '승' ? '적중' : ''}]</div>
-              <div class="odd-box ${m.s === '무' ? 'colored' : ''}">핸무 [${m.s === '무' ? '적중' : ''}]</div>
-              <div class="odd-box ${m.s === '패' ? 'colored' : ''}">핸패 [${m.s === '패' ? '적중' : ''}]</div>
+              <div class="odd-box ${m.k === '승' ? 'colored' : ''}">홈 ${m.h} ${m.k === '승' ? '✔' : ''}</div>
+              <div class="odd-box ${m.k === '무' ? 'colored' : ''}">무 ${m.d} ${m.k === '무' ? '✔' : ''}</div>
+              <div class="odd-box ${m.k === '패' ? 'colored' : ''}">원정 ${m.a} ${m.k === '패' ? '✔' : ''}</div>
+            </div>
+            <div class="odds-row">
+              <div class="odd-box ${m.s === '승' ? 'colored' : ''}">핸승 ${m.hp} ${m.s === '승' ? '✔' : ''}</div>
+              <div class="odd-box ${m.s === '무' ? 'colored' : ''}">핸무 ${m.hd} ${m.s === '무' ? '✔' : ''}</div>
+              <div class="odd-box ${m.s === '패' ? 'colored' : ''}">핸패 ${m.ha} ${m.s === '패' ? '✔' : ''}</div>
             </div>
           </div>
         `;
@@ -579,9 +592,7 @@
       document.getElementById('filterMatchListContainer').innerHTML = "<div style='text-align:center;padding:30px;color:#94a3b8;'>조건을 선택하고 [조건 검색 실행]을 누르세요.</div>";
     }
 
-    // ==========================================================
-    // 경기 터치 시 분석 실행 (★ 만능 데이터 추출기 적용 완료!)
-    // ==========================================================
+    // 경기 터치 시 팝업창 분석
     function analyzeMatch(idx) {
       const cur = todayList[idx];
 
@@ -626,7 +637,6 @@
       const targetHandi = normHandi(cur.o);
 
       for (let i = 0; i < pastDB.length; i++) {
-        // ★ 만능 추출기로 과거 데이터를 깨짐 없이 완벽하게 복원!
         const item = getPastItem(pastDB[i], i);
 
         if (Math.abs(item.h - cur.h) <= 0.25 && Math.abs(item.a - cur.a) <= 0.35) {
@@ -681,7 +691,6 @@
       const diff = (parseFloat(impliedProb) - parseFloat(favActualRate)).toFixed(1);
       const oppHnd = isHomeFav ? `원정 플핸 (${cur.ha}배)` : `홈 플핸 (${cur.hp}배)`;
 
-      // 과대평가 +9.2% 이상 시 함정 발동
       let trapSection = "";
       let isTrap = false;
       if (parseFloat(diff) >= 9.2) {
