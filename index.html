@@ -35,7 +35,6 @@
     .section-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; padding: 0 4px; }
     .section-title { font-size: 15px; font-weight: 800; color: #0f172a; }
 
-    /* 경기 목록 카드 */
     .match-list { display: flex; flex-direction: column; gap: 10px; }
     .match-card { background: #ffffff; border-radius: 12px; padding: 13px 15px; border: 1.5px solid #cbd5e1; box-shadow: 0 2px 5px rgba(0,0,0,0.04); cursor: pointer; }
     .match-card:active { background: #f8fafc; border-color: #2563eb; transform: scale(0.98); }
@@ -62,13 +61,11 @@
     .combo-item { display: flex; flex-direction: column; gap: 3px; }
     .combo-item label { font-size: 11px; font-weight: 700; color: #64748b; text-align: center; }
     .combo-item select { height: 36px; border-radius: 6px; border: 1.5px solid #cbd5e1; font-size: 12.5px; font-weight: 700; color: #1e293b; background: #f8fafc; text-align: center; outline: none; }
-    .combo-item select:focus { border-color: #2563eb; background: #fff; }
-
+    
     .filter-grid-text { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
     .text-item { display: flex; align-items: center; gap: 8px; }
     .text-item label { width: 75px; font-size: 12px; font-weight: 700; color: #475569; }
     .text-item input { flex: 1; height: 36px; border-radius: 6px; border: 1.5px solid #cbd5e1; padding: 0 10px; font-size: 13px; outline: none; background: #f8fafc; }
-    .text-item input:focus { border-color: #2563eb; background: #fff; }
 
     .filter-btn-row { display: flex; gap: 8px; }
     .btn-run-filter { flex: 2; height: 44px; background: #2563eb; color: #ffffff; border: none; border-radius: 8px; font-size: 14.5px; font-weight: 800; cursor: pointer; }
@@ -83,7 +80,7 @@
     /* 베팅가이드 탭 */
     .guide-container { display: none; flex-direction: column; gap: 14px; }
     .guide-card { background: #ffffff; border-radius: 12px; padding: 16px; border: 1.5px solid #cbd5e1; box-shadow: 0 2px 6px rgba(0,0,0,0.05); }
-    .guide-title { font-size: 15.5px; font-weight: 800; color: #1e3a8a; border-bottom: 2px solid #2563eb; padding-bottom: 8px; margin-bottom: 12px; display: flex; align-items: center; gap: 6px; }
+    .guide-title { font-size: 15.5px; font-weight: 800; color: #1e3a8a; border-bottom: 2px solid #2563eb; padding-bottom: 8px; margin-bottom: 12px; }
     .guide-text { font-size: 13.5px; line-height: 1.7; color: #334155; }
     .guide-table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 12.5px; }
     .guide-table th, .guide-table td { padding: 8px 6px; text-align: center; border: 1px solid #e2e8f0; }
@@ -112,7 +109,7 @@
     .verdict-box { background: linear-gradient(135deg, #1e3a8a, #2563eb); color: #ffffff; border-radius: 10px; padding: 12px 14px; margin-top: 10px; box-shadow: 0 4px 10px rgba(37, 99, 235, 0.25); }
     .verdict-title { font-size: 13.5px; font-weight: 800; color: #fde047; margin-bottom: 6px; }
     .verdict-pick { font-size: 15px; font-weight: 900; color: #ffffff; margin-bottom: 4px; }
-    .verdict-sub { font-size: 12.5px; color: #bfdbfe; margin-bottom: 6px; }
+    .verdict-sub { font-size: 12px; color: #bfdbfe; margin-bottom: 6px; }
     .verdict-summary { font-size: 12px; line-height: 1.55; color: #f1f5f9; background: rgba(0, 0, 0, 0.22); padding: 8px 10px; border-radius: 6px; border-left: 3px solid #fde047; white-space: pre-wrap; }
     
     .window-footer { padding: 8px 12px; background: #ffffff; border-top: 1px solid #e2e8f0; text-align: right; }
@@ -157,7 +154,7 @@
 
       <div class="match-list" id="matchListContainer">
         <div style="text-align:center; padding:40px 10px; color:#94a3b8; font-size:14px;">
-          데이터를 불러오는 중입니다...
+          상단의 [엑셀 파일 열기] 버튼을 눌러주세요.
         </div>
       </div>
     </div>
@@ -209,7 +206,6 @@
         </div>
       </div>
 
-      <!-- ★ [연동 완료] 복기용 검색 결과 경기 목록 (터치 시 분석 팝업 연동!) -->
       <div class="match-list" id="filterMatchListContainer">
         <div style="text-align:center; padding:30px; color:#94a3b8; font-size:13.5px;">
           조건을 선택하고 [조건 검색 실행]을 누르세요.
@@ -217,7 +213,7 @@
       </div>
     </div>
 
-    <!-- [탭 3] 베팅가이드 -->
+    <!-- [탭 3] 베팅가이드 영역 -->
     <div id="tabContentGuide" class="guide-container">
       <div class="guide-card">
         <div class="guide-title">🚦 1. 오즈메이커 과대평가(함정) 신호등</div>
@@ -252,7 +248,7 @@
 
   <div id="popupContainer"></div>
 
-  <!-- AI 키 모달 -->
+  <!-- AI 키 입력 모달 -->
   <div class="ai-modal-overlay" id="aiKeyModal">
     <div class="ai-modal-card">
       <div style="font-size:16px; font-weight:800; color:#1e3a8a; margin-bottom:8px;">🤖 구글 Gemini AI 키 등록</div>
@@ -376,24 +372,13 @@
       }
     }
 
-    window.onload = function() {
-      fetch('data.json?t=' + Date.now())
-        .then(response => {
-          if (!response.ok) throw new Error("서버에 data.json이 없습니다.");
-          return response.json();
-        })
-        .then(data => {
-          todayList = data.todayList || [];
-          pastDB = data.pastDB || [];
-          renderMatchList();
-        })
-        .catch(err => {
-          document.getElementById('matchListContainer').innerHTML = `
-            <div style="text-align:center; padding:30px; color:#64748b; font-size:13.5px;">
-              [📁 엑셀 파일 직접 선택하기] 버튼을 눌러주세요.
-            </div>`;
-        });
-    };
+    function receiveExcelData(jsonStr) {
+      const data = JSON.parse(jsonStr);
+      todayList = data.todayList || [];
+      pastDB = data.pastDB || [];
+      document.getElementById('statusMsg').innerText = `✔ 로드 완료 (대상: ${todayList.length}건 / DB: ${pastDB.length}건)`;
+      renderMatchList();
+    }
 
     function renderMatchList() {
       const container = document.getElementById('matchListContainer');
@@ -411,7 +396,7 @@
         let isHa = (m.y==="정배당" && m.hp>m.ha) || (m.y==="역배당" && m.hp<m.ha) || m.z==="패";
 
         html += `
-          <div class="match-card" onclick="analyzeMatchObj(${JSON.stringify(m).replace(/"/g, '&quot;')})">
+          <div class="match-card" onclick="analyzeMatch(${idx})">
             <div class="card-top">
               <div class="badge-wrap">
                 <span class="row-badge">${m.row}행</span>
@@ -436,13 +421,110 @@
       container.innerHTML = html;
     }
 
-    function analyzeMatch(idx) {
-      analyzeMatchObj(todayList[idx]);
+    function analyzeMatch(idx) { analyzeMatchObj(todayList[idx]); }
+
+    function executeAdvancedFilter() {
+      const fltW = document.getElementById('fltW').value.trim();
+      const fltX = document.getElementById('fltX').value.trim();
+      const fltY = document.getElementById('fltY').value.trim();
+      const fltZ = document.getElementById('fltZ').value.trim();
+      const fltL = document.getElementById('fltL').value.trim();
+      const fltO = normHandi(document.getElementById('fltO').value.trim());
+      const fltT = document.getElementById('fltT').value.trim();
+
+      const fltC = document.getElementById('fltC').value.trim().toLowerCase();
+      const fltD = document.getElementById('fltD').value.trim().toLowerCase();
+      const fltF = document.getElementById('fltF').value.trim().toLowerCase();
+
+      let filtered = [];
+      let cHomeWin = 0, cDraw = 0, cAwayWin = 0;
+      let cHdWin = 0, cHdDraw = 0, cHdLoss = 0;
+
+      for (let i = 0; i < pastDB.length; i++) {
+        const item = getPastItem(pastDB[i], i);
+        if (!item.k || !item.s) continue;
+
+        if (fltW && item.w !== fltW) continue;
+        if (fltX && item.x !== fltX) continue;
+        if (fltY && item.y !== fltY) continue;
+        if (fltZ && item.z !== fltZ) continue;
+        if (fltL && item.colL !== fltL) continue;
+        if (fltO && normHandi(item.o) !== fltO) continue;
+        if (fltT && item.colT !== fltT) continue;
+
+        if (fltC && !item.l.toLowerCase().includes(fltC)) continue;
+        if (fltD && !item.hT.toLowerCase().includes(fltD)) continue;
+        if (fltF && !item.aT.toLowerCase().includes(fltF)) continue;
+
+        filtered.push(item);
+        if (item.k === "승") cHomeWin++;
+        else if (item.k === "무") cDraw++;
+        else if (item.k === "패") cAwayWin++;
+
+        if (item.s === "승") cHdWin++;
+        else if (item.s === "무") cHdDraw++;
+        else if (item.s === "패") cHdLoss++;
+      }
+
+      const totalCount = filtered.length;
+      const statCard = document.getElementById('filterStatCard');
+      const listContainer = document.getElementById('filterMatchListContainer');
+
+      if (totalCount === 0) {
+        statCard.style.display = 'none';
+        listContainer.innerHTML = "<div style='text-align:center;padding:40px;color:#94a3b8;'>해당 조건의 완료된 경기가 없습니다.</div>";
+        return;
+      }
+
+      const rHW = ((cHomeWin / totalCount) * 100).toFixed(1);
+      const rD = ((cDraw / totalCount) * 100).toFixed(1);
+      const rAW = ((cAwayWin / totalCount) * 100).toFixed(1);
+      const rHDW = ((cHdWin / totalCount) * 100).toFixed(1);
+      const rHDD = ((cHdDraw / totalCount) * 100).toFixed(1);
+      const rHDL = ((cHdLoss / totalCount) * 100).toFixed(1);
+
+      document.getElementById('filterStatHeader').innerText = `📊 조건 일치 완료 경기 : 총 ${totalCount.toLocaleString()}건`;
+      document.getElementById('stHomeWin').innerText = `${cHomeWin}회 (${rHW}%)`;
+      document.getElementById('stDraw').innerText = `${cDraw}회 (${rD}%)`;
+      document.getElementById('stAwayWin').innerText = `${cAwayWin}회 (${rAW}%)`;
+      document.getElementById('stHdWin').innerText = `${cHdWin}회 (${rHDW}%)`;
+      document.getElementById('stHdDraw').innerText = `${cHdDraw}회 (${rHDD}%)`;
+      document.getElementById('stHdLoss').innerText = `${cHdLoss}회 (${rHDL}%)`;
+
+      statCard.style.display = 'block';
+
+      let listHtml = "";
+      filtered.slice(-40).reverse().forEach(m => {
+        listHtml += `
+          <div class="match-card" onclick='analyzeMatchObj(${JSON.stringify(m).replace(/'/g, "&#39;")})'>
+            <div class="card-top">
+              <span class="row-badge">${m.row}행</span>
+              <span class="league-badge">${m.l || '축구'}</span>
+            </div>
+            <div class="teams">${m.hT} VS ${m.aT}</div>
+            <div style="font-size:11.5px; color:#64748b; margin-bottom:4px;">[W:${m.w} X:${m.x} | Y:${m.y} Z:${m.z} | L:${m.colL} T:${m.colT}]</div>
+            <div class="odds-row">
+              <div class="odd-box ${m.k === '승' ? 'colored' : ''}">홈 ${m.h} ${m.k === '승' ? '✔' : ''}</div>
+              <div class="odd-box ${m.k === '무' ? 'colored' : ''}">무 ${m.d} ${m.k === '무' ? '✔' : ''}</div>
+              <div class="odd-box ${m.k === '패' ? 'colored' : ''}">원정 ${m.a} ${m.k === '패' ? '✔' : ''}</div>
+            </div>
+            <div class="odds-row">
+              <div class="odd-box ${m.s === '승' ? 'colored' : ''}">핸승 ${m.hp} ${m.s === '승' ? '✔' : ''}</div>
+              <div class="odd-box ${m.s === '무' ? 'colored' : ''}">핸무 ${m.hd} ${m.s === '무' ? '✔' : ''}</div>
+              <div class="odd-box ${m.s === '패' ? 'colored' : ''}">핸패 ${m.ha} ${m.s === '패' ? '✔' : ''}</div>
+            </div>
+          </div>
+        `;
+      });
+      listContainer.innerHTML = listHtml;
     }
 
-    // ==========================================================
-    // ★ [핵심] 필터 검색 결과 경기 터치 시에도 분석 팝업이 뜨도록 연동!
-    // ==========================================================
+    function resetAdvancedFilter() {
+      ['fltW','fltX','fltY','fltZ','fltL','fltO','fltT','fltC','fltD','fltF'].forEach(id => document.getElementById(id).value = "");
+      document.getElementById('filterStatCard').style.display = 'none';
+      document.getElementById('filterMatchListContainer').innerHTML = "<div style='text-align:center;padding:30px;color:#94a3b8;'>조건을 선택하고 검색하세요.</div>";
+    }
+
     function analyzeMatchObj(cur) {
       let pickW_Res = "", pickW_Name = "", pickW_Odd = 0;
       if (cur.w === "정배당") {
@@ -516,38 +598,11 @@
       const rX = ((cntX_Hit / matchCount) * 100).toFixed(1);
       const rY = ((cntY_Hit / matchCount) * 100).toFixed(1);
       const rZ = ((cntZ_Hit / matchCount) * 100).toFixed(1);
-      const rGen = ((cntGenTotal / matchCount) * 100).toFixed(1);
-      const rHnd = ((cntHndTotal / matchCount) * 100).toFixed(1);
-
       const rateDraw = ((cntDraw / matchCount) * 100).toFixed(1);
       const rateHdDraw = ((cntHdDraw / matchCount) * 100).toFixed(1);
 
-      const genRec = parseFloat(rW) >= parseFloat(rX) ? `[${pickW_Name} (${pickW_Odd}배당)] 추천! (${rW}%)` : `[${pickX_Name} (${pickX_Odd}배당)] 추천! (${rX}%)`;
-      const hndRec = parseFloat(rY) >= parseFloat(rZ) ? `[${pickY_Name} (${pickY_Odd}배당)] 추천! (${rY}%)` : `[${pickZ_Name} (${pickZ_Odd}배당)] 추천! (${rZ}%)`;
-
-      let highYieldRec = "";
-      if (parseFloat(rateHdDraw) >= parseFloat(rateDraw)) {
-        highYieldRec = `[핸디무승부 (${cur.hd}배당)] 유력! (${rateHdDraw}%)`;
-      } else {
-        highYieldRec = `[일반 무승부 (${cur.d}배당)] 유력! (${rateDraw}%)`;
-      }
-
-      const isHomeFav = (cur.h <= cur.a);
-      const favTeam = isHomeFav ? cur.hT : cur.aT;
-      const favOdd = isHomeFav ? cur.h : cur.a;
-      const favActualRate = isHomeFav ? ((cntHomeWin / matchCount) * 100).toFixed(1) : ((cntAwayWin / matchCount) * 100).toFixed(1);
-      const impliedProb = ((1 / favOdd) * 100).toFixed(1);
-      const diff = (parseFloat(impliedProb) - parseFloat(favActualRate)).toFixed(1);
-      const oppHnd = isHomeFav ? `원정 플핸 (${cur.ha}배)` : `홈 플핸 (${cur.hp}배)`;
-
-      let trapSection = "";
-      let isTrap = false;
-      if (parseFloat(diff) >= 9.2) {
-        isTrap = true;
-        trapSection = `🚨 [함정 경고] 승률 +${diff}% 과대평가됨! 정배 위험 👉 ${oppHnd} 또는 무승부 추천!`;
-      } else {
-        trapSection = `⚖️ 적정 배당 경기 (+${diff}%)`;
-      }
+      const genRec = parseFloat(rW) >= parseFloat(rX) ? `[${pickW_Name} (${pickW_Odd}배)] 추천! (${rW}%)` : `[${pickX_Name} (${pickX_Odd}배)] 추천! (${rX}%)`;
+      const hndRec = parseFloat(rY) >= parseFloat(rZ) ? `[${pickY_Name} (${pickY_Odd}배)] 추천! (${rY}%)` : `[${pickZ_Name} (${pickZ_Odd}배)] 추천! (${rZ}%)`;
 
       const reportText = 
 `■ 경기 : ${cur.l} | ${cur.hT} vs ${cur.aT} (${cur.row}행)
@@ -563,110 +618,9 @@
 ------------------------------------------
 [1. 일반 대결] ${genRec} (적중률 ${rW}% vs ${rX}%)
 [2. 핸디 대결] ${hndRec} (적중률 ${rY}% vs ${rZ}%)
-[3. 고배당 저격] 일반무(${rateDraw}%) vs 핸디무(${rateHdDraw}%)
-------------------------------------------
-${trapSection}`;
+[3. 고배당 저격] 일반무(${rateDraw}%) vs 핸디무(${rateHdDraw}%)`;
 
-      createDraggableWindow(cur, reportText);
-    }
-
-    function executeAdvancedFilter() {
-      const fltW = document.getElementById('fltW').value.trim();
-      const fltX = document.getElementById('fltX').value.trim();
-      const fltY = document.getElementById('fltY').value.trim();
-      const fltZ = document.getElementById('fltZ').value.trim();
-      const fltL = document.getElementById('fltL').value.trim();
-      const fltO = normHandi(document.getElementById('fltO').value.trim());
-      const fltT = document.getElementById('fltT').value.trim();
-
-      const fltC = document.getElementById('fltC').value.trim().toLowerCase();
-      const fltD = document.getElementById('fltD').value.trim().toLowerCase();
-      const fltF = document.getElementById('fltF').value.trim().toLowerCase();
-
-      let filtered = [];
-      let cHomeWin = 0, cDraw = 0, cAwayWin = 0;
-      let cHdWin = 0, cHdDraw = 0, cHdLoss = 0;
-
-      for (let i = 0; i < pastDB.length; i++) {
-        const item = getPastItem(pastDB[i], i);
-        if (!item.k || !item.s) continue;
-
-        if (fltW && item.w !== fltW) continue;
-        if (fltX && item.x !== fltX) continue;
-        if (fltY && item.y !== fltY) continue;
-        if (fltZ && item.z !== fltZ) continue;
-        if (fltL && item.colL !== fltL) continue;
-        if (fltO && normHandi(item.o) !== fltO) continue;
-        if (fltT && item.colT !== fltT) continue;
-
-        if (fltC && !item.l.toLowerCase().includes(fltC)) continue;
-        if (fltD && !item.hT.toLowerCase().includes(fltD)) continue;
-        if (fltF && !item.aT.toLowerCase().includes(fltF)) continue;
-
-        filtered.push(item);
-        if (item.k === "승") cHomeWin++;
-        else if (item.k === "무") cDraw++;
-        else if (item.k === "패") cAwayWin++;
-
-        if (item.s === "승") cHdWin++;
-        else if (item.s === "무") cHdDraw++;
-        else if (item.s === "패") cHdLoss++;
-      }
-
-      const totalCount = filtered.length;
-      const statCard = document.getElementById('filterStatCard');
-      const listContainer = document.getElementById('filterMatchListContainer');
-
-      if (totalCount === 0) {
-        statCard.style.display = 'none';
-        listContainer.innerHTML = "<div style='text-align:center;padding:40px;color:#94a3b8;'>해당 조건의 완료된 경기가 없습니다.</div>";
-        return;
-      }
-
-      const rHW = ((cHomeWin / totalCount) * 100).toFixed(1);
-      const rD = ((cDraw / totalCount) * 100).toFixed(1);
-      const rAW = ((cAwayWin / totalCount) * 100).toFixed(1);
-      const rHDW = ((cHdWin / totalCount) * 100).toFixed(1);
-      const rHDD = ((cHdDraw / totalCount) * 100).toFixed(1);
-      const rHDL = ((cHdLoss / totalCount) * 100).toFixed(1);
-
-      document.getElementById('filterStatHeader').innerText = `📊 조건 일치 완료 경기 : 총 ${totalCount.toLocaleString()}건`;
-      document.getElementById('stHomeWin').innerText = `${cHomeWin}회 (${rHW}%)`;
-      document.getElementById('stDraw').innerText = `${cDraw}회 (${rD}%)`;
-      document.getElementById('stAwayWin').innerText = `${cAwayWin}회 (${rAW}%)`;
-      statCard.style.display = 'block';
-
-      let listHtml = "";
-      filtered.slice(-40).reverse().forEach(m => {
-        // ★ 필터 검색 결과 카드 클릭 시에도 analyzeMatchObj()로 분석 팝업 호출!
-        listHtml += `
-          <div class="match-card" onclick="analyzeMatchObj(${JSON.stringify(m).replace(/"/g, '&quot;')})">
-            <div class="card-top">
-              <span class="row-badge">${m.row}행</span>
-              <span class="league-badge">${m.l || '축구'}</span>
-            </div>
-            <div class="teams">${m.hT} VS ${m.aT}</div>
-            <div style="font-size:11.5px; color:#64748b; margin-bottom:4px;">[W:${m.w} X:${m.x} | Y:${m.y} Z:${m.z} | L:${m.colL} T:${m.colT}]</div>
-            <div class="odds-row">
-              <div class="odd-box ${m.k === '승' ? 'colored' : ''}">홈 ${m.h} ${m.k === '승' ? '✔' : ''}</div>
-              <div class="odd-box ${m.k === '무' ? 'colored' : ''}">무 ${m.d} ${m.k === '무' ? '✔' : ''}</div>
-              <div class="odd-box ${m.k === '패' ? 'colored' : ''}">원정 ${m.a} ${m.k === '패' ? '✔' : ''}</div>
-            </div>
-            <div class="odds-row">
-              <div class="odd-box ${m.s === '승' ? 'colored' : ''}">핸승 ${m.hp} ${m.s === '승' ? '✔' : ''}</div>
-              <div class="odd-box ${m.s === '무' ? 'colored' : ''}">핸무 ${m.hd} ${m.s === '무' ? '✔' : ''}</div>
-              <div class="odd-box ${m.s === '패' ? 'colored' : ''}">핸패 ${m.ha} ${m.s === '패' ? '✔' : ''}</div>
-            </div>
-          </div>
-        `;
-      });
-      listContainer.innerHTML = html;
-    }
-
-    function resetAdvancedFilter() {
-      ['fltW','fltX','fltY','fltZ','fltL','fltO','fltT','fltC','fltD','fltF'].forEach(id => document.getElementById(id).value = "");
-      document.getElementById('filterStatCard').style.display = 'none';
-      document.getElementById('filterMatchListContainer').innerHTML = "<div style='text-align:center;padding:30px;color:#94a3b8;'>조건을 선택하고 검색하세요.</div>";
+      createWindow(`${cur.hT} vs ${cur.aT}`, reportText);
     }
 
     function createWindow(title, content) {
