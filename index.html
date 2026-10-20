@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=4.0, user-scalable=yes">
-  <title>AI 승부예측 시스템 (TOTO_COLOR_V2.0)</title>
+  <title>AI 승부예측 시스템 (V2.0)</title>
   <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Pretendard', '맑은 고딕', sans-serif; }
@@ -387,7 +387,7 @@
           pastDB = data.pastDB || [];
 
           document.getElementById('syncBox').style.display = 'flex';
-          document.getElementById('syncText').innerText = `✔ 깃허브 실시간 동기화 완료 (${todayList.length}경기)`;
+          document.getElementById('syncText').innerText = `✔ 실시간 동기화 완료 (${todayList.length}경기)`;
           document.getElementById('syncTime').innerText = data.updated || '';
           document.getElementById('sectionTitleText').innerText = `🔥 오늘의 분석 대상 경기 (${todayList.length}건)`;
 
