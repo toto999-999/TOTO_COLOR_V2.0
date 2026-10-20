@@ -881,7 +881,7 @@ ${trapSection}`;
 - 빅데이터 통계와 결장자 정보를 종합한 베팅 근거 2줄 요약.`;
 
       // ★ 에러 원인이었던 모델명과 Tool 형식 완벽히 수정!
-      const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${apiKey}`;
+      const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-pro-preview:generateContent?key=${apiKey}`;
 
       fetch(geminiUrl, {
         method: 'POST',
