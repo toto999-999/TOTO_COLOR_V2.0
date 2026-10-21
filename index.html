@@ -186,6 +186,7 @@
         </div>
       </div>
 
+      <!-- 필터 요약 카드 (일반 + 핸디 모두 표시) -->
       <div id="filterStatCard" style="display:none;" class="filter-stat-card">
         <div class="stat-header" id="filterStatHeader">📊 필터 조건 검색 결과 요약</div>
         <div style="font-size:12px; margin-bottom:4px; color:#bfdbfe; font-weight:700;">■ 일반경기 실제 결과 통계</div>
@@ -350,13 +351,31 @@
       }
     }
 
-    function receiveExcelData(jsonStr) {
-      const data = JSON.parse(jsonStr);
-      todayList = data.todayList || [];
-      pastDB = data.pastDB || [];
-      document.getElementById('statusMsg').innerText = `✔ 로드 완료 (대상: ${todayList.length}건 / DB: ${pastDB.length}건)`;
-      renderMatchList();
-    }
+    window.onload = function() {
+      fetch('data.json?t=' + Date.now())
+        .then(response => {
+          if (!response.ok) throw new Error("서버에 data.json이 없습니다.");
+          return response.json();
+        })
+        .then(data => {
+          todayList = data.todayList || [];
+          pastDB = data.pastDB || [];
+
+          document.getElementById('syncBox').style.display = 'flex';
+          document.getElementById('syncText').innerText = `✔ 깃허브 실시간 동기화 완료 (${todayList.length}경기)`;
+          document.getElementById('syncTime').innerText = data.updated || '';
+          document.getElementById('sectionTitleText').innerText = `🔥 오늘의 분석 대상 경기 (${todayList.length}건)`;
+
+          renderMatchList();
+        })
+        .catch(err => {
+          document.getElementById('matchListContainer').innerHTML = `
+            <div style="text-align:center; padding:30px; color:#64748b; font-size:13.5px;">
+              PC 엑셀에서 <b>[스마트폰으로 즉시 전송]</b>을 먼저 실행하시거나,<br>
+              위의 <b>[📁 엑셀 파일 직접 선택하기]</b> 버튼을 눌러주세요.
+            </div>`;
+        });
+    };
 
     function renderMatchList() {
       const container = document.getElementById('matchListContainer');
@@ -400,7 +419,7 @@
     }
 
     // ==========================================================
-    // ★ [웹버전 100% 동일] 고급 필터 검색 및 복기 팝업 연동
+    // ★ [완벽 수정] 필터 검색 실행 및 핸디/일반 통계 완벽 집계
     // ==========================================================
     function executeAdvancedFilter() {
       const fltW = document.getElementById('fltW').value.trim();
@@ -421,7 +440,7 @@
 
       for (let i = 0; i < pastDB.length; i++) {
         const item = getPastItem(pastDB[i], i);
-        if (!item.k || !item.s) continue;
+        if (!item.k || !item.s) continue; // 미종료 제외
 
         if (fltW && item.w !== fltW) continue;
         if (fltX && item.x !== fltX) continue;
@@ -436,10 +455,13 @@
         if (fltF && !item.aT.toLowerCase().includes(fltF)) continue;
 
         filtered.push(item);
+        
+        // 일반 결과 집계 (K열)
         if (item.k === "승") cHomeWin++;
         else if (item.k === "무") cDraw++;
         else if (item.k === "패") cAwayWin++;
 
+        // 핸디 결과 집계 (S열)
         if (item.s === "승") cHdWin++;
         else if (item.s === "무") cHdDraw++;
         else if (item.s === "패") cHdLoss++;
@@ -514,7 +536,7 @@
     function analyzeMatch(idx) { analyzeMatchData(todayList[idx]); }
     function analyzePastMatch(idx) { analyzeMatchData(currentFilteredList[idx]); }
 
-    // 공용 분석 엔진 (웹버전 100% 동일)
+    // 공용 분석 엔진
     function analyzeMatchData(cur) {
       let pickW_Res = "", pickW_Name = "", pickW_Odd = 0;
       if (cur.w === "정배당") {
@@ -975,133 +997,6 @@ ${newsCorpus.slice(0, 500) || '특이 외신 기사 없음'}
 
       handle.addEventListener('pointerdown', onPointerDown);
     }
-
-    // 엑셀 수동 로드 시 팝업과 필터 모두 정상 작동하도록 완벽 복원
-    function loadExcelFileManual(e) {
-      const file = e.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = function(evt) {
-        const data = new Uint8Array(evt.target.result);
-        const workbook = XLSX.read(data, { type: 'array' });
-        let sName = workbook.Sheets["일반핸디"] ? "일반핸디" : workbook.SheetNames[0];
-        const sheetData = XLSX.utils.sheet_to_json(workbook.Sheets[sName], { header: 1, defval: "" });
-        
-        todayList = []; pastDB = [];
-        for (let r = 18; r < sheetData.length; r++) {
-          const row = sheetData[r];
-          if (!row || row.length < 10) continue;
-          const h = parseFloat(row[7]) || 0, a = parseFloat(row[9]) || 0;
-          const resK = String(row[10] || "").trim();
-          const colL = String(row[11] || "").trim();
-          const resS = String(row[18] || "").trim();
-          const colT = String(row[19] || "").trim();
-
-          if (h > 0 && a > 0) {
-            const obj = {
-              row: r + 1, l: String(row[2]||""), hT: String(row[3]||""), aT: String(row[5]||""),
-              h: h, d: parseFloat(row[8])||0, a: a, k: resK, colL: colL,
-              o: normHandi(row[14]), hp: parseFloat(row[15])||0, hd: parseFloat(row[16])||0, ha: parseFloat(row[17])||0,
-              s: resS, colT: colT,
-              w: String(row[22]||""), x: String(row[23]||""), y: String(row[24]||""), z: String(row[25]||"")
-            };
-            if (resK === "" || resS === "") todayList.push(obj);
-            if (resK !== "" && resS !== "") pastDB.push(obj);
-          }
-        }
-        document.getElementById('statusBox').style.display = 'flex';
-        document.getElementById('statusText').innerText = `📁 로드 완료 (대상: ${todayList.length}건 / DB: ${pastDB.length}건)`;
-        renderMatchList();
-      };
-      reader.readAsArrayBuffer(file);
-    }
   </script>
 </body>
 </html>
-"""
-
-class Bridge(QObject):
-    def __init__(self, window):
-        super().__init__()
-        self.window = window
-
-    @pyqtSlot()
-    def open_file_dialog(self):
-        file_path, _ = QFileDialog.getOpenFileName(None, "분석할 엑셀 파일 선택", "", "Excel Files (*.xlsm *.xlsx)")
-        if not file_path:
-            return
-
-        try:
-            df = pd.read_excel(file_path, sheet_name="일반핸디", header=None)
-        except Exception:
-            df = pd.read_excel(file_path, sheet_name=0, header=None)
-
-        today_list = []
-        past_db = []
-
-        for r in range(18, len(df)):
-            row = df.iloc[r].tolist()
-            if len(row) < 10:
-                continue
-            
-            try:
-                h = float(row[7]) if pd.notnull(row[7]) else 0
-                d = float(row[8]) if pd.notnull(row[8]) else 0
-                a = float(row[9]) if pd.notnull(row[9]) else 0
-                if h <= 0 or a <= 0:
-                    continue
-
-                resK = str(row[10]).strip() if pd.notnull(row[10]) else ""
-                colL = str(row[11]).strip() if pd.notnull(row[11]) else ""
-                resS = str(row[18]).strip() if pd.notnull(row[18]) else ""
-                colT = str(row[19]).strip() if pd.notnull(row[19]) else ""
-
-                obj = {
-                    "row": r + 1,
-                    "l": str(row[2]).strip() if pd.notnull(row[2]) else "",
-                    "hT": str(row[3]).strip() if pd.notnull(row[3]) else "",
-                    "aT": str(row[5]).strip() if pd.notnull(row[5]) else "",
-                    "h": h, "d": d, "a": a,
-                    "o": str(row[14]).strip() if pd.notnull(row[14]) else "0",
-                    "hp": float(row[15]) if pd.notnull(row[15]) else 0,
-                    "hd": float(row[16]) if pd.notnull(row[16]) else 0,
-                    "ha": float(row[17]) if pd.notnull(row[17]) else 0,
-                    "w": str(row[22]).strip() if pd.notnull(row[22]) else "",
-                    "x": str(row[23]).strip() if pd.notnull(row[23]) else "",
-                    "y": str(row[24]).strip() if pd.notnull(row[24]) else "",
-                    "z": str(row[25]).strip() if pd.notnull(row[25]) else "",
-                    "k": resK, "s": resS, "colL": colL, "colT": colT
-                }
-
-                if resK == "" or resS == "":
-                    today_list.append(obj)
-                else:
-                    past_db.append(obj)
-            except Exception:
-                continue
-
-        payload = json.dumps({"todayList": today_list, "pastDB": past_db})
-        safe_payload = payload.replace("\\", "\\\\").replace("'", "\\'")
-        self.window.page().runJavaScript(f"receiveExcelData('{safe_payload}');")
-
-class MainWindow(QMainWindow):
-    def __init__(self):
-        super().__init__()
-        self.setWindowTitle("TOTO_COLOR_V2.0 - Offline Desktop")
-        self.resize(480, 880)
-
-        self.browser = QWebEngineView()
-        
-        self.channel = QWebChannel()
-        self.bridge = Bridge(self.browser)
-        self.channel.registerObject("pyqt_bridge", self.bridge)
-        self.browser.page().setWebChannel(self.channel)
-
-        self.browser.setHtml(OFFLINE_HTML)
-        self.setCentralWidget(self.browser)
-
-if __name__ == '__main__':
-    app = QApplication(sys.argv)
-    window = MainWindow()
-    window.show()
-    sys.exit(app.exec_())
