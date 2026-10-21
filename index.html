@@ -832,8 +832,11 @@ ${trapSection}`;
         .catch(err => {
           const badgeEl = document.getElementById(`newsBadge_${winId}`);
           if (badgeEl) {
-            badgeEl.className = "news-status-badge badge-ok-news";
-            badgeEl.innerText = "✅ [특이 결장 없음]: 긴급 악재 미감지 (정상 전력)";
+            // ★ 실패 시 초록색이 아니라 회색/노란색 계열의 경고 스타일로 변경
+            badgeEl.className = "news-status-badge";
+            badgeEl.style.background = "#fef3c7";
+            badgeEl.style.color = "#92400e";
+            badgeEl.innerText = "❌ [실시간 뉴스 검색 실패]: 아래 버튼을 눌러 직접 확인하세요.";
           }
           callGeminiOrDeepVerdict(cur, stats, "", false, false, winId);
         });
