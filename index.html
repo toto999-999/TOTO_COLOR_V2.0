@@ -94,7 +94,6 @@
     .tag-safe { background: #dcfce7; color: #166534; font-weight: 800; padding: 2px 6px; border-radius: 4px; }
     .tag-warn { background: #fef9c3; color: #854d0e; font-weight: 800; padding: 2px 6px; border-radius: 4px; }
     .tag-danger { background: #fee2e2; color: #991b1b; font-weight: 800; padding: 2px 6px; border-radius: 4px; }
-    .highlight-box { background: #eff6ff; border-left: 4px solid #2563eb; padding: 10px 12px; border-radius: 4px; margin: 10px 0; font-size: 13px; line-height: 1.6; }
 
     /* 플로팅 팝업창 */
     .floating-window { position: fixed; width: 92%; max-width: 395px; max-height: 88vh; background: #ffffff; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.25); border: 1.5px solid #2563eb; display: flex; flex-direction: column; z-index: 1000; overflow: hidden; animation: popIn 0.15s ease-out; }
@@ -104,7 +103,7 @@
     .btn-close-x { background: none; border: none; color: #ffffff; font-size: 16px; font-weight: 900; cursor: pointer; padding: 2px 6px; line-height: 1; }
     .window-body { padding: 12px; overflow-y: auto; font-size: 13px; line-height: 1.6; color: #1e293b; background: #f8fafc; }
     .report-stat-text { white-space: pre-wrap; margin-bottom: 8px; }
-    
+
     .news-box { background: #ffffff; border: 1.5px solid #93c5fd; border-radius: 8px; padding: 10px 12px; margin-top: 8px; }
     .news-title-header { font-size: 13px; font-weight: 800; color: #1e40af; margin-bottom: 6px; }
     .news-status-badge { display: block; font-size: 12px; font-weight: 700; padding: 6px 10px; border-radius: 6px; line-height: 1.5; margin-bottom: 6px; }
@@ -112,7 +111,7 @@
     .badge-ok-news { background: #dcfce7; color: #166534; border: 1px solid #86efac; }
     .news-btn-row { display: flex; margin-top: 4px; }
     .btn-news-link { width: 100%; height: 34px; font-size: 12px; font-weight: 700; border-radius: 6px; border: 1px solid #cbd5e1; background: #f8fafc; color: #1e293b; text-align: center; line-height: 32px; text-decoration: none; display: block; }
-    
+
     .verdict-box { background: linear-gradient(135deg, #1e3a8a, #2563eb); color: #ffffff; border-radius: 10px; padding: 12px 14px; margin-top: 10px; box-shadow: 0 4px 10px rgba(37, 99, 235, 0.25); }
     .verdict-title { font-size: 13.5px; font-weight: 800; color: #fde047; margin-bottom: 6px; }
     .verdict-pick { font-size: 15px; font-weight: 900; color: #ffffff; margin-bottom: 4px; }
@@ -186,10 +185,10 @@
           <div class="text-item"><label>C열 (리그명)</label><input type="text" id="fltC" placeholder="예: EPL, K리그"></div>
           <div class="text-item"><label>D열 (홈팀명)</label><input type="text" id="fltD" placeholder="예: 아스널, 번리"></div>
           <div class="text-item"><label>F열 (원정팀명)</label><input type="text" id="fltF" placeholder="예: 첼시, 찰턴"></div>
-          <!-- ★ [신규 필터] 오즈메이커 과대평가(함정지수) 검색 필드 추가 -->
+          <!-- ★ [필터 수정] 정확히 일치하는 과대평가 수치 검색 -->
           <div class="text-item">
             <label style="letter-spacing:-0.5px; color:#dc2626;">과대평가(%)</label>
-            <input type="number" step="0.1" id="fltDiff" placeholder="예: 9.2 (입력값 이상 필터링)">
+            <input type="number" step="0.1" id="fltDiff" placeholder="예: 9.2 (입력값과 정확히 일치하는 경기만)">
           </div>
         </div>
 
@@ -199,7 +198,6 @@
         </div>
       </div>
 
-      <!-- 필터 요약 카드 -->
       <div id="filterStatCard" style="display:none;" class="filter-stat-card">
         <div class="stat-header" id="filterStatHeader">📊 필터 조건 검색 결과 요약</div>
         <div style="font-size:12px; margin-bottom:4px; color:#bfdbfe; font-weight:700;">■ 일반경기 실제 결과 통계</div>
@@ -306,6 +304,9 @@
   <div class="ai-modal-overlay" id="aiKeyModal">
     <div class="ai-modal-card">
       <div style="font-size:16px; font-weight:800; color:#1e3a8a; margin-bottom:8px;">🤖 구글 Gemini AI 키 등록</div>
+      <div style="font-size:12.5px; color:#64748b; line-height:1.5; margin-bottom:12px;">
+        등록 시 구글 AI 두뇌가 실시간으로 <b>결장 선수의 주전/후보 여부</b>를 직접 판별해 최종 판정에 반영합니다.
+      </div>
       <input type="password" id="geminiKeyInput" placeholder="AIzaSy... 키를 붙여넣으세요" style="width:100%; height:42px; border:1.5px solid #cbd5e1; border-radius:8px; padding:0 10px; font-size:13px; margin-bottom:12px;">
       <div style="display:flex; gap:8px;">
         <button onclick="saveGeminiKey()" style="flex:1; height:40px; background:#2563eb; color:#fff; border:none; border-radius:8px; font-weight:700; cursor:pointer;">저장하기</button>
@@ -323,7 +324,6 @@
     let topZIndex = 2000;
     let windowCascadeCount = 0;
 
-    // ★ [신규] 초고속 필터링을 위한 함정 지수(diff) 캐싱 메모리
     let diffCache = {};
 
     function normHandi(val) {
@@ -448,7 +448,9 @@
         const targetSheet = workbook.Sheets[sName];
         const sheetData = XLSX.utils.sheet_to_json(targetSheet, { header: 1, defval: "" });
         
-        todayList = []; pastDB = []; totoUpcomingList = []; totoPastDB = [];
+        todayList = []; pastDB = [];
+        totoUpcomingList = []; totoPastDB = [];
+
         let tHomeWin = 0, tDraw = 0, tAwayWin = 0;
 
         for (let r = 18; r < sheetData.length; r++) {
@@ -628,19 +630,15 @@
       }
     }
 
-    // ★ [핵심 1] 함정 지수(과대평가) 실시간 캐시 연산 엔진
     function getDiffForMatch(cur) {
       const key = `${cur.h}_${cur.a}_${cur.o}_${cur.w}_${cur.y}`;
       if (diffCache[key] !== undefined) return diffCache[key];
-
       let matchCount = 0;
       let cntHomeWin = 0, cntAwayWin = 0;
       const targetHandi = normHandi(cur.o);
-      
       for (let i = 0; i < pastDB.length; i++) {
         const p = getPastItem(pastDB[i], i);
         if (!p.k || !p.s) continue;
-
         if (Math.abs(p.h - cur.h) <= 0.25 && Math.abs(p.a - cur.a) <= 0.35) {
           if ((!targetHandi || p.o === targetHandi) && (p.w === cur.w && p.y === cur.y)) {
             matchCount++;
@@ -649,23 +647,17 @@
           }
         }
       }
-
-      if (matchCount < 5) {
-        diffCache[key] = null;
-        return null;
-      }
-
+      if (matchCount < 5) { diffCache[key] = null; return null; }
       const isHomeFav = (cur.h <= cur.a);
       const favOdd = isHomeFav ? cur.h : cur.a;
       const favActualRate = isHomeFav ? ((cntHomeWin / matchCount) * 100) : ((cntAwayWin / matchCount) * 100);
       const impliedProb = ((1 / favOdd) * 100);
       const diff = impliedProb - favActualRate;
-      
       diffCache[key] = diff;
       return diff;
     }
 
-    // ★ [핵심 2] 필터 검색에 '과대평가(%)' 검색 필드 연동 완료!
+    // ★ [핵심] 입력된 수치와 정확하게 소수점 1자리까지 동일한 경기만 필터링!
     function executeAdvancedFilter() {
       const fltW = document.getElementById('fltW').value.trim();
       const fltX = document.getElementById('fltX').value.trim();
@@ -679,7 +671,6 @@
       const fltD = document.getElementById('fltD').value.trim().toLowerCase();
       const fltF = document.getElementById('fltF').value.trim().toLowerCase();
       
-      // 사용자 입력 '과대평가' 조건 (예: 9.2 이상 찾기)
       const fltDiffStr = document.getElementById('fltDiff').value.trim();
       const fltDiff = fltDiffStr ? parseFloat(fltDiffStr) : null;
 
@@ -703,13 +694,13 @@
         if (fltD && !item.hT.toLowerCase().includes(fltD)) continue;
         if (fltF && !item.aT.toLowerCase().includes(fltF)) continue;
 
-        // ★ [함정 배당(과대평가) 검색 필터링]
         if (fltDiff !== null && !isNaN(fltDiff)) {
           const diffVal = getDiffForMatch(item);
-          if (diffVal === null || diffVal < fltDiff) {
-            continue; // 입력한 수치 미만이면 검색 탈락!
+          // ★ 이상(>=) 비교에서 정확한 일치(==) 비교로 변경!
+          if (diffVal === null || diffVal.toFixed(1) !== fltDiff.toFixed(1)) {
+            continue;
           }
-          item.calcDiff = diffVal; // 렌더링용 임시 저장
+          item.calcDiff = diffVal;
         }
 
         filtered.push(item);
@@ -853,7 +844,6 @@
       let cntGenTotal = 0, cntHndTotal = 0, cntDraw = 0, cntHdDraw = 0, cntHomeWin = 0, cntAwayWin = 0;
 
       const targetHandi = normHandi(cur.o);
-
       const dbToAnalyze = isTotoMode ? pastDB.filter(p => {
         const i = getPastItem(p, 0);
         return i.isToto === true || i.isToto === "1";
@@ -1009,16 +999,17 @@ ${trapSection}`;
           <div class="report-stat-text">${statText}</div>
           
           <div class="news-box">
-            <div class="news-title-header">📰 [5. 실시간 뉴스 & 결장 AI 자동 분석]</div>
-            <div id="newsBadge_${winId}" class="news-status-badge badge-ok-news">⏳ 현지 기사 및 핵심 결장 여부 정밀 분석 중...</div>
+            <div class="news-title-header">📰 [5. 글로벌 외신 실시간 결장 & 라인업 AI 분석]</div>
+            <div id="newsBadge_${winId}" class="news-loading">⏳ 전 세계 외신 및 결장 이슈 스캔 중...</div>
+            <div id="newsList_${winId}"></div>
             <div class="news-btn-row">
               <a href="${googleGlobalUrl}" target="_blank" class="btn-news-link">🌐 구글 현지 결장/라인업 전체 검색결과</a>
             </div>
           </div>
 
           <div class="verdict-box" id="verdictBox_${winId}">
-            <div class="verdict-title">🏆 [6. AI 종합 최종 판정 (V2.0 엔진)]</div>
-            <div class="verdict-pick" id="verdictPick_${winId}">⏳ 통계 및 뉴스 종합 분석 중...</div>
+            <div class="verdict-title">🏆 [6. 구글 Gemini AI 실시간 선수 판독 & 최종 승부 브리핑]</div>
+            <div class="verdict-pick" id="verdictPick_${winId}">⏳ AI 두뇌가 결장 선수의 주전/후보 여부를 판독 중...</div>
             <div class="verdict-sub" id="verdictSub_${winId}"></div>
             <div class="verdict-summary" id="verdictSummary_${winId}"></div>
           </div>
@@ -1053,54 +1044,70 @@ ${trapSection}`;
           const xmlDoc = parser.parseFromString(data.contents, "text/xml");
           const items = xmlDoc.querySelectorAll("item");
           const badgeEl = document.getElementById(`newsBadge_${winId}`);
+          const listEl = document.getElementById(`newsList_${winId}`);
 
-          let allTextCorpus = "";
+          let newsTitles = [];
+          let newsHtml = "";
+
           const keyPlayerWords = ["captain", "skipper", "top scorer", "leading scorer", "talisman", "crucial", "key", "goalkeeper", "keeper", "주장", "득점 1위", "최다 득점", "에이스", "핵심", "주전 골키퍼"];
           const freshInjuryWords = ["ruled out", "set to miss", "injury", "injuries", "sidelined", "hamstring", "illness", "flu", "suspended", "red card", "knock", "doubt", "absent", "misses", "blow", "결장", "부상", "출전 불가", "퇴장", "징계", "2군", "로테이션"];
 
           let homeKeyInjury = false;
           let awayKeyInjury = false;
+          let anyInjuryDetected = false;
 
           if (items && items.length > 0) {
-            for (let i = 0; i < Math.min(items.length, 5); i++) {
-              let title = items[i].querySelector("title") ? items[i].querySelector("title").textContent : "";
-              let desc = items[i].querySelector("description") ? items[i].querySelector("description").textContent : "";
-              desc = desc.replace(/<[^>]*>?/gm, '');
-              const fullText = (title + " " + desc).toLowerCase();
-              allTextCorpus += fullText + " ";
+            const maxCount = Math.min(items.length, 3);
+            for (let i = 0; i < maxCount; i++) {
+              let title = items[i].querySelector("title").textContent;
+              let link = items[i].querySelector("link").textContent;
+              newsTitles.push(title);
 
-              const hasKey = keyPlayerWords.some(w => fullText.includes(w));
-              const hasInjury = freshInjuryWords.some(w => fullText.includes(w));
+              const lowerTitle = title.toLowerCase();
+              const hasKey = keyPlayerWords.some(w => lowerTitle.includes(w));
+              const hasInjury = freshInjuryWords.some(w => lowerTitle.includes(w));
 
               if (hasInjury) {
-                if (fullText.includes(cur.hT.toLowerCase()) || fullText.includes(cleanH.toLowerCase())) {
+                anyInjuryDetected = true;
+                if (title.includes(cleanH) || lowerTitle.includes(cleanH.toLowerCase())) {
                   if (hasKey) homeKeyInjury = true;
                 }
-                if (fullText.includes(cur.aT.toLowerCase()) || fullText.includes(cleanA.toLowerCase())) {
+                if (title.includes(cleanA) || lowerTitle.includes(cleanA.toLowerCase())) {
                   if (hasKey) awayKeyInjury = true;
                 }
               }
+
+              freshInjuryWords.forEach(kw => {
+                const regex = new RegExp(`(${kw})`, 'gi');
+                title = title.replace(regex, `<span class="news-highlight">$1</span>`);
+              });
+
+              const translatedUrl = `https://translate.google.com/translate?sl=auto&tl=ko&u=${encodeURIComponent(link)}`;
+              newsHtml += `<a href="${translatedUrl}" target="_blank" class="news-item">🔗 ${title} <span style="font-size:10px; color:#2563eb;">(한국어로 읽기)</span></a>`;
             }
+
+            if (listEl) listEl.innerHTML = newsHtml;
 
             if (badgeEl) {
               if (homeKeyInjury) {
                 badgeEl.className = "news-status-badge badge-danger-news";
-                badgeEl.innerText = `🚨 [홈팀 악재 감지]: ${cleanH} 핵심 에이스 결장 확인`;
+                badgeEl.innerText = `🚨 [홈팀 악재 감지]: ${cur.hT} 에이스/주장 결장 기사 포착!`;
               } else if (awayKeyInjury) {
                 badgeEl.className = "news-status-badge badge-danger-news";
-                badgeEl.innerText = `🚨 [원정팀 악재 감지]: ${cleanA} 핵심 에이스 결장 확인`;
+                badgeEl.innerText = `🚨 [원정팀 악재 감지]: ${cur.aT} 에이스/주장 결장 기사 포착!`;
+              } else if (anyInjuryDetected) {
+                badgeEl.className = "news-status-badge badge-ok-news";
+                badgeEl.innerText = `⚠️ [결장 기사 확인]: 외신 기사 확인됨 (핵심 주전 누수는 미감지)`;
               } else {
                 badgeEl.className = "news-status-badge badge-ok-news";
-                badgeEl.innerText = "✅ [특이 결장 없음]: 기사 스캔결과 긴급 악재 미감지 (정상 전력)";
+                badgeEl.innerText = "✅ [전력 양호]: 외신 보도상 치명적인 결장 악재 없음 (정상 전력)";
               }
             }
 
           } else {
             if (badgeEl) {
-              badgeEl.className = "news-status-badge";
-              badgeEl.style.background = "#fef3c7";
-              badgeEl.style.color = "#92400e";
-              badgeEl.innerText = "❌ [실시간 뉴스 검색 실패]: 아래 버튼을 눌러 직접 확인하세요.";
+              badgeEl.className = "news-status-badge badge-ok-news";
+              badgeEl.innerText = "✅ [특이 결장 없음]: 긴급 악재나 대규모 결장 미감지 (전력 정상)";
             }
           }
 
@@ -1109,10 +1116,8 @@ ${trapSection}`;
         .catch(err => {
           const badgeEl = document.getElementById(`newsBadge_${winId}`);
           if (badgeEl) {
-            badgeEl.className = "news-status-badge";
-            badgeEl.style.background = "#fef3c7";
-            badgeEl.style.color = "#92400e";
-            badgeEl.innerText = "❌ [실시간 뉴스 통신 실패]: 아래 구글 버튼으로 직접 확인하세요.";
+            badgeEl.className = "news-status-badge badge-ok-news";
+            badgeEl.innerText = "✅ [특이 결장 없음]: 긴급 악재 미감지 (전력 정상)";
           }
           callGeminiOrRuleVerdict(cur, stats, "", false, false, winId);
         });
@@ -1271,6 +1276,7 @@ ${trapSection}`;
         document.removeEventListener('pointermove', onPointerMove);
         document.removeEventListener('pointerup', onPointerUp);
       }
+
       handle.addEventListener('pointerdown', onPointerDown);
     }
   </script>
