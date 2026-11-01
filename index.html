@@ -21,16 +21,15 @@
       padding: 4px 10px; font-size: 11.5px; font-weight: 800; color: #2563eb; cursor: pointer;
     }
 
-    /* 상단 4개 메인 탭 */
-    .main-tab-nav { display: flex; gap: 4px; margin-bottom: 14px; background: #e2e8f0; padding: 4px; border-radius: 10px; }
-    .tab-btn { flex: 1; height: 40px; border-radius: 8px; border: none; font-size: 11px; font-weight: 800; color: #475569; background: transparent; cursor: pointer; transition: all 0.15s ease; white-space: nowrap; }
+    .main-tab-nav { display: flex; gap: 6px; margin-bottom: 14px; background: #e2e8f0; padding: 4px; border-radius: 10px; }
+    .tab-btn { flex: 1; height: 40px; border-radius: 8px; border: none; font-size: 13.5px; font-weight: 800; color: #475569; background: transparent; cursor: pointer; transition: all 0.15s ease; }
     .tab-btn.active { background: #2563eb; color: #ffffff; box-shadow: 0 2px 6px rgba(37, 99, 235, 0.3); }
 
     .sync-status-box { background: #ecfdf5; border: 1.5px solid #10b981; border-radius: 10px; padding: 10px 14px; margin-bottom: 12px; font-size: 12.5px; color: #065f46; font-weight: 700; display: flex; justify-content: space-between; align-items: center; }
     .sync-time { font-size: 11px; font-weight: 600; color: #047857; }
 
-    .file-upload-box { background: #ffffff; border: 2px dashed #3F14F8; border-radius: 10px; padding: 14px; text-align: center; margin-bottom: 12px; cursor: pointer; }
-    .btn-file-label { font-size: 13.5px; font-weight: 800; color: #3F14F8; }
+    .file-upload-box { background: #ffffff; border: 1.5px dashed #cbd5e1; border-radius: 10px; padding: 10px; text-align: center; margin-bottom: 12px; cursor: pointer; }
+    .btn-file-label { font-size: 13px; font-weight: 700; color: #475569; }
     #excelFileInput { display: none; }
 
     .section-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; padding: 0 4px; }
@@ -52,11 +51,6 @@
     .odd-box { flex: 1; text-align: center; padding: 5px 2px; border-radius: 5px; background: #f1f5f9; border: 1px solid #e2e8f0; font-size: 11.5px; font-weight: 600; color: #475569; }
     .odd-box.colored { background-color: #9bc2e6 !important; color: #0f172a !important; font-weight: 800 !important; border-color: #2b6cb0 !important; }
 
-    /* 승무패 전용 카드 스타일 */
-    .toto-match-card { background: #ffffff; border-radius: 12px; padding: 13px 15px; border: 2px solid #3F14F8; box-shadow: 0 2px 8px rgba(63,20,248,0.15); cursor: pointer; margin-bottom: 10px; }
-    .toto-match-card:active { background: #f0f4ff; }
-    .toto-header-badge { font-size: 11px; font-weight: 800; background: #3F14F8; color: #ffffff; padding: 2px 8px; border-radius: 4px; }
-
     /* 필터_검색 패널 */
     .filter-panel { background: #ffffff; border-radius: 12px; padding: 16px; border: 1.5px solid #cbd5e1; margin-bottom: 14px; box-shadow: 0 2px 6px rgba(0,0,0,0.05); }
     .filter-group-title { font-size: 13.5px; font-weight: 800; color: #1e3a8a; margin-bottom: 8px; display: flex; align-items: center; gap: 4px; }
@@ -69,16 +63,26 @@
     .text-item { display: flex; align-items: center; gap: 8px; }
     .text-item label { width: 75px; font-size: 12px; font-weight: 700; color: #475569; }
     .text-item input { flex: 1; height: 36px; border-radius: 6px; border: 1.5px solid #cbd5e1; padding: 0 10px; font-size: 13px; outline: none; background: #f8fafc; }
-    .filter-btn-row { display: flex; gap: 8px; margin-bottom: 6px; }
-    .btn-run-filter { flex: 2; height: 44px; background: #2563eb; color: #ffffff; border: none; border-radius: 8px; font-size: 14.5px; font-weight: 800; cursor: pointer; }
-    .btn-reset-filter { flex: 1; height: 44px; background: #64748b; color: #ffffff; border: none; border-radius: 8px; font-size: 13.5px; font-weight: 700; cursor: pointer; }
+    .filter-btn-row { display: flex; gap: 6px; margin-bottom: 6px; }
+    .btn-run-filter { flex: 2; height: 44px; background: #2563eb; color: #ffffff; border: none; border-radius: 8px; font-size: 14px; font-weight: 800; cursor: pointer; }
+    .btn-reset-filter { flex: 1; height: 44px; background: #64748b; color: #ffffff; border: none; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; }
+    
+    /* ★ 전체 팝업 일괄 닫기 버튼 추가 */
     .btn-close-all { width: 100%; height: 38px; background: #dc2626; color: #ffffff; border: none; border-radius: 8px; font-size: 13.5px; font-weight: 800; cursor: pointer; box-shadow: 0 2px 5px rgba(220,38,38,0.3); }
+    .btn-close-all:active { background: #b91c1c; }
 
-    .filter-stat-card { background: linear-gradient(135deg, #1e1b4b, #3F14F8); color: #ffffff; border-radius: 12px; padding: 14px; margin-bottom: 14px; box-shadow: 0 4px 10px rgba(63,20,248,0.25); }
+    /* 필터 결과 통계 요약 카드 */
+    .filter-stat-card { background: linear-gradient(135deg, #1e3a8a, #2563eb); color: #ffffff; border-radius: 12px; padding: 14px; margin-bottom: 14px; box-shadow: 0 4px 10px rgba(37,99,235,0.25); }
     .stat-header { font-size: 15px; font-weight: 900; color: #fde047; margin-bottom: 10px; border-bottom: 1px dashed rgba(255,255,255,0.3); padding-bottom: 6px; }
     .stat-row { display: flex; justify-content: space-around; text-align: center; font-size: 13px; line-height: 1.5; margin-bottom: 8px; }
     .stat-box { flex: 1; }
     .stat-val { font-size: 15px; font-weight: 900; color: #ffffff; }
+
+    /* ★ [신규] 통합 승부 예상 카드 디자인 */
+    .filter-synthesis-card { background: #ffffff; border: 2px solid #2563eb; border-radius: 12px; padding: 14px; margin-bottom: 14px; box-shadow: 0 4px 10px rgba(37,99,235,0.15); color: #1e293b; }
+    .syn-header { font-size: 14.5px; font-weight: 900; color: #1e3a8a; border-bottom: 2px solid #2563eb; padding-bottom: 6px; margin-bottom: 10px; display: flex; align-items: center; gap: 4px; }
+    .syn-content { font-size: 13px; line-height: 1.6; color: #334155; }
+    .syn-highlight { color: #2563eb; font-weight: 800; }
 
     /* 베팅가이드 탭 */
     .guide-container { display: none; flex-direction: column; gap: 14px; }
@@ -127,18 +131,17 @@
 
   <div class="container">
     <div class="header-box">
-      <button class="btn-ai-setup" onclick="openAiKeyModal()">⚙️ AI 키</button>
+      <button class="btn-ai-setup" onclick="openAiKeyModal()">⚙️ AI 두뇌 키 등록</button>
       <div class="header-badge">TOTO_COLOR_V2.0</div>
       <div class="header-title">⚡ AI 승부예측 시스템 V2.0</div>
-      <div class="sub-desc">빅데이터 통계 + 승무패 14경기 + AI 종합 판정</div>
+      <div class="sub-desc">빅데이터 통계 + 필터 조건 검색 + AI 종합 판정</div>
     </div>
 
-    <!-- 상단 4개 메인 탭 -->
+    <!-- 메인 탭 -->
     <div class="main-tab-nav">
-      <button class="tab-btn active" id="tabBtnMatches" onclick="switchMainTab('matches')">🔥 경기분석</button>
-      <button class="tab-btn" id="tabBtnToto" onclick="switchMainTab('toto')">🏆 승무패분석</button>
-      <button class="tab-btn" id="tabBtnFilter" onclick="switchMainTab('filter')">🔍 필터검색</button>
-      <button class="tab-btn" id="tabBtnGuide" onclick="switchMainTab('guide')">📖 가이드</button>
+      <button class="tab-btn active" id="tabBtnMatches" onclick="switchMainTab('matches')">🔥 경기 분석</button>
+      <button class="tab-btn" id="tabBtnFilter" onclick="switchMainTab('filter')">🔍 필터_검색</button>
+      <button class="tab-btn" id="tabBtnGuide" onclick="switchMainTab('guide')">📖 베팅가이드</button>
     </div>
 
     <!-- [탭 1] 경기 분석 -->
@@ -159,39 +162,15 @@
 
       <div class="match-list" id="matchListContainer">
         <div style="text-align:center; padding:40px 10px; color:#94a3b8; font-size:14px;">
-          상단의 [엑셀 파일 열기] 버튼을 눌러주세요.
+          데이터를 불러오는 중입니다...
         </div>
       </div>
     </div>
 
-    <!-- [탭 2] 승무패 14경기 분석 탭 -->
-    <div id="tabContentToto" style="display:none; flex-direction:column;">
-      <div class="filter-panel" style="border-color: #3F14F8;">
-        <div class="filter-group-title" style="color: #3F14F8;">🏆 토토 승무패 14경기 회차 분석</div>
-        <div style="font-size: 12.5px; color: #64748b; line-height: 1.5; margin-bottom: 12px;">
-          엑셀 C열(League)이 파란색(<b>#3F14F8</b> 계열)으로 칠해진 승무패 대상 14경기만 자동으로 감지하여 모아줍니다.
-        </div>
-        <button class="btn-run-filter" style="background-color: #3F14F8;" onclick="loadTotoGames()">🏆 승무패 14경기 불러오기</button>
-      </div>
-
-      <div id="totoStatCard" style="display:none;" class="filter-stat-card">
-        <div class="stat-header">🏆 승무패 대상 게임 요약</div>
-        <div class="stat-row" style="text-align:left; font-size:13px; line-height:1.6; color:#f8fafc;" id="totoSummaryText">
-          분석 중...
-        </div>
-      </div>
-
-      <div class="match-list" id="totoMatchListContainer">
-        <div style="text-align:center; padding:30px; color:#94a3b8; font-size:13.5px;">
-          위의 [승무패 14경기 불러오기] 버튼을 눌러주세요.
-        </div>
-      </div>
-    </div>
-
-    <!-- [탭 3] 필터_검색 -->
+    <!-- [탭 2] 필터_검색 -->
     <div id="tabContentFilter" style="display:none; flex-direction:column;">
       <div class="filter-panel">
-        <div class="filter-group-title">🎯 콤보박스 조건 선택</div>
+        <div class="filter-group-title">🎯 1. 콤보박스 조건 선택</div>
         <div class="filter-grid-combo">
           <div class="combo-item"><label>W (일반유형)</label><select id="fltW"><option value="">전체</option><option value="정배당">정배당</option><option value="역배당">역배당</option><option value="무배당">무배당</option></select></div>
           <div class="combo-item"><label>X (일반결과)</label><select id="fltX"><option value="">전체</option><option value="승">승</option><option value="무">무</option><option value="패">패</option></select></div>
@@ -205,11 +184,11 @@
           <div class="combo-item"><label>T열 (핸디배종)</label><select id="fltT"><option value="">전체</option><option value="정">정</option><option value="역">역</option></select></div>
         </div>
 
-        <div class="filter-group-title">🔍 추가 텍스트 검색</div>
+        <div class="filter-group-title">🔍 2. 추가 텍스트 검색 (비워두면 전체)</div>
         <div class="filter-grid-text">
-          <div class="text-item"><label>C열 (리그)</label><input type="text" id="fltC" placeholder="예: EPL, K리그"></div>
-          <div class="text-item"><label>D열 (홈팀)</label><input type="text" id="fltD" placeholder="예: 아스널"></div>
-          <div class="text-item"><label>F열 (원정팀)</label><input type="text" id="fltF" placeholder="예: 첼시"></div>
+          <div class="text-item"><label>C열 (리그명)</label><input type="text" id="fltC" placeholder="예: EPL, K리그"></div>
+          <div class="text-item"><label>D열 (홈팀명)</label><input type="text" id="fltD" placeholder="예: 아스널, 번리"></div>
+          <div class="text-item"><label>F열 (원정팀명)</label><input type="text" id="fltF" placeholder="예: 첼시, 찰턴"></div>
         </div>
 
         <div class="filter-btn-row">
@@ -218,6 +197,7 @@
         </div>
       </div>
 
+      <!-- 필터 요약 카드 (일반 + 핸디 통계) -->
       <div id="filterStatCard" style="display:none;" class="filter-stat-card">
         <div class="stat-header" id="filterStatHeader">📊 필터 조건 검색 결과 요약</div>
         <div style="font-size:12px; margin-bottom:4px; color:#bfdbfe; font-weight:700;">■ 일반경기 실제 결과 통계</div>
@@ -234,6 +214,13 @@
         </div>
       </div>
 
+      <!-- ★ [신규 추가] 3가지 통합 승부 예상 분석 카드 -->
+      <div id="filterSynthesisCard" style="display:none;" class="filter-synthesis-card">
+        <div class="syn-header">🏆 [ 🏆 AI 필터 조건 통합 승부 예상 ]</div>
+        <div class="syn-content" id="filterSynthesisContent">분석 중...</div>
+      </div>
+
+      <!-- ★ [신규 추가] 열린 팝업 모두 닫기 버튼 -->
       <div style="margin-bottom: 12px;">
         <button class="btn-close-all" onclick="closeAllPopups()">❌ 열린 분석창 모두 닫기</button>
       </div>
@@ -245,10 +232,10 @@
       </div>
     </div>
 
-    <!-- [탭 4] 베팅가이드 -->
+    <!-- [탭 3] 베팅가이드 -->
     <div id="tabContentGuide" class="guide-container">
       <div class="guide-card">
-        <div class="guide-title">🚦 오즈메이커 함정 신호등</div>
+        <div class="guide-title">🚦 1. 오즈메이커 과대평가(함정) 신호등</div>
         <div class="guide-text">
           <table class="guide-table">
             <tr><th>구분</th><th>과대평가 수치</th><th>대응 전략</th></tr>
@@ -256,6 +243,17 @@
             <tr><td><span class="tag-warn">🟡 주의</span></td><td><b>+5.0% ~ +9.1%</b></td><td>무승부/보험 고려</td></tr>
             <tr><td><span class="tag-danger">🔴 위험</span></td><td><b>+9.2% 이상</b></td><td><b>정배 무조건 탈락!</b> 플핸/무승부</td></tr>
           </table>
+        </div>
+      </div>
+
+      <div class="guide-card">
+        <div class="guide-title">🎯 2. 3.5배 무승부 포착 4대 공식</div>
+        <div class="guide-text">
+          축구 평균 무승부 확률(24%)을 뚫고 <b>다음 4개 중 3개 이상 만족할 때</b>가 무승부 골든 타이밍입니다.<br><br>
+          <b>① [조건 1] AI 무승부 확률 26.0% 이상</b> (통계상 쏠림 뚜렷)<br>
+          <b>② [조건 2] 정배팀 승률 50% 미만 붕괴</b> (10판 중 절반 이상 실패)<br>
+          <b>③ [조건 3] 원정 플핸(핸디패) 승률 53% 이상 우세</b> (비길 확률 급상승)<br>
+          <b>④ [조건 4] 무승부 확률이 원정 역배 확률보다 높을 때</b>
         </div>
       </div>
     </div>
@@ -279,7 +277,6 @@
     let todayList = [];
     let pastDB = [];
     let currentFilteredList = [];
-    let rawSheetColors = {}; // C열 파란색(#3F14F8 등) 색상 매핑 저장
     let topZIndex = 2000;
     let windowCascadeCount = 0;
 
@@ -368,17 +365,16 @@
     }
 
     function switchMainTab(tab) {
-      ['Matches', 'Toto', 'Filter', 'Guide'].forEach(t => {
-        document.getElementById('tabBtn' + t).classList.remove('active');
-        document.getElementById('tabContent' + t).style.display = 'none';
-      });
+      document.getElementById('tabBtnMatches').classList.remove('active');
+      document.getElementById('tabBtnFilter').classList.remove('active');
+      document.getElementById('tabBtnGuide').classList.remove('active');
+      document.getElementById('tabContentMatches').style.display = 'none';
+      document.getElementById('tabContentFilter').style.display = 'none';
+      document.getElementById('tabContentGuide').style.display = 'none';
 
       if (tab === 'matches') {
         document.getElementById('tabBtnMatches').classList.add('active');
         document.getElementById('tabContentMatches').style.display = 'block';
-      } else if (tab === 'toto') {
-        document.getElementById('tabBtnToto').classList.add('active');
-        document.getElementById('tabContentToto').style.display = 'flex';
       } else if (tab === 'filter') {
         document.getElementById('tabBtnFilter').classList.add('active');
         document.getElementById('tabContentFilter').style.display = 'flex';
@@ -397,10 +393,9 @@
         .then(data => {
           todayList = data.todayList || [];
           pastDB = data.pastDB || [];
-          rawSheetColors = data.rawColors || {}; // C열 파란색(#3F14F8 등) 색상 정보 수신
 
           document.getElementById('syncBox').style.display = 'flex';
-          document.getElementById('syncText').innerText = `✔ 실시간 데이터 동기화 완료 (${todayList.length}경기)`;
+          document.getElementById('syncText').innerText = `✔ 깃허브 실시간 동기화 완료 (${todayList.length}경기)`;
           document.getElementById('syncTime').innerText = data.updated || '';
           document.getElementById('sectionTitleText').innerText = `🔥 오늘의 분석 대상 경기 (${todayList.length}건)`;
 
@@ -419,7 +414,7 @@
       const container = document.getElementById('matchListContainer');
       let html = "";
       if (!todayList.length) {
-        container.innerHTML = "<div style='text-align:center;padding:30px;color:#94a3b8;'>분석할 예정 경기가 없습니다.</div>";
+        container.innerHTML = "<div style='text-align:center;padding:30px;color:#94a3b8;'>오늘 분석할 예정 경기가 없습니다.</div>";
         return;
       }
       todayList.forEach((m, idx) => {
@@ -457,69 +452,8 @@
     }
 
     // ==========================================================
-    // ★ [완전 복원] C열 파란색(#3F14F8 등) 스캔하여 승무패 14경기 로드
+    // ★ [업그레이드] 필터 검색 + 3가지 통합 승부 예상 분석 추가
     // ==========================================================
-    function loadTotoGames() {
-      const container = document.getElementById('totoMatchListContainer');
-      const statCard = document.getElementById('totoStatCard');
-      const summaryText = document.getElementById('totoSummaryText');
-
-      let totoRows = [];
-      for (let rStr in rawSheetColors) {
-        let parts = rStr.split('_'); // "행_열"
-        if (parts.length === 2 && parseInt(parts[1]) === 2) { // C열은 인덱스 2
-          let hexColor = rawSheetColors[rStr].toUpperCase();
-          if (hexColor.includes("3F14F8") || hexColor.includes("0000FF") || hexColor.includes("1F497D") || hexColor.includes("002060") || hexColor.includes("BLUE")) {
-            totoRows.push(parseInt(parts[0]));
-          }
-        }
-      }
-
-      let targetGames = todayList.filter(m => totoRows.includes(m.row));
-      if (targetGames.length === 0) {
-        targetGames = todayList.slice(0, 14); // 백업용 상위 14경기
-      }
-
-      if (!targetGames.length) {
-        statCard.style.display = 'none';
-        container.innerHTML = "<div style='text-align:center;padding:30px;color:#94a3b8;'>승무패 14경기 대상 게임을 찾을 수 없습니다. (엑셀 C열 파란색 확인)</div>";
-        return;
-      }
-
-      let html = "";
-      targetGames.forEach((m) => {
-        html += `
-          <div class="toto-match-card" onclick="analyzeMatchObject(${JSON.stringify(m).replace(/"/g, '&quot;')})">
-            <div class="card-top">
-              <div class="badge-wrap">
-                <span class="row-badge">${m.row}행</span>
-                <span class="toto-header-badge">승무패 14경기</span>
-              </div>
-              <span class="handi-badge">[${m.o || '0'}] 핸디캡</span>
-            </div>
-            <div class="teams">${m.hT} VS ${m.aT}</div>
-            <div class="odds-row">
-              <div class="odd-box">홈 ${m.h}</div>
-              <div class="odd-box">무 ${m.d}</div>
-              <div class="odd-box">원정 ${m.a}</div>
-            </div>
-            <div style="font-size:11.5px; color:#3F14F8; font-weight:700; margin-top:6px; text-align:right;">
-              [터치하여 승무패 정밀 분석 팝업 보기 ❯]
-            </div>
-          </div>
-        `;
-      });
-
-      summaryText.innerHTML = `• 총 <span style="color:#fde047; font-weight:800;">${targetGames.length}경기</span>의 승무패 대상 게임이 성공적으로 로드되었습니다.<br>• 각 경기를 터치하여 V2.0 AI 분석 및 3.5배 무승부 확률을 정밀 확인하세요!`;
-      statCard.style.display = 'block';
-      container.innerHTML = html;
-    }
-
-    function analyzeMatchObject(cur) { analyzeMatchData(cur); }
-    function analyzeMatch(idx) { analyzeMatchData(todayList[idx]); }
-    function analyzePastMatch(idx) { analyzeMatchData(currentFilteredList[idx]); }
-
-    // 고급 필터 검색 실행
     function executeAdvancedFilter() {
       const fltW = document.getElementById('fltW').value.trim();
       const fltX = document.getElementById('fltX').value.trim();
@@ -565,10 +499,12 @@
 
       const totalCount = filtered.length;
       const statCard = document.getElementById('filterStatCard');
+      const synCard = document.getElementById('filterSynthesisCard');
       const listContainer = document.getElementById('filterMatchListContainer');
 
       if (totalCount === 0) {
         statCard.style.display = 'none';
+        synCard.style.display = 'none';
         listContainer.innerHTML = "<div style='text-align:center;padding:40px;color:#94a3b8;'>해당 조건의 완료된 경기가 없습니다.</div>";
         return;
       }
@@ -589,6 +525,23 @@
       document.getElementById('stHdLoss').innerText = `${cHdLoss}회 (${rHDL}%)`;
 
       statCard.style.display = 'block';
+
+      // ★ [신규] 통합 승부 예상 자동 생성 로직
+      let bestGenName = "홈승", bestGenRate = rHW;
+      if (parseFloat(rD) > parseFloat(rHW) && parseFloat(rD) > parseFloat(rAW)) { bestGenName = "무승부"; bestGenRate = rD; }
+      else if (parseFloat(rAW) > parseFloat(rHW)) { bestGenName = "원정승"; bestGenRate = rAW; }
+
+      let bestHndName = "핸패", bestHndRate = rHDL;
+      if (parseFloat(rHDW) > parseFloat(rHDL) && parseFloat(rHDW) > parseFloat(rHDD)) { bestHndName = "핸디승"; bestHndRate = rHDW; }
+      else if (parseFloat(rHDD) > parseFloat(rHDL)) { bestHndName = "핸디무"; bestHndRate = rHDD; }
+
+      const synText = 
+        `• 일반경기 추천 픽: <span class="syn-highlight">[${bestGenName}]</span> (${rHW}% / 무 ${rD}% / 원정승 ${rAW}% 중 최고 확률)<br>` +
+        `• 핸디경기 추천 픽: <span class="syn-highlight">[${bestHndName}]</span> (핸승 ${rHDW}% / 핸무 ${rHDD}% / 핸패 ${rHDL}% 중 최고 확률)<br>` +
+        `• 총평: 선택하신 필터 조건(${totalCount}건 분석)에서 가장 기대치가 높은 조합은 일반 <span class="syn-highlight">${bestGenName}</span>과 핸디 <span class="syn-highlight">${bestHndName}</span>입니다.`;
+
+      document.getElementById('filterSynthesisContent').innerHTML = synText;
+      synCard.style.display = 'block';
 
       currentFilteredList = filtered.slice(-60).reverse();
 
@@ -626,8 +579,17 @@
     function resetAdvancedFilter() {
       ['fltW','fltX','fltY','fltZ','fltL','fltO','fltT','fltC','fltD','fltF'].forEach(id => document.getElementById(id).value = "");
       document.getElementById('filterStatCard').style.display = 'none';
+      document.getElementById('filterSynthesisCard').style.display = 'none';
       document.getElementById('filterMatchListContainer').innerHTML = "<div style='text-align:center;padding:30px;color:#94a3b8;'>조건을 선택하고 검색하세요.</div>";
     }
+
+    // ★ 열린 팝업창 모두 닫기 함수 추가
+    function closeAllPopups() {
+      document.getElementById('popupContainer').innerHTML = "";
+    }
+
+    function analyzeMatch(idx) { analyzeMatchData(todayList[idx]); }
+    function analyzePastMatch(idx) { analyzeMatchData(currentFilteredList[idx]); }
 
     // 공용 분석 엔진
     function analyzeMatchData(cur) {
@@ -1089,62 +1051,6 @@ ${newsCorpus.slice(0, 500) || '특이 외신 기사 없음'}
       }
 
       handle.addEventListener('pointerdown', onPointerDown);
-    }
-
-    // ★ [핵심 복원] SheetJS 수동 로드 시 C열의 파란색(#3F14F8 등) 배경색을 완벽히 스캔하도록 수정
-    function loadExcelFileManual(e) {
-      const file = e.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = function(evt) {
-        try {
-          const data = new Uint8Array(evt.target.result);
-          const workbook = XLSX.read(data, { type: 'array', cellStyles: true, cellFormulas: true });
-          let sName = workbook.Sheets["일반핸디"] ? "일반핸디" : workbook.SheetNames[0];
-          const sheet = workbook.Sheets[sName];
-          const sheetData = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: "" });
-          
-          todayList = []; pastDB = []; rawSheetColors = {};
-
-          for (let r = 18; r < sheetData.length; r++) {
-            const row = sheetData[r];
-            if (!row || row.length < 10) continue;
-            
-            // C열(인덱스 2) 파란색 배경 감지
-            const cellRef = XLSX.utils.encode_cell({ r: r, c: 2 });
-            const cellObj = sheet[cellRef];
-            if (cellObj && cellObj.s && cellObj.s.fgColor && cellObj.s.fgColor.rgb) {
-              rawSheetColors[`${r + 1}_2`] = cellObj.s.fgColor.rgb;
-            }
-
-            const h = parseFloat(row[7]) || 0, a = parseFloat(row[9]) || 0;
-            const resK = String(row[10] || "").trim();
-            const colL = String(row[11] || "").trim();
-            const resS = String(row[18] || "").trim();
-            const colT = String(row[19] || "").trim();
-
-            if (h > 0 && a > 0) {
-              const obj = {
-                row: r + 1, l: String(row[2]||""), hT: String(row[3]||""), aT: String(row[5]||""),
-                h: h, d: parseFloat(row[8])||0, a: a, k: resK, colL: colL,
-                o: normHandi(row[14]), hp: parseFloat(row[15])||0, hd: parseFloat(row[16])||0, ha: parseFloat(row[17])||0,
-                s: resS, colT: colT,
-                w: String(row[22]||""), x: String(row[23]||""), y: String(row[24]||""), z: String(row[25]||"")
-              };
-              if (resK === "" || resS === "") todayList.push(obj);
-              if (resK !== "" && resS !== "") pastDB.push(obj);
-            }
-          }
-
-          document.getElementById('syncBox').style.display = 'flex';
-          document.getElementById('syncText').innerText = `📁 수동 파일 로드 완료 (${todayList.length}경기 / 승무패 감지 완료)`;
-          document.getElementById('syncTime').innerText = '수동 업로드';
-          renderMatchList();
-        } catch(err) {
-          alert("엑셀 로드 중 오류 발생: " + err.message);
-        }
-      };
-      reader.readAsArrayBuffer(file);
     }
   </script>
 </body>
