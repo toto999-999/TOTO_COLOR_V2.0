@@ -83,18 +83,6 @@
 
     .toto-stat-card { background: linear-gradient(135deg, #2e1065, #3F14F8); color: #ffffff; border-radius: 12px; padding: 14px; margin-bottom: 14px; box-shadow: 0 4px 10px rgba(63, 20, 248, 0.3); }
 
-    /* 베팅가이드 탭 */
-    .guide-container { display: none; flex-direction: column; gap: 14px; }
-    .guide-card { background: #ffffff; border-radius: 12px; padding: 16px; border: 1.5px solid #cbd5e1; box-shadow: 0 2px 6px rgba(0,0,0,0.05); }
-    .guide-title { font-size: 15.5px; font-weight: 800; color: #1e3a8a; border-bottom: 2px solid #2563eb; padding-bottom: 8px; margin-bottom: 12px; display: flex; align-items: center; gap: 6px; }
-    .guide-text { font-size: 13.5px; line-height: 1.7; color: #334155; }
-    .guide-table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 12.5px; }
-    .guide-table th, .guide-table td { padding: 8px 6px; text-align: center; border: 1px solid #e2e8f0; }
-    .guide-table th { background: #f8fafc; font-weight: 800; color: #1e293b; }
-    .tag-safe { background: #dcfce7; color: #166534; font-weight: 800; padding: 2px 6px; border-radius: 4px; }
-    .tag-warn { background: #fef9c3; color: #854d0e; font-weight: 800; padding: 2px 6px; border-radius: 4px; }
-    .tag-danger { background: #fee2e2; color: #991b1b; font-weight: 800; padding: 2px 6px; border-radius: 4px; }
-
     /* 플로팅 팝업창 */
     .floating-window { position: fixed; width: 92%; max-width: 395px; max-height: 88vh; background: #ffffff; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.25); border: 1.5px solid #2563eb; display: flex; flex-direction: column; z-index: 1000; overflow: hidden; animation: popIn 0.15s ease-out; }
     @keyframes popIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
@@ -135,12 +123,11 @@
       <div class="sub-desc">빅데이터 통계 + 승무패 분석 + AI 종합 판정</div>
     </div>
 
-    <!-- 상단 4개 메인 탭 -->
+    <!-- 상단 3개 메인 탭 (가이드 탭 삭제됨) -->
     <div class="main-tab-nav">
       <button class="tab-btn active" id="tabBtnMatches" onclick="switchMainTab('matches')">🔥 경기</button>
       <button class="tab-btn" id="tabBtnFilter" onclick="switchMainTab('filter')">🔍 필터</button>
       <button class="tab-btn" id="tabBtnToto" onclick="switchMainTab('toto')">⚽ 승무패</button>
-      <button class="tab-btn" id="tabBtnGuide" onclick="switchMainTab('guide')">📖 가이드</button>
     </div>
 
     <!-- [탭 1] 일반 경기 분석 -->
@@ -185,10 +172,19 @@
           <div class="text-item"><label>C열 (리그명)</label><input type="text" id="fltC" placeholder="예: EPL, K리그"></div>
           <div class="text-item"><label>D열 (홈팀명)</label><input type="text" id="fltD" placeholder="예: 아스널, 번리"></div>
           <div class="text-item"><label>F열 (원정팀명)</label><input type="text" id="fltF" placeholder="예: 첼시, 찰턴"></div>
-          <!-- ★ [필터 수정] 정확히 일치하는 과대평가 수치 검색 -->
+          
+          <!-- 정확히 일치하는 과대평가 수치 검색 -->
           <div class="text-item">
             <label style="letter-spacing:-0.5px; color:#dc2626;">과대평가(%)</label>
             <input type="number" step="0.1" id="fltDiff" placeholder="예: 9.2 (입력값과 정확히 일치하는 경기만)">
+          </div>
+
+          <!-- 승무패 경기 전용 필터 체크박스 -->
+          <div class="text-item" style="background:#eef2ff; border:1.5px solid #c7d2fe; border-radius:8px; padding:8px 12px; margin-top:2px;">
+            <label style="cursor:pointer; width:auto; flex:1; font-size:12.5px; font-weight:800; color:#3730a3; display:flex; align-items:center; gap:8px;">
+              <input type="checkbox" id="fltTotoOnly" style="width:18px; height:18px; cursor:pointer;">
+              ⚽ 승무패 대상 경기만 보기 (승무패 전용 검색)
+            </label>
           </div>
         </div>
 
@@ -270,32 +266,6 @@
         </div>
       </div>
     </div>
-
-    <!-- [탭 4] 베팅가이드 -->
-    <div id="tabContentGuide" class="guide-container">
-      <div class="guide-card">
-        <div class="guide-title">🚦 1. 오즈메이커 과대평가(함정) 신호등</div>
-        <div class="guide-text">
-          <table class="guide-table">
-            <tr><th>구분</th><th>과대평가 수치</th><th>대응 전략</th></tr>
-            <tr><td><span class="tag-safe">🟢 안전</span></td><td><b>+3.0% 미만</b></td><td>정배 신뢰</td></tr>
-            <tr><td><span class="tag-warn">🟡 주의</span></td><td><b>+5.0% ~ +9.1%</b></td><td>무승부/보험 고려</td></tr>
-            <tr><td><span class="tag-danger">🔴 위험</span></td><td><b>+9.2% 이상</b></td><td><b>정배 무조건 탈락!</b> 플핸/무승부</td></tr>
-          </table>
-        </div>
-      </div>
-
-      <div class="guide-card">
-        <div class="guide-title">🎯 2. 3.5배 무승부 포착 4대 공식</div>
-        <div class="guide-text">
-          축구 평균 무승부 확률(24%)을 뚫고 <b>다음 4개 중 3개 이상 만족할 때</b>가 무승부 골든 타이밍입니다.<br><br>
-          <b>① [조건 1] AI 무승부 확률 26.0% 이상</b> (통계상 쏠림 뚜렷)<br>
-          <b>② [조건 2] 정배팀 승률 50% 미만 붕괴</b> (10판 중 절반 이상 실패)<br>
-          <b>③ [조건 3] 원정 플핸(핸디패) 승률 53% 이상 우세</b> (비길 확률 급상승)<br>
-          <b>④ [조건 4] 무승부 확률이 원정 역배 확률보다 높을 때</b>
-        </div>
-      </div>
-    </div>
   </div>
 
   <div id="popupContainer"></div>
@@ -341,7 +311,7 @@
           colL: String(p[7] || "").trim(), colT: String(p[8] || "").trim(), k: String(p[9] || "").trim(), s: String(p[10] || "").trim(),
           l: String(p[11] || "").trim(), hT: String(p[12] || "").trim(), aT: String(p[13] || "").trim(),
           row: p[14] || (index + 19), d: parseFloat(p[15]) || 0, hp: parseFloat(p[16]) || 0, hd: parseFloat(p[17]) || 0, ha: parseFloat(p[18]) || 0,
-          isToto: false
+          isToto: (p[19] === true || p[19] === "1" || p[19] === 1) ? true : false
         };
       } else {
         return {
@@ -350,7 +320,7 @@
           colL: String(p.colL || "").trim(), colT: String(p.colT || "").trim(), k: String(p.k || "").trim(), s: String(p.s || "").trim(),
           l: String(p.l || "").trim(), hT: String(p.hT || "").trim(), aT: String(p.aT || "").trim(),
           row: p.row || (index + 19), d: parseFloat(p.d || 0), hp: parseFloat(p.hp || 0), hd: parseFloat(p.hd || 0), ha: parseFloat(p.ha || 0),
-          isToto: p.isToto || false
+          isToto: (p.isToto === true || p.isToto === "1" || p.isToto === 1) ? true : false
         };
       }
     }
@@ -388,12 +358,10 @@
       document.getElementById('tabBtnMatches').classList.remove('active');
       document.getElementById('tabBtnFilter').classList.remove('active');
       document.getElementById('tabBtnToto').classList.remove('active');
-      document.getElementById('tabBtnGuide').classList.remove('active');
 
       document.getElementById('tabContentMatches').style.display = 'none';
       document.getElementById('tabContentFilter').style.display = 'none';
       document.getElementById('tabContentToto').style.display = 'none';
-      document.getElementById('tabContentGuide').style.display = 'none';
 
       if (tab === 'matches') {
         document.getElementById('tabBtnMatches').classList.add('active');
@@ -404,9 +372,6 @@
       } else if (tab === 'toto') {
         document.getElementById('tabBtnToto').classList.add('active');
         document.getElementById('tabContentToto').style.display = 'flex';
-      } else if (tab === 'guide') {
-        document.getElementById('tabBtnGuide').classList.add('active');
-        document.getElementById('tabContentGuide').style.display = 'flex';
       }
     }
 
@@ -513,6 +478,7 @@
         document.getElementById('syncText').innerText = `📁 수동 파일 로드 완료 (대상: ${todayList.length}건 / DB: ${pastDB.length}건)`;
         document.getElementById('syncTime').innerText = `승무패 인식 ${totoUpcomingList.length+totoPastDB.length}건`;
         
+        diffCache = {};
         renderMatchList();
         renderTotoList();
       };
@@ -630,14 +596,22 @@
       }
     }
 
-    function getDiffForMatch(cur) {
-      const key = `${cur.h}_${cur.a}_${cur.o}_${cur.w}_${cur.y}`;
+    // ★ [수치 불일치 수정 핵심] isTotoMode 매개변수를 추가하여 팝업창과 동일한 DB 모집합을 기준으로 과대평가를 계산
+    function getDiffForMatch(cur, isTotoMode = false) {
+      const key = `${cur.h}_${cur.a}_${cur.o}_${cur.w}_${cur.y}_${isTotoMode ? 'toto' : 'all'}`;
       if (diffCache[key] !== undefined) return diffCache[key];
+
       let matchCount = 0;
       let cntHomeWin = 0, cntAwayWin = 0;
       const targetHandi = normHandi(cur.o);
-      for (let i = 0; i < pastDB.length; i++) {
-        const p = getPastItem(pastDB[i], i);
+
+      const dbToAnalyze = isTotoMode ? pastDB.filter(p => {
+        const i = getPastItem(p, 0);
+        return i.isToto === true || i.isToto === "1" || i.isToto === 1;
+      }) : pastDB;
+
+      for (let i = 0; i < dbToAnalyze.length; i++) {
+        const p = getPastItem(dbToAnalyze[i], i);
         if (!p.k || !p.s) continue;
         if (Math.abs(p.h - cur.h) <= 0.25 && Math.abs(p.a - cur.a) <= 0.35) {
           if ((!targetHandi || p.o === targetHandi) && (p.w === cur.w && p.y === cur.y)) {
@@ -647,7 +621,10 @@
           }
         }
       }
-      if (matchCount < 5) { diffCache[key] = null; return null; }
+
+      const minCount = isTotoMode ? 3 : 5;
+      if (matchCount < minCount) { diffCache[key] = null; return null; }
+
       const isHomeFav = (cur.h <= cur.a);
       const favOdd = isHomeFav ? cur.h : cur.a;
       const favActualRate = isHomeFav ? ((cntHomeWin / matchCount) * 100) : ((cntAwayWin / matchCount) * 100);
@@ -657,7 +634,7 @@
       return diff;
     }
 
-    // ★ [핵심] 입력된 수치와 정확하게 소수점 1자리까지 동일한 경기만 필터링!
+    // ★ [필터 실행] 승무패 전용 체크박스 + 일치 과대평가 계산 반영
     function executeAdvancedFilter() {
       const fltW = document.getElementById('fltW').value.trim();
       const fltX = document.getElementById('fltX').value.trim();
@@ -674,6 +651,8 @@
       const fltDiffStr = document.getElementById('fltDiff').value.trim();
       const fltDiff = fltDiffStr ? parseFloat(fltDiffStr) : null;
 
+      const fltTotoOnly = document.getElementById('fltTotoOnly').checked;
+
       let filtered = [];
       let cHomeWin = 0, cDraw = 0, cAwayWin = 0;
       let cHdWin = 0, cHdDraw = 0, cHdLoss = 0;
@@ -681,6 +660,8 @@
       for (let i = 0; i < pastDB.length; i++) {
         const item = getPastItem(pastDB[i], i);
         if (!item.k || !item.s) continue;
+
+        if (fltTotoOnly && !item.isToto) continue;
 
         if (fltW && item.w !== fltW) continue;
         if (fltX && item.x !== fltX) continue;
@@ -694,9 +675,10 @@
         if (fltD && !item.hT.toLowerCase().includes(fltD)) continue;
         if (fltF && !item.aT.toLowerCase().includes(fltF)) continue;
 
+        const isTotoMatch = fltTotoOnly || item.isToto;
+
         if (fltDiff !== null && !isNaN(fltDiff)) {
-          const diffVal = getDiffForMatch(item);
-          // ★ 이상(>=) 비교에서 정확한 일치(==) 비교로 변경!
+          const diffVal = getDiffForMatch(item, isTotoMatch);
           if (diffVal === null || diffVal.toFixed(1) !== fltDiff.toFixed(1)) {
             continue;
           }
@@ -732,7 +714,8 @@
       const rHDD = ((cHdDraw / totalCount) * 100).toFixed(1);
       const rHDL = ((cHdLoss / totalCount) * 100).toFixed(1);
 
-      document.getElementById('filterStatHeader').innerText = `📊 조건 일치 완료 경기 : 총 ${totalCount.toLocaleString()}건`;
+      const totoPrefix = fltTotoOnly ? "[⚽ 승무패 대상] " : "";
+      document.getElementById('filterStatHeader').innerText = `📊 ${totoPrefix}조건 일치 완료 경기 : 총 ${totalCount.toLocaleString()}건`;
       document.getElementById('stHomeWin').innerText = `${cHomeWin}회 (${rHW}%)`;
       document.getElementById('stDraw').innerText = `${cDraw}회 (${rD}%)`;
       document.getElementById('stAwayWin').innerText = `${cAwayWin}회 (${rAW}%)`;
@@ -761,16 +744,18 @@
 
       let listHtml = "";
       currentFilteredList.forEach((m, idx) => {
-        let diffVal = m.calcDiff !== undefined ? m.calcDiff : getDiffForMatch(m);
+        const isTotoMatch = fltTotoOnly || m.isToto;
+        let diffVal = m.calcDiff !== undefined ? m.calcDiff : getDiffForMatch(m, isTotoMatch);
         let diffStr = diffVal !== null ? ` | 과대평가: +${diffVal.toFixed(1)}%` : ` | 과대평가: DB부족`;
         let diffColor = (diffVal !== null && diffVal >= 9.2) ? '#dc2626' : '#64748b';
 
         listHtml += `
-          <div class="match-card" onclick="analyzeMatch(${idx}, false, 'filter')">
+          <div class="match-card ${m.isToto ? 'toto-card' : ''}" onclick="analyzeMatch(${idx}, ${isTotoMatch ? 'true' : 'false'}, 'filter')">
             <div class="card-top">
               <div class="badge-wrap">
                 <span class="row-badge">${m.row}행</span>
                 <span class="league-badge">${m.l || '축구'}</span>
+                ${m.isToto ? '<span class="toto-badge">⚽ 승무패</span>' : ''}
               </div>
               <span class="handi-badge">[${m.o}] 핸디 | L:${m.colL} T:${m.colT}</span>
             </div>
@@ -796,6 +781,7 @@
 
     function resetAdvancedFilter() {
       ['fltW','fltX','fltY','fltZ','fltL','fltO','fltT','fltC','fltD','fltF','fltDiff'].forEach(id => document.getElementById(id).value = "");
+      document.getElementById('fltTotoOnly').checked = false;
       document.getElementById('filterStatCard').style.display = 'none';
       document.getElementById('filterSynthesisCard').style.display = 'none';
       document.getElementById('filterMatchListContainer').innerHTML = "<div style='text-align:center;padding:30px;color:#94a3b8;'>조건을 선택하고 검색하세요.</div>";
@@ -846,7 +832,7 @@
       const targetHandi = normHandi(cur.o);
       const dbToAnalyze = isTotoMode ? pastDB.filter(p => {
         const i = getPastItem(p, 0);
-        return i.isToto === true || i.isToto === "1";
+        return i.isToto === true || i.isToto === "1" || i.isToto === 1;
       }) : pastDB;
 
       for (let i = 0; i < dbToAnalyze.length; i++) {
@@ -1111,6 +1097,7 @@ ${trapSection}`;
             }
           }
 
+          const allTextCorpus = newsTitles.join(" ");
           callGeminiOrRuleVerdict(cur, stats, allTextCorpus, homeKeyInjury, awayKeyInjury, winId);
         })
         .catch(err => {
