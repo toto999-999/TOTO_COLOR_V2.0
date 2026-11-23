@@ -173,10 +173,16 @@
           <div class="text-item"><label>D열 (홈팀명)</label><input type="text" id="fltD" placeholder="예: 아스널, 번리"></div>
           <div class="text-item"><label>F열 (원정팀명)</label><input type="text" id="fltF" placeholder="예: 첼시, 찰턴"></div>
           
-          <!-- 정확히 일치하는 과대평가 수치 검색 -->
-          <div class="text-item">
-            <label style="letter-spacing:-0.5px; color:#dc2626;">과대평가(%)</label>
-            <input type="number" step="0.1" id="fltDiff" placeholder="예: 9.2 (입력값과 정확히 일치하는 경기만)">
+          <!-- 과대평가(%) 정확 일치 & 과대평가 구간 검색 분리 -->
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 2px;">
+            <div class="combo-item">
+              <label style="text-align:left; letter-spacing:-0.5px; color:#dc2626; font-size:12px;">과대평가(%)</label>
+              <input type="number" step="0.1" id="fltDiff" placeholder="예: 9.2 (정확 일치)" style="height: 36px; border-radius: 6px; border: 1.5px solid #cbd5e1; padding: 0 8px; font-size: 12.5px; outline: none; background: #f8fafc; width: 100%;">
+            </div>
+            <div class="combo-item">
+              <label style="text-align:left; letter-spacing:-0.5px; color:#2563eb; font-size:12px;">과대평가 구간</label>
+              <input type="text" id="fltDiffRange" placeholder="예: 5.2~5.5" style="height: 36px; border-radius: 6px; border: 1.5px solid #cbd5e1; padding: 0 8px; font-size: 12.5px; outline: none; background: #f8fafc; width: 100%;">
+            </div>
           </div>
 
           <!-- 승무패 경기 전용 필터 체크박스 -->
@@ -634,7 +640,7 @@
       return diff;
     }
 
-    // ★ [필터 실행] 승무패 전용 체크박스 + 일치 과대평가 계산 반영
+    // ★ [필터 실행] 승무패 전용 체크박스 + 일치/구간 과대평가 계산 반영
     function executeAdvancedFilter() {
       const fltW = document.getElementById('fltW').value.trim();
       const fltX = document.getElementById('fltX').value.trim();
@@ -650,6 +656,26 @@
       
       const fltDiffStr = document.getElementById('fltDiff').value.trim();
       const fltDiff = fltDiffStr ? parseFloat(fltDiffStr) : null;
+
+      const fltDiffRangeStr = document.getElementById('fltDiffRange').value.trim();
+      let diffRange = null;
+      if (fltDiffRangeStr !== "") {
+        const bothMatch = fltDiffRangeStr.match(/^(-?\d+(?:\.\d+)?)\s*[~-]\s*(-?\d+(?:\.\d+)?)$/);
+        const minOnlyMatch = fltDiffRangeStr.match(/^(-?\d+(?:\.\d+)?)\s*~\s*$/);
+        const maxOnlyMatch = fltDiffRangeStr.match(/^\s*~\s*(-?\d+(?:\.\d+)?)$/);
+        if (bothMatch) {
+          const v1 = parseFloat(bothMatch[1]);
+          const v2 = parseFloat(bothMatch[2]);
+          diffRange = { min: Math.min(v1, v2), max: Math.max(v1, v2) };
+        } else if (minOnlyMatch) {
+          diffRange = { min: parseFloat(minOnlyMatch[1]), max: Infinity };
+        } else if (maxOnlyMatch) {
+          diffRange = { min: -Infinity, max: parseFloat(maxOnlyMatch[1]) };
+        } else {
+          alert("과대평가 구간 형식이 올바르지 않습니다.\n예: 5.2~5.5 또는 -3.0~2.0");
+          return;
+        }
+      }
 
       const fltTotoOnly = document.getElementById('fltTotoOnly').checked;
 
@@ -677,10 +703,19 @@
 
         const isTotoMatch = fltTotoOnly || item.isToto;
 
-        if (fltDiff !== null && !isNaN(fltDiff)) {
+        if ((fltDiff !== null && !isNaN(fltDiff)) || diffRange !== null) {
           const diffVal = getDiffForMatch(item, isTotoMatch);
-          if (diffVal === null || diffVal.toFixed(1) !== fltDiff.toFixed(1)) {
-            continue;
+          if (diffVal === null) continue;
+          if (fltDiff !== null && !isNaN(fltDiff)) {
+            if (diffVal.toFixed(1) !== fltDiff.toFixed(1)) {
+              continue;
+            }
+          }
+          if (diffRange !== null) {
+            const roundedDiff = parseFloat(diffVal.toFixed(1));
+            if (roundedDiff < diffRange.min || roundedDiff > diffRange.max) {
+              continue;
+            }
           }
           item.calcDiff = diffVal;
         }
@@ -780,7 +815,7 @@
     }
 
     function resetAdvancedFilter() {
-      ['fltW','fltX','fltY','fltZ','fltL','fltO','fltT','fltC','fltD','fltF','fltDiff'].forEach(id => document.getElementById(id).value = "");
+      ['fltW','fltX','fltY','fltZ','fltL','fltO','fltT','fltC','fltD','fltF','fltDiff','fltDiffRange'].forEach(id => document.getElementById(id).value = "");
       document.getElementById('fltTotoOnly').checked = false;
       document.getElementById('filterStatCard').style.display = 'none';
       document.getElementById('filterSynthesisCard').style.display = 'none';
