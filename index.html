@@ -1327,7 +1327,7 @@ ${scorePromptLine}
 [최종 추천]: 1순위 추천 픽(함정 발생 시 정배 탈락시키고 플핸 or 무승부 추천!)과 확신도(%), 고배당/예상 스코어 노림수
 [총평]: 핵심 근거 2줄 요약`;
 
-      const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+      const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${apiKey}`;
 
       fetch(geminiUrl, {
         method: 'POST',
@@ -1335,13 +1335,14 @@ ${scorePromptLine}
         body: JSON.stringify({
           contents: [{ parts: [{ text: prompt }] }],
           tools: [{ googleSearch: {} }],
-          generationConfig: { temperature: 0.2, maxOutputTokens: 600 }
+          generationConfig: { maxOutputTokens: 2048 }
         })
       })
       .then(res => res.json())
       .then(data => {
-        if (data.candidates && data.candidates[0].content) {
-          const aiText = data.candidates[0].content.parts[0].text;
+        const parts = (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts) || [];
+        const aiText = parts.filter(p => !p.thought && p.text).map(p => p.text).join('\n').trim();
+        if (aiText) {
           pickEl.innerText = `★ 구글 Gemini 실시간 결장·스코어 판독 완료`;
           subEl.innerHTML = `<b>실시간 최신 전력·스코어 융합 분석 완료</b>`;
           summaryEl.innerText = aiText;
