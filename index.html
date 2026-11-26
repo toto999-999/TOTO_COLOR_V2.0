@@ -90,6 +90,8 @@
     @keyframes popIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
     .window-header { background: #2563eb; color: #ffffff; padding: 10px 14px; font-size: 14px; font-weight: 800; display: flex; justify-content: space-between; align-items: center; cursor: grab; user-select: none; touch-action: none; }
     .window-header:active { cursor: grabbing; background: #1d4ed8; }
+    .win-header-btns { display: flex; align-items: center; gap: 4px; flex-shrink: 0; }
+    .btn-min-win { background: rgba(255,255,255,0.2); border: none; color: #ffffff; font-size: 13px; font-weight: 900; cursor: pointer; padding: 2px 7px; border-radius: 4px; line-height: 1.2; }
     .btn-close-x { background: none; border: none; color: #ffffff; font-size: 16px; font-weight: 900; cursor: pointer; padding: 2px 6px; line-height: 1; }
     .window-body { padding: 12px; overflow-y: auto; font-size: 13px; line-height: 1.6; color: #1e293b; background: #f8fafc; }
     .report-stat-text { white-space: pre-wrap; margin-bottom: 8px; }
@@ -108,8 +110,10 @@
     .verdict-sub { font-size: 12px; color: #bfdbfe; margin-bottom: 6px; }
     .verdict-summary { font-size: 12px; line-height: 1.55; color: #f1f5f9; background: rgba(0, 0, 0, 0.22); padding: 8px 10px; border-radius: 6px; border-left: 3px solid #fde047; white-space: pre-wrap; }
     
-    .window-footer { padding: 8px 12px; background: #ffffff; border-top: 1px solid #e2e8f0; text-align: right; }
-    .btn-close-win { width: 100%; height: 38px; background: #334155; color: #ffffff; border: none; border-radius: 6px; font-size: 14px; font-weight: 700; cursor: pointer; }
+    .window-footer { padding: 8px 12px; background: #ffffff; border-top: 1px solid #e2e8f0; text-align: right; display: flex; flex-direction: column; gap: 5px; }
+    .win-flt-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; }
+    .btn-win-flt { height: 33px; color: #ffffff; border: none; border-radius: 6px; font-size: 11.5px; font-weight: 800; cursor: pointer; }
+    .btn-close-win { width: 100%; height: 36px; background: #334155; color: #ffffff; border: none; border-radius: 6px; font-size: 13.5px; font-weight: 700; cursor: pointer; }
 
     .ai-modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 3000; justify-content: center; align-items: center; padding: 20px; }
     .ai-modal-card { background: #ffffff; border-radius: 14px; padding: 20px; width: 100%; max-width: 380px; box-shadow: 0 10px 25px rgba(0,0,0,0.25); }
@@ -184,6 +188,27 @@
             <div class="combo-item">
               <label style="text-align:left; letter-spacing:-0.5px; color:#2563eb; font-size:12px;">과대평가 구간</label>
               <input type="text" id="fltDiffRange" placeholder="예: 5.2~5.5" style="height: 36px; border-radius: 6px; border: 1.5px solid #cbd5e1; padding: 0 8px; font-size: 12.5px; outline: none; background: #f8fafc; width: 100%;">
+            </div>
+          </div>
+
+          <!-- TOP3 스코어 승무패 비중 정확 일치 & 구간 검색 -->
+          <div style="display: grid; grid-template-columns: 0.9fr 1fr 1fr; gap: 6px; margin-top: 2px;">
+            <div class="combo-item">
+              <label style="text-align:left; letter-spacing:-0.5px; color:#0f766e; font-size:11.5px;">TOP3 대상</label>
+              <select id="fltTop3Type" style="height: 36px; border-radius: 6px; border: 1.5px solid #cbd5e1; font-size: 12px; font-weight: 700; color: #1e293b; background: #f8fafc; text-align: center; outline: none; width: 100%;">
+                <option value="">전체</option>
+                <option value="홈승">홈승</option>
+                <option value="무">무</option>
+                <option value="원정승">원정승</option>
+              </select>
+            </div>
+            <div class="combo-item">
+              <label style="text-align:left; letter-spacing:-0.5px; color:#0f766e; font-size:11.5px;">TOP3 비중(%)</label>
+              <input type="number" step="0.01" id="fltTop3Pct" placeholder="예: 62.44" style="height: 36px; border-radius: 6px; border: 1.5px solid #cbd5e1; padding: 0 7px; font-size: 12px; outline: none; background: #f8fafc; width: 100%;">
+            </div>
+            <div class="combo-item">
+              <label style="text-align:left; letter-spacing:-0.5px; color:#0f766e; font-size:11.5px;">TOP3 구간</label>
+              <input type="text" id="fltTop3Range" placeholder="예: 60~70" style="height: 36px; border-radius: 6px; border: 1.5px solid #cbd5e1; padding: 0 7px; font-size: 12px; outline: none; background: #f8fafc; width: 100%;">
             </div>
           </div>
 
@@ -303,6 +328,33 @@
     let windowCascadeCount = 0;
 
     let diffCache = {};
+    let metricsCache = {};
+    let parsedIndexCache = null;
+    let windowMatchContext = {};
+
+    function invalidateMetricsCache() {
+      diffCache = {};
+      metricsCache = {};
+      parsedIndexCache = null;
+    }
+
+    function formatSignedDiff(val, digits = 1) {
+      let n = parseFloat(Number(val).toFixed(digits));
+      if (Object.is(n, -0) || n === 0) n = 0;
+      return (n > 0 ? "+" : "") + n.toFixed(digits);
+    }
+
+    function setSelectValueSafe(selectId, val) {
+      const sel = document.getElementById(selectId);
+      if (!sel) return;
+      if (val && !Array.from(sel.options).some(opt => opt.value === val)) {
+        const opt = document.createElement('option');
+        opt.value = val;
+        opt.textContent = val;
+        sel.appendChild(opt);
+      }
+      sel.value = val || "";
+    }
 
     function normHandi(val) {
       if (!val && val !== 0) return "";
@@ -312,6 +364,10 @@
     }
 
     function normTeamKey(name) {
+      return String(name || "").trim().replace(/\s+/g, "").toLowerCase();
+    }
+
+    function normLeagueKey(name) {
       return String(name || "").trim().replace(/\s+/g, "").toLowerCase();
     }
 
@@ -374,6 +430,51 @@
       }
     }
 
+    function buildPastIndex() {
+      if (parsedIndexCache) return parsedIndexCache;
+      const allByWYO = {};
+      const allByWY = {};
+      const totoByWYO = {};
+      const totoByWY = {};
+
+      for (let i = 0; i < pastDB.length; i++) {
+        const item = getPastItem(pastDB[i], i);
+        if (!item.k || !item.s) continue;
+
+        let hg = -1, ag = -1;
+        if (item.score) {
+          const m = item.score.match(/^(\d+):(\d+)$/);
+          if (m) {
+            hg = parseInt(m[1], 10);
+            ag = parseInt(m[2], 10);
+          }
+        }
+
+        const entry = {
+          h: item.h, a: item.a, o: item.o, w: item.w, y: item.y,
+          k: item.k, score: (hg >= 0 ? item.score : ""), hg: hg, ag: ag
+        };
+
+        const wyKey = `${item.w}|${item.y}`;
+        const wyoKey = `${item.w}|${item.y}|${item.o}`;
+
+        if (!allByWY[wyKey]) allByWY[wyKey] = [];
+        allByWY[wyKey].push(entry);
+        if (!allByWYO[wyoKey]) allByWYO[wyoKey] = [];
+        allByWYO[wyoKey].push(entry);
+
+        if (item.isToto) {
+          if (!totoByWY[wyKey]) totoByWY[wyKey] = [];
+          totoByWY[wyKey].push(entry);
+          if (!totoByWYO[wyoKey]) totoByWYO[wyoKey] = [];
+          totoByWYO[wyoKey].push(entry);
+        }
+      }
+
+      parsedIndexCache = { allByWYO, allByWY, totoByWYO, totoByWY };
+      return parsedIndexCache;
+    }
+
     function cleanTeamName(name) {
       if (!name) return "";
       let n = name.trim();
@@ -433,6 +534,7 @@
         .then(data => {
           todayList = data.todayList || [];
           pastDB = data.pastDB || [];
+          invalidateMetricsCache();
           
           document.getElementById('syncBox').style.display = 'flex';
           document.getElementById('syncText').innerText = `✔ 깃허브 데이터 동기화 (${todayList.length}경기)`;
@@ -579,7 +681,7 @@
         document.getElementById('syncText').innerText = `📁 수동 파일 로드 완료 (대상: ${todayList.length}건 / DB: ${pastDB.length}건)`;
         document.getElementById('syncTime').innerText = `승무패 인식 ${totoUpcomingList.length+totoPastDB.length}건`;
         
-        diffCache = {};
+        invalidateMetricsCache();
         renderMatchList();
         renderTotoList();
       };
@@ -697,45 +799,120 @@
       }
     }
 
-    // ★ [수치 불일치 수정 핵심] isTotoMode 매개변수를 추가하여 팝업창과 동일한 DB 모집합을 기준으로 과대평가를 계산
-    function getDiffForMatch(cur, isTotoMode = false) {
-      const key = `${cur.h}_${cur.a}_${cur.o}_${cur.w}_${cur.y}_${isTotoMode ? 'toto' : 'all'}`;
-      if (diffCache[key] !== undefined) return diffCache[key];
+    // ★ [고속 통합 계산] 과대평가(diff) + TOP3 스코어 승무패 비중을 단일 캐시에서 동시 산출
+    function getMatchMetrics(cur, isTotoMode = false) {
+      const targetHandi = normHandi(cur.o);
+      const key = `${cur.h}_${cur.a}_${targetHandi}_${cur.w}_${cur.y}_${isTotoMode ? 'toto' : 'all'}`;
+      if (metricsCache[key] !== undefined) return metricsCache[key];
+
+      const idxData = buildPastIndex();
+      const bucket = targetHandi
+        ? (isTotoMode ? idxData.totoByWYO[`${cur.w}|${cur.y}|${targetHandi}`] : idxData.allByWYO[`${cur.w}|${cur.y}|${targetHandi}`])
+        : (isTotoMode ? idxData.totoByWY[`${cur.w}|${cur.y}`] : idxData.allByWY[`${cur.w}|${cur.y}`]);
+
+      if (!bucket || bucket.length === 0) {
+        metricsCache[key] = null;
+        diffCache[key] = null;
+        return null;
+      }
 
       let matchCount = 0;
       let cntHomeWin = 0, cntAwayWin = 0;
-      const targetHandi = normHandi(cur.o);
+      let scoreMatchCount = 0;
+      const scoreFreq = {};
 
-      const dbToAnalyze = isTotoMode ? pastDB.filter(p => {
-        const i = getPastItem(p, 0);
-        return i.isToto === true || i.isToto === "1" || i.isToto === 1;
-      }) : pastDB;
-
-      for (let i = 0; i < dbToAnalyze.length; i++) {
-        const p = getPastItem(dbToAnalyze[i], i);
-        if (!p.k || !p.s) continue;
+      for (let i = 0; i < bucket.length; i++) {
+        const p = bucket[i];
         if (Math.abs(p.h - cur.h) <= 0.25 && Math.abs(p.a - cur.a) <= 0.35) {
-          if ((!targetHandi || p.o === targetHandi) && (p.w === cur.w && p.y === cur.y)) {
-            matchCount++;
-            if (p.k === "승") cntHomeWin++;
-            if (p.k === "패") cntAwayWin++;
+          matchCount++;
+          if (p.k === "승") cntHomeWin++;
+          else if (p.k === "패") cntAwayWin++;
+          if (p.hg >= 0) {
+            scoreMatchCount++;
+            scoreFreq[p.score] = (scoreFreq[p.score] || 0) + 1;
           }
         }
       }
 
       const minCount = isTotoMode ? 3 : 5;
-      if (matchCount < minCount) { diffCache[key] = null; return null; }
+      if (matchCount < minCount) {
+        metricsCache[key] = null;
+        diffCache[key] = null;
+        return null;
+      }
 
       const isHomeFav = (cur.h <= cur.a);
       const favOdd = isHomeFav ? cur.h : cur.a;
       const favActualRate = isHomeFav ? ((cntHomeWin / matchCount) * 100) : ((cntAwayWin / matchCount) * 100);
       const impliedProb = ((1 / favOdd) * 100);
       const diff = impliedProb - favActualRate;
+
+      const top3Entries = Object.entries(scoreFreq)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 3);
+      const top3Total = top3Entries.reduce((acc, [, cnt]) => acc + cnt, 0);
+
+      let top3HomeCnt = 0, top3DrawCnt = 0, top3AwayCnt = 0;
+      top3Entries.forEach(([sc, cnt]) => {
+        const m = sc.match(/^(\d+):(\d+)$/);
+        if (m) {
+          const hg = parseInt(m[1], 10);
+          const ag = parseInt(m[2], 10);
+          if (hg > ag) top3HomeCnt += cnt;
+          else if (hg === ag) top3DrawCnt += cnt;
+          else top3AwayCnt += cnt;
+        }
+      });
+
+      const top3HomePct = top3Total > 0 ? (top3HomeCnt / top3Total) * 100 : 0;
+      const top3DrawPct = top3Total > 0 ? (top3DrawCnt / top3Total) * 100 : 0;
+      const top3AwayPct = top3Total > 0 ? (top3AwayCnt / top3Total) * 100 : 0;
+
+      const wdlItems = [];
+      if (top3Total > 0) {
+        if (top3HomeCnt > 0) wdlItems.push({ label: "홈승", cnt: top3HomeCnt, pct: top3HomePct.toFixed(2) });
+        if (top3DrawCnt > 0) wdlItems.push({ label: "무", cnt: top3DrawCnt, pct: top3DrawPct.toFixed(2) });
+        if (top3AwayCnt > 0) wdlItems.push({ label: "원정승", cnt: top3AwayCnt, pct: top3AwayPct.toFixed(2) });
+        wdlItems.sort((a, b) => b.cnt - a.cnt);
+      }
+      const top3WdlStr = wdlItems.length > 0
+        ? wdlItems.map(item => `${item.label}:${item.pct}%`).join(", ")
+        : "";
+
+      const resObj = {
+        diff,
+        scoreMatchCount,
+        top3Total,
+        top3HomeCnt,
+        top3DrawCnt,
+        top3AwayCnt,
+        top3HomePct,
+        top3DrawPct,
+        top3AwayPct,
+        top3WdlStr
+      };
+      metricsCache[key] = resObj;
       diffCache[key] = diff;
-      return diff;
+      return resObj;
     }
 
-    // ★ [필터 실행] 승무패 전용 체크박스 + 일치/구간 과대평가 계산 반영
+    function getDiffForMatch(cur, isTotoMode = false) {
+      const m = getMatchMetrics(cur, isTotoMode);
+      return m ? m.diff : null;
+    }
+
+    function matchesTop3Val(val, exactPct, rangeObj) {
+      if (exactPct !== null && !isNaN(exactPct)) {
+        if (val.toFixed(2) !== exactPct.toFixed(2)) return false;
+      }
+      if (rangeObj !== null) {
+        const r2 = parseFloat(val.toFixed(2));
+        if (r2 < rangeObj.min || r2 > rangeObj.max) return false;
+      }
+      return true;
+    }
+
+    // ★ [필터 실행] 승무패 전용 체크박스 + 과대평가(일치/구간) + TOP3 스코어 비중(대상/일치/구간)
     function executeAdvancedFilter() {
       const fltW = document.getElementById('fltW').value.trim();
       const fltX = document.getElementById('fltX').value.trim();
@@ -772,6 +949,32 @@
         }
       }
 
+      const fltTop3Type = document.getElementById('fltTop3Type').value.trim();
+      const fltTop3PctStr = document.getElementById('fltTop3Pct').value.trim();
+      const fltTop3Pct = fltTop3PctStr ? parseFloat(fltTop3PctStr) : null;
+
+      const fltTop3RangeStr = document.getElementById('fltTop3Range').value.trim();
+      let top3Range = null;
+      if (fltTop3RangeStr !== "") {
+        const bothMatch = fltTop3RangeStr.match(/^(\d+(?:\.\d+)?)\s*[~-]\s*(\d+(?:\.\d+)?)$/);
+        const minOnlyMatch = fltTop3RangeStr.match(/^(\d+(?:\.\d+)?)\s*~\s*$/);
+        const maxOnlyMatch = fltTop3RangeStr.match(/^\s*~\s*(\d+(?:\.\d+)?)$/);
+        if (bothMatch) {
+          const v1 = parseFloat(bothMatch[1]);
+          const v2 = parseFloat(bothMatch[2]);
+          top3Range = { min: Math.min(v1, v2), max: Math.max(v1, v2) };
+        } else if (minOnlyMatch) {
+          top3Range = { min: parseFloat(minOnlyMatch[1]), max: Infinity };
+        } else if (maxOnlyMatch) {
+          top3Range = { min: -Infinity, max: parseFloat(maxOnlyMatch[1]) };
+        } else {
+          alert("TOP3 구간 형식이 올바르지 않습니다.\n예: 60~70 또는 35.5~45.5");
+          return;
+        }
+      }
+
+      const needDiffFilter = (fltDiff !== null && !isNaN(fltDiff)) || diffRange !== null;
+      const needTop3Filter = Boolean(fltTop3Type || (fltTop3Pct !== null && !isNaN(fltTop3Pct)) || top3Range !== null);
       const fltTotoOnly = document.getElementById('fltTotoOnly').checked;
 
       let filtered = [];
@@ -798,21 +1001,53 @@
 
         const isTotoMatch = fltTotoOnly || item.isToto;
 
-        if ((fltDiff !== null && !isNaN(fltDiff)) || diffRange !== null) {
-          const diffVal = getDiffForMatch(item, isTotoMatch);
-          if (diffVal === null) continue;
-          if (fltDiff !== null && !isNaN(fltDiff)) {
-            if (diffVal.toFixed(1) !== fltDiff.toFixed(1)) {
-              continue;
+        if (needDiffFilter || needTop3Filter) {
+          const metrics = getMatchMetrics(item, isTotoMatch);
+          if (!metrics) continue;
+
+          if (needDiffFilter) {
+            const diffVal = metrics.diff;
+            if (fltDiff !== null && !isNaN(fltDiff)) {
+              if (diffVal.toFixed(1) !== fltDiff.toFixed(1)) continue;
+            }
+            if (diffRange !== null) {
+              const roundedDiff = parseFloat(diffVal.toFixed(1));
+              if (roundedDiff < diffRange.min || roundedDiff > diffRange.max) continue;
             }
           }
-          if (diffRange !== null) {
-            const roundedDiff = parseFloat(diffVal.toFixed(1));
-            if (roundedDiff < diffRange.min || roundedDiff > diffRange.max) {
-              continue;
+
+          if (needTop3Filter) {
+            if (metrics.scoreMatchCount === 0 || metrics.top3Total === 0) continue;
+            const hasNumericCond = (fltTop3Pct !== null && !isNaN(fltTop3Pct)) || top3Range !== null;
+
+            if (fltTop3Type === "홈승") {
+              if (hasNumericCond) {
+                if (!matchesTop3Val(metrics.top3HomePct, fltTop3Pct, top3Range)) continue;
+              } else {
+                if (metrics.top3HomeCnt === 0) continue;
+              }
+            } else if (fltTop3Type === "무") {
+              if (hasNumericCond) {
+                if (!matchesTop3Val(metrics.top3DrawPct, fltTop3Pct, top3Range)) continue;
+              } else {
+                if (metrics.top3DrawCnt === 0) continue;
+              }
+            } else if (fltTop3Type === "원정승") {
+              if (hasNumericCond) {
+                if (!matchesTop3Val(metrics.top3AwayPct, fltTop3Pct, top3Range)) continue;
+              } else {
+                if (metrics.top3AwayCnt === 0) continue;
+              }
+            } else {
+              const okHome = metrics.top3HomeCnt > 0 && matchesTop3Val(metrics.top3HomePct, fltTop3Pct, top3Range);
+              const okDraw = metrics.top3DrawCnt > 0 && matchesTop3Val(metrics.top3DrawPct, fltTop3Pct, top3Range);
+              const okAway = metrics.top3AwayCnt > 0 && matchesTop3Val(metrics.top3AwayPct, fltTop3Pct, top3Range);
+              if (!okHome && !okDraw && !okAway) continue;
             }
           }
-          item.calcDiff = diffVal;
+
+          item.calcDiff = metrics.diff;
+          item.calcTop3Str = metrics.top3WdlStr;
         }
 
         filtered.push(item);
@@ -875,9 +1110,11 @@
       let listHtml = "";
       currentFilteredList.forEach((m, idx) => {
         const isTotoMatch = fltTotoOnly || m.isToto;
-        let diffVal = m.calcDiff !== undefined ? m.calcDiff : getDiffForMatch(m, isTotoMatch);
-        let diffStr = diffVal !== null ? ` | 과대평가: +${diffVal.toFixed(1)}%` : ` | 과대평가: DB부족`;
+        let metrics = (m.calcDiff !== undefined && m.calcTop3Str !== undefined) ? { diff: m.calcDiff, top3WdlStr: m.calcTop3Str } : getMatchMetrics(m, isTotoMatch);
+        let diffVal = metrics ? metrics.diff : null;
+        let diffStr = diffVal !== null ? ` | 과대평가: ${formatSignedDiff(diffVal, 1)}%` : ` | 과대평가: DB부족`;
         let diffColor = (diffVal !== null && diffVal >= 9.2) ? '#dc2626' : '#64748b';
+        let top3Line = (metrics && metrics.top3WdlStr) ? `<div style="font-size:11px; color:#0f766e; margin-bottom:4px; font-weight:700;">⚽ TOP3 비중: ${metrics.top3WdlStr}</div>` : '';
         let scoreBadge = m.score ? `<span class="score-badge">${m.score}</span>` : '';
         let dateTag = m.dt ? `<span class="date-tag">(${m.dt})</span>` : '';
 
@@ -892,9 +1129,10 @@
               <span class="handi-badge">[${m.o}] 핸디 | L:${m.colL} T:${m.colT}</span>
             </div>
             <div class="teams">${m.hT} VS ${m.aT}${scoreBadge}${dateTag}</div>
-            <div style="font-size:11.5px; color:#64748b; margin-bottom:4px; font-weight:700;">
+            <div style="font-size:11.5px; color:#64748b; margin-bottom:2px; font-weight:700;">
               [W:${m.w} X:${m.x} | Y:${m.y} Z:${m.z}] <span style="color:${diffColor};">${diffStr}</span>
             </div>
+            ${top3Line}
             <div class="odds-row">
               <div class="odd-box ${m.k === '승' ? 'colored' : ''}">홈 ${m.h} ${m.k === '승' ? '✔' : ''}</div>
               <div class="odd-box ${m.k === '무' ? 'colored' : ''}">무 ${m.d} ${m.k === '무' ? '✔' : ''}</div>
@@ -912,15 +1150,221 @@
     }
 
     function resetAdvancedFilter() {
-      ['fltW','fltX','fltY','fltZ','fltL','fltO','fltT','fltC','fltD','fltF','fltDiff','fltDiffRange'].forEach(id => document.getElementById(id).value = "");
+      ['fltW','fltX','fltY','fltZ','fltL','fltO','fltT','fltC','fltD','fltF','fltDiff','fltDiffRange','fltTop3Type','fltTop3Pct','fltTop3Range'].forEach(id => document.getElementById(id).value = "");
       document.getElementById('fltTotoOnly').checked = false;
       document.getElementById('filterStatCard').style.display = 'none';
       document.getElementById('filterSynthesisCard').style.display = 'none';
       document.getElementById('filterMatchListContainer').innerHTML = "<div style='text-align:center;padding:30px;color:#94a3b8;'>조건을 선택하고 검색하세요.</div>";
     }
 
+    function applyMatchToFilter(winId, withSameLeague, withDiffRange) {
+      const ctx = windowMatchContext[winId];
+      if (!ctx) return;
+      const cur = ctx.cur;
+
+      ['fltC','fltD','fltF','fltDiff','fltDiffRange','fltTop3Type','fltTop3Pct','fltTop3Range'].forEach(id => {
+        document.getElementById(id).value = "";
+      });
+
+      const autoL = (cur.colL === "정" || cur.colL === "역") ? cur.colL : (cur.h <= cur.a ? "정" : "역");
+      const autoT = (cur.colT === "정" || cur.colT === "역") ? cur.colT : (cur.hp <= cur.ha ? "정" : "역");
+
+      setSelectValueSafe('fltW', cur.w || "");
+      setSelectValueSafe('fltX', cur.x || "");
+      setSelectValueSafe('fltY', cur.y || "");
+      setSelectValueSafe('fltZ', cur.z || "");
+      setSelectValueSafe('fltL', autoL);
+      setSelectValueSafe('fltO', normHandi(cur.o));
+      setSelectValueSafe('fltT', autoT);
+      document.getElementById('fltTotoOnly').checked = Boolean(ctx.isTotoMode);
+
+      if (withSameLeague && cur.l) {
+        document.getElementById('fltC').value = cur.l;
+      }
+
+      if (withDiffRange && ctx.diff !== null && ctx.diff !== undefined && !isNaN(ctx.diff)) {
+        const dNum = parseFloat(ctx.diff);
+        const minD = (dNum - 0.5).toFixed(1);
+        const maxD = (dNum + 0.5).toFixed(1);
+        document.getElementById('fltDiffRange').value = `${minD}~${maxD}`;
+      }
+
+      // ★ 팝업창을 닫지 않고 그대로 유지하면서 뒤쪽 필터 탭으로 전환 + 검색 실행
+      switchMainTab('filter');
+      executeAdvancedFilter();
+    }
+
+    function toggleMinimizeWindow(winId) {
+      const winEl = document.getElementById(winId);
+      if (!winEl) return;
+      const bodyEl = winEl.querySelector('.window-body');
+      const footerEl = winEl.querySelector('.window-footer');
+      const minBtn = winEl.querySelector('.btn-min-win');
+      const isCollapsed = (bodyEl.style.display === 'none');
+      if (isCollapsed) {
+        bodyEl.style.display = 'block';
+        footerEl.style.display = 'flex';
+        minBtn.innerText = '—';
+      } else {
+        bodyEl.style.display = 'none';
+        footerEl.style.display = 'none';
+        minBtn.innerText = '□';
+      }
+    }
+
     function closeAllPopups() {
       document.getElementById('popupContainer').innerHTML = "";
+      windowMatchContext = {};
+    }
+
+    function buildScoreTierVerdict(cur, statsCtx) {
+      const {
+        isHomeFav, favOdd, diffNum, favWinRate, rateDraw,
+        avgHG, avgAG, rateOneGoal, rateFavTwoPlus, top1Score, top1IsDraw
+      } = statsCtx;
+
+      const oddDiff = Math.abs(cur.a - cur.h);
+      const favSideLabel = isHomeFav ? "홈승" : "원정승";
+      const dogPlHandiLabel = isHomeFav ? `원정 플핸(${cur.ha}배)` : `홈 플핸(${cur.hp}배)`;
+      const favMaHandiLabel = isHomeFav ? `홈 마핸(${cur.hp}배)` : `원정 마핸(${cur.ha}배)`;
+      const favGoalAdv = isHomeFav ? (avgHG - avgAG) : (avgAG - avgHG);
+      const advSign = favGoalAdv >= 0 ? "+" : "";
+
+      if (diffNum <= -3.0) {
+        const tail = parseFloat(rateFavTwoPlus) >= 28.0
+          ? `${favSideLabel} 및 ${favMaHandiLabel}까지 유리합니다.`
+          : `안정적인 [${favSideLabel}] 중심 접근을 추천합니다.`;
+        return {
+          headline: `💎 [가치 배당 + 스코어 우세] [${favSideLabel} (${favOdd}배)] 추천!`,
+          detail: `실제 승률(${favWinRate.toFixed(1)}%)이 배당 기대치보다 높고 평균 득실 차도 ${advSign}${favGoalAdv.toFixed(2)}골(2골차 승률 ${rateFavTwoPlus}%)입니다. ${tail}`
+        };
+      }
+
+      if (diffNum >= 9.2) {
+        if (diffNum >= 10.5 || (oddDiff < 1.1 && favGoalAdv < 0.35) || (top1IsDraw && rateDraw >= 26.0)) {
+          const top1Note = top1IsDraw ? `최다 스코어도 [${top1Score}] 무승부이므로 ` : "";
+          return {
+            headline: `🚨 [고위험 함정] [${dogPlHandiLabel}] 또는 [무승부(${cur.d}배)] 강력 추천!`,
+            detail: `배당 차(${oddDiff.toFixed(2)})·득실 차(${advSign}${favGoalAdv.toFixed(2)}골)·2골차 승률(${rateFavTwoPlus}%)이 약하고, 비정배 이탈률(무+역배)이 ${(100 - favWinRate).toFixed(1)}%로 압도적입니다. ${top1Note}${favSideLabel} 정배를 피하세요.`
+          };
+        }
+        if (oddDiff >= 1.2 && favGoalAdv >= 0.40) {
+          return {
+            headline: `⚖️ [함정·체급 충돌] 안전 [${dogPlHandiLabel}] vs 정배 체급(${favSideLabel}) 변수 주의!`,
+            detail: `과대평가(+${diffNum.toFixed(1)}%) 구간이지만, 배당 차(${oddDiff.toFixed(2)})·득실 차(+${favGoalAdv.toFixed(2)}골)·2골차 완승(${rateFavTwoPlus}%) 등 정배 체급 자체가 큽니다. 기댓값은 [${dogPlHandiLabel}]이 유리하나 정배 압승 변수도 살아있어 무리한 역배보다 소액/패스를 권장합니다.`
+          };
+        }
+        return {
+          headline: `⚠️ [함정 주의] [${dogPlHandiLabel}] 우세 / [무승부(${cur.d}배)] 노림!`,
+          detail: `정배 승률(${favWinRate.toFixed(1)}%)이 배당 기대치에 못 미치고 비정배 이탈(${(100 - favWinRate).toFixed(1)}%)이 잦습니다. ${favSideLabel} 단통은 위험하며 [${dogPlHandiLabel}] 방어가 유리합니다.`
+        };
+      }
+
+      if (favGoalAdv >= 0.35 && favWinRate >= 50.0) {
+        if (parseFloat(rateOneGoal) >= 40.0 && parseFloat(rateFavTwoPlus) < 28.0) {
+          return {
+            headline: `✅ [${favSideLabel} (${favOdd}배)] 추천 / 마핸(-1) 주의`,
+            detail: `적정 배당(${formatSignedDiff(diffNum, 1)}%)에 득실 차(+${favGoalAdv.toFixed(2)}골)가 뚜렷해 [${favSideLabel}]이 유력합니다. 다만 1점차 접전(${rateOneGoal}%)이 많아 2골차 마핸보다 일반승 또는 [핸디무(${cur.hd}배)]가 잘 맞습니다.`
+          };
+        }
+        return {
+          headline: `🔥 [${favSideLabel} (${favOdd}배)] 및 [${favMaHandiLabel}] 추천!`,
+          detail: `적정 배당에 득실 차(+${favGoalAdv.toFixed(2)}골)와 2골차 이상 완승률(${rateFavTwoPlus}%)이 우수해 [${favSideLabel}] 중심에 마핸까지 노려볼 만한 구간입니다.`
+        };
+      }
+
+      if (favGoalAdv < 0.30 && (rateDraw >= 25.0 || top1IsDraw)) {
+        return {
+          headline: `⚖️ [초접전 박빙] [무승부(${cur.d}배)] 또는 [${dogPlHandiLabel}] 추천!`,
+          detail: `득실 차(${advSign}${favGoalAdv.toFixed(2)}골)가 근소하고 무승부(${rateDraw.toFixed(1)}%)·1점차(${rateOneGoal}%) 비율이 높습니다. 정배 단통보다 [${dogPlHandiLabel}] 또는 [무승부]가 기대치가 좋습니다.`
+        };
+      }
+
+      if (favWinRate >= 48.0) {
+        return {
+          headline: `📊 [균형 구간] [${favSideLabel} (${favOdd}배)] 소폭 우세`,
+          detail: `배당 대비 승률(${favWinRate.toFixed(1)}%)과 득실 차(${advSign}${favGoalAdv.toFixed(2)}골)가 무난합니다. [${favSideLabel}] 위주 접근이 적절하며 1점차(${rateOneGoal}%) 변수를 참고하세요.`
+        };
+      }
+
+      return {
+        headline: `📊 [혼전 구간] [${dogPlHandiLabel}] 또는 [무승부(${cur.d}배)] 참고`,
+        detail: `정배 승률(${favWinRate.toFixed(1)}%)이 절반에 못 미치고 비정배 이탈(${(100 - favWinRate).toFixed(1)}%)이 잦은 구간입니다. [${dogPlHandiLabel}] 쪽 방어가 안정적입니다.`
+      };
+    }
+
+    // ★ [4-2] 초정밀 배당 + 동일 리그 보정 판단 생성기
+    function buildPrecisionJudgment(cur, ctx) {
+      const {
+        isHomeFav, baseFavRate, fineCount, fineFavRate, fineDogRate, fineDrawRate, fineHdWinRate,
+        lgMatchCount, lgMatchFavRate, lgMatchDogRate, lgMatchDrawRate, lgMatchHdWinRate,
+        lgAllCount, lgAllHomeRate, lgAllAwayRate, lgAllDrawRate, lgAllAvgTotal
+      } = ctx;
+
+      const favLabel = isHomeFav ? "홈승" : "원정승";
+      const dogPlLabel = isHomeFav ? `원정 플핸(${cur.ha}배)` : `홈 플핸(${cur.hp}배)`;
+
+      const hasFine = fineCount >= 5;
+      const hasLgMatch = lgMatchCount >= 5;
+      const hasLgAll = lgAllCount >= 10;
+
+      if (!hasFine && !hasLgMatch && !hasLgAll) {
+        return {
+          headline: "데이터 부족 (정밀·리그 추가 표본 5건 미만)",
+          shiftType: "none",
+          shiftVal: 0
+        };
+      }
+
+      let fineDiff = hasFine ? (fineFavRate - baseFavRate) : 0;
+      let lgDiff = hasLgMatch ? (lgMatchFavRate - baseFavRate) : 0;
+      let avgShift = 0;
+      if (hasFine && hasLgMatch) avgShift = (fineDiff + lgDiff) / 2;
+      else if (hasFine) avgShift = fineDiff;
+      else if (hasLgMatch) avgShift = lgDiff;
+
+      let headline = "";
+      let shiftType = "neutral";
+
+      if (hasFine && hasLgMatch) {
+        if (fineDiff >= 3.0 && lgDiff >= 2.0 || avgShift >= 4.0) {
+          shiftType = "up";
+          headline = `📈 [${favLabel} 상향 신호] 정밀배당(${fineFavRate.toFixed(1)}%)과 ${cur.l} 동일배당(${lgMatchFavRate.toFixed(1)}%) 모두 전체 평균(${baseFavRate.toFixed(1)}%)보다 ${favLabel} 확률이 높음!`;
+        } else if (fineDiff <= -3.0 && lgDiff <= -2.0 || avgShift <= -4.0) {
+          shiftType = "down";
+          headline = `📉 [${favLabel} 하향 / ${dogPlLabel}·무 주의] 정밀배당(${fineFavRate.toFixed(1)}%)·${cur.l}(${lgMatchFavRate.toFixed(1)}%) 모두 전체 평균(${baseFavRate.toFixed(1)}%)보다 정배 힘이 떨어짐!`;
+        } else if (Math.abs(fineDiff - lgDiff) >= 6.0) {
+          shiftType = "mixed";
+          headline = `⚖️ [정밀·리그 엇갈림] 정밀배당 ${favLabel}(${fineFavRate.toFixed(1)}%) vs ${cur.l} ${favLabel}(${lgMatchFavRate.toFixed(1)}%)로 방향이 갈리니 리그 성향(${cur.l})과 결장을 함께 보세요.`;
+        } else {
+          headline = `📊 [전체 통계와 일치] 정밀배당(${fineFavRate.toFixed(1)}%)과 ${cur.l}(${lgMatchFavRate.toFixed(1)}%) 모두 기존 확률(${baseFavRate.toFixed(1)}%)과 흐름이 같습니다.`;
+        }
+      } else if (hasFine) {
+        if (fineDiff >= 4.0) {
+          shiftType = "up";
+          headline = `📈 [정밀배당 ${favLabel} 상향] 무·핸디배당까지 맞추면 ${favLabel}이 ${fineFavRate.toFixed(1)}%(전체 ${baseFavRate.toFixed(1)}%)로 상승!`;
+        } else if (fineDiff <= -4.0) {
+          shiftType = "down";
+          headline = `📉 [정밀배당 ${favLabel} 하향] 무·핸디배당까지 맞추면 ${favLabel}이 ${fineFavRate.toFixed(1)}%(전체 ${baseFavRate.toFixed(1)}%)로 하락 — [${dogPlLabel}] 유리!`;
+        } else {
+          headline = `📊 [정밀배당 일치] 무·핸디배당 포함 ${fineCount}건에서도 ${favLabel} ${fineFavRate.toFixed(1)}%로 기존과 유사합니다.`;
+        }
+      } else if (hasLgMatch) {
+        if (lgDiff >= 4.0) {
+          shiftType = "up";
+          headline = `📈 [${cur.l} 리그 ${favLabel} 강세] 동일 리그 내에선 ${favLabel}이 ${lgMatchFavRate.toFixed(1)}%(전체 ${baseFavRate.toFixed(1)}%)로 높습니다.`;
+        } else if (lgDiff <= -4.0) {
+          shiftType = "down";
+          headline = `📉 [${cur.l} 리그 정배 약세] 동일 리그 내에선 ${favLabel}이 ${lgMatchFavRate.toFixed(1)}%(전체 ${baseFavRate.toFixed(1)}%)에 그쳐 [${dogPlLabel}] 주의!`;
+        } else {
+          headline = `📊 [${cur.l} 리그 일치] 동일 리그 유사배당 ${lgMatchCount}건(${favLabel} ${lgMatchFavRate.toFixed(1)}%)도 기존 평균과 비슷합니다.`;
+        }
+      } else {
+        const lgFavOverall = isHomeFav ? lgAllHomeRate : lgAllAwayRate;
+        headline = `📌 [${cur.l} 전체 성향 참고] 리그 전체 평균 ${favLabel} ${lgFavOverall.toFixed(1)}% / 무 ${lgAllDrawRate.toFixed(1)}% (평균 ${lgAllAvgTotal}골)`;
+      }
+
+      return { headline, shiftType, shiftVal: avgShift };
     }
 
     function analyzeMatch(idx, isTotoMode = false, source = 'today') {
@@ -963,8 +1407,20 @@
 
       // ★ 스코어 빅데이터 집계 변수
       let scoreMatchCount = 0, sumHomeGoals = 0, sumAwayGoals = 0;
-      let cntOneGoalMargin = 0, cntOver25 = 0;
+      let cntOneGoalMargin = 0, cntOver25 = 0, cntFavTwoPlus = 0;
       const scoreFreq = {};
+      const isHomeFav = (cur.h <= cur.a);
+
+      // ★ [4-2] 정밀 배당 + 동일 리그 집계 변수
+      const curLgNorm = normLeagueKey(cur.l);
+      let fineCount = 0, fineHomeWin = 0, fineDraw = 0, fineAwayWin = 0, fineHdWin = 0, fineHdDraw = 0, fineHdLoss = 0;
+      let fineScoreCount = 0, fineSumHG = 0, fineSumAG = 0;
+
+      let lgMatchCount = 0, lgMatchHomeWin = 0, lgMatchDraw = 0, lgMatchAwayWin = 0, lgMatchHdWin = 0, lgMatchHdLoss = 0;
+      let lgMatchScoreCount = 0, lgMatchSumHG = 0, lgMatchSumAG = 0;
+
+      let lgAllCount = 0, lgAllHomeWin = 0, lgAllDraw = 0, lgAllAwayWin = 0;
+      let lgAllScoreCount = 0, lgAllSumHG = 0, lgAllSumAG = 0;
 
       const targetHandi = normHandi(cur.o);
       const dbToAnalyze = isTotoMode ? pastDB.filter(p => {
@@ -975,6 +1431,28 @@
       for (let i = 0; i < dbToAnalyze.length; i++) {
         const item = getPastItem(dbToAnalyze[i], i);
         if (!item.k || !item.s) continue;
+
+        let hg = -1, ag = -1;
+        if (item.score) {
+          const scMatch = item.score.match(/^(\d+):(\d+)$/);
+          if (scMatch) {
+            hg = parseInt(scMatch[1], 10);
+            ag = parseInt(scMatch[2], 10);
+          }
+        }
+
+        const sameLeague = curLgNorm !== "" && normLeagueKey(item.l) === curLgNorm;
+        if (sameLeague) {
+          lgAllCount++;
+          if (item.k === "승") lgAllHomeWin++;
+          else if (item.k === "무") lgAllDraw++;
+          else if (item.k === "패") lgAllAwayWin++;
+          if (hg >= 0) {
+            lgAllScoreCount++;
+            lgAllSumHG += hg;
+            lgAllSumAG += ag;
+          }
+        }
 
         if (Math.abs(item.h - cur.h) <= 0.25 && Math.abs(item.a - cur.a) <= 0.35) {
           if ((!targetHandi || item.o === targetHandi) && (item.w === cur.w && item.y === cur.y)) {
@@ -990,17 +1468,52 @@
             if (item.k === "패") cntAwayWin++;
             if (item.s === "무") cntHdDraw++;
 
-            if (item.score) {
-              const scMatch = item.score.match(/^(\d+):(\d+)$/);
-              if (scMatch) {
-                const hg = parseInt(scMatch[1], 10);
-                const ag = parseInt(scMatch[2], 10);
-                scoreMatchCount++;
-                sumHomeGoals += hg;
-                sumAwayGoals += ag;
-                if (Math.abs(hg - ag) === 1) cntOneGoalMargin++;
-                if (hg + ag >= 3) cntOver25++;
-                scoreFreq[item.score] = (scoreFreq[item.score] || 0) + 1;
+            if (hg >= 0) {
+              scoreMatchCount++;
+              sumHomeGoals += hg;
+              sumAwayGoals += ag;
+              if (Math.abs(hg - ag) === 1) cntOneGoalMargin++;
+              if (hg + ag >= 3) cntOver25++;
+              if ((isHomeFav && (hg - ag >= 2)) || (!isHomeFav && (ag - hg >= 2))) cntFavTwoPlus++;
+              scoreFreq[item.score] = (scoreFreq[item.score] || 0) + 1;
+            }
+
+            // 초정밀 배당 매칭 (홈±0.15, 원정±0.20, 무±0.15, 핸디±0.20/0.15)
+            const isFineMatch =
+              Math.abs(item.h - cur.h) <= 0.15 &&
+              Math.abs(item.a - cur.a) <= 0.20 &&
+              (cur.d <= 0 || item.d <= 0 || Math.abs(item.d - cur.d) <= 0.15) &&
+              (cur.hp <= 0 || item.hp <= 0 || Math.abs(item.hp - cur.hp) <= 0.20) &&
+              (cur.hd <= 0 || item.hd <= 0 || Math.abs(item.hd - cur.hd) <= 0.20) &&
+              (cur.ha <= 0 || item.ha <= 0 || Math.abs(item.ha - cur.ha) <= 0.15);
+
+            if (isFineMatch) {
+              fineCount++;
+              if (item.k === "승") fineHomeWin++;
+              else if (item.k === "무") fineDraw++;
+              else if (item.k === "패") fineAwayWin++;
+              if (item.s === "승") fineHdWin++;
+              else if (item.s === "무") fineHdDraw++;
+              else if (item.s === "패") fineHdLoss++;
+              if (hg >= 0) {
+                fineScoreCount++;
+                fineSumHG += hg;
+                fineSumAG += ag;
+              }
+            }
+
+            // 동일 리그 내 유사배당 매칭
+            if (sameLeague) {
+              lgMatchCount++;
+              if (item.k === "승") lgMatchHomeWin++;
+              else if (item.k === "무") lgMatchDraw++;
+              else if (item.k === "패") lgMatchAwayWin++;
+              if (item.s === "승") lgMatchHdWin++;
+              else if (item.s === "패") lgMatchHdLoss++;
+              if (hg >= 0) {
+                lgMatchScoreCount++;
+                lgMatchSumHG += hg;
+                lgMatchSumAG += ag;
               }
             }
           }
@@ -1056,15 +1569,28 @@
         ? wdlItems.map(item => `${item.label}:${item.pct}%`).join(", ")
         : "집계 없음";
 
+      let top1Score = "", top1IsDraw = false;
+      if (top3Entries.length > 0) {
+        top1Score = top3Entries[0][0];
+        const m1 = top1Score.match(/^(\d+):(\d+)$/);
+        if (m1 && parseInt(m1[1], 10) === parseInt(m1[2], 10)) top1IsDraw = true;
+      }
+
+      const avgHGNum = scoreMatchCount > 0 ? (sumHomeGoals / scoreMatchCount) : 0;
+      const avgAGNum = scoreMatchCount > 0 ? (sumAwayGoals / scoreMatchCount) : 0;
+      const rateFavTwoPlus = scoreMatchCount > 0 ? ((cntFavTwoPlus / scoreMatchCount) * 100).toFixed(1) : "0.0";
+
       const scoreStats = {
         count: scoreMatchCount,
-        avgHG: scoreMatchCount > 0 ? (sumHomeGoals / scoreMatchCount).toFixed(2) : "0.00",
-        avgAG: scoreMatchCount > 0 ? (sumAwayGoals / scoreMatchCount).toFixed(2) : "0.00",
-        avgTotal: scoreMatchCount > 0 ? ((sumHomeGoals + sumAwayGoals) / scoreMatchCount).toFixed(2) : "0.00",
+        avgHG: scoreMatchCount > 0 ? avgHGNum.toFixed(2) : "0.00",
+        avgAG: scoreMatchCount > 0 ? avgAGNum.toFixed(2) : "0.00",
+        avgTotal: scoreMatchCount > 0 ? (avgHGNum + avgAGNum).toFixed(2) : "0.00",
         rateOneGoal: scoreMatchCount > 0 ? ((cntOneGoalMargin / scoreMatchCount) * 100).toFixed(1) : "0.0",
         rateOver25: scoreMatchCount > 0 ? ((cntOver25 / scoreMatchCount) * 100).toFixed(1) : "0.0",
+        rateFavTwoPlus: rateFavTwoPlus,
         topScoresStr: sortedScores.length > 0 ? sortedScores.join(", ") : "집계 없음",
-        top3WdlStr: top3WdlStr
+        top3WdlStr: top3WdlStr,
+        verdict: null
       };
 
       const genRec = parseFloat(rW) >= parseFloat(rX) ? `[${pickW_Name} (${pickW_Odd}배당)] 추천! (${rW}%)` : `[${pickX_Name} (${pickX_Odd}배당)] 추천! (${rX}%)`;
@@ -1077,17 +1603,18 @@
         highYieldRec = `[일반 무승부 (${cur.d}배당)] 유력! (${rateDraw}%)`;
       }
 
-      const isHomeFav = (cur.h <= cur.a);
       const favTeam = isHomeFav ? cur.hT : cur.aT;
       const favOdd = isHomeFav ? cur.h : cur.a;
-      const favActualRate = isHomeFav ? ((cntHomeWin / matchCount) * 100).toFixed(1) : ((cntAwayWin / matchCount) * 100).toFixed(1);
+      const favWinRateNum = isHomeFav ? ((cntHomeWin / matchCount) * 100) : ((cntAwayWin / matchCount) * 100);
+      const favActualRate = favWinRateNum.toFixed(1);
       const impliedProb = ((1 / favOdd) * 100).toFixed(1);
-      const diff = (parseFloat(impliedProb) - parseFloat(favActualRate)).toFixed(1);
+      const diffNum = parseFloat(impliedProb) - parseFloat(favActualRate);
+      const diff = diffNum.toFixed(1);
       const oppHnd = isHomeFav ? `원정 플핸 (${cur.ha}배)` : `홈 플핸 (${cur.hp}배)`;
 
       let trapSection = "";
       let isTrap = false;
-      if (parseFloat(diff) >= 9.2) {
+      if (diffNum >= 9.2) {
         isTrap = true;
         trapSection = 
 `🚨 [4. 오즈메이커 함정 배당 경고!]
@@ -1095,23 +1622,38 @@
   - AI 빅데이터 승률 : ${favActualRate}% (과거 통계)
   👉 [위험 경고] 오즈메이커가 승률을 +${diff}% 과대평가함!
   👉 ${favTeam} 정배 위험! 무승부(${cur.d}배) 또는 ${oppHnd} 추천!`;
-      } else if (parseFloat(diff) <= -3.0) {
+      } else if (diffNum <= -3.0) {
         trapSection = 
 `💎 [4. 오즈메이커 가치 배당 (Value Bet)!]
   - 배당상 요구 승률 : ${impliedProb}% (${favOdd}배)
   - AI 빅데이터 승률 : ${favActualRate}% (과거 통계)
-  👉 [꿀배당 포착] 실제 승률이 요구치보다 +${Math.abs(diff)}% 더 높음!
+  👉 [꿀배당 포착] 실제 승률이 요구치보다 +${Math.abs(diffNum).toFixed(1)}% 더 높음!
   👉 배당 대비 가치 우수! ${favTeam} 승리 적극 추천!`;
       } else {
         trapSection = 
 `⚖️ [4. 오즈메이커 배당 가치 평가]
   - 배당상 요구 승률 : ${impliedProb}% (${favOdd}배)
   - AI 빅데이터 승률 : ${favActualRate}% (과거 통계)
-  👉 배당과 실제 승률이 균형을 이루는 적정 배당 경기 (+${diff}%)`;
+  👉 배당과 실제 승률이 균형을 이루는 적정 배당 경기 (${formatSignedDiff(diffNum, 1)}%)`;
       }
 
       let scoreSection = "";
       if (scoreMatchCount > 0) {
+        const sv = buildScoreTierVerdict(cur, {
+          isHomeFav,
+          favOdd,
+          diffNum,
+          favWinRate: favWinRateNum,
+          rateDraw: parseFloat(rateDraw),
+          avgHG: avgHGNum,
+          avgAG: avgAGNum,
+          rateOneGoal: scoreStats.rateOneGoal,
+          rateFavTwoPlus: rateFavTwoPlus,
+          top1Score,
+          top1IsDraw
+        });
+        scoreStats.verdict = sv;
+
         scoreSection =
 `\n------------------------------------------
 ⚽ [4-1. 스코어 & 득실점 빅데이터 (매칭 ${scoreMatchCount}건)]
@@ -1119,8 +1661,93 @@
   - 1점차 접전 비율 : ${scoreStats.rateOneGoal}% (${cntOneGoalMargin}회)
   - 2.5 기준 다득점(오버) : ${scoreStats.rateOver25}% (${cntOver25}회)
   - 최다 출현 스코어 : ${scoreStats.topScoresStr}
-  - TOP3 스코어 승무패 비중 : ${scoreStats.top3WdlStr}`;
+  - TOP3 스코어 승무패 비중 : ${scoreStats.top3WdlStr}
+  ★ 스코어·체급 AI 판단 ▶ ${sv.headline}
+  👉 ${sv.detail}`;
       }
+
+      // ★ [4-2] 정밀 배당 & 동일 리그 보정 섹션 생성
+      const fineHomeRate = fineCount > 0 ? (fineHomeWin / fineCount) * 100 : 0;
+      const fineDrawRate = fineCount > 0 ? (fineDraw / fineCount) * 100 : 0;
+      const fineAwayRate = fineCount > 0 ? (fineAwayWin / fineCount) * 100 : 0;
+      const fineHdWinRate = fineCount > 0 ? (fineHdWin / fineCount) * 100 : 0;
+      const fineFavRate = isHomeFav ? fineHomeRate : fineAwayRate;
+      const fineDogRate = isHomeFav ? fineAwayRate : fineHomeRate;
+      const fineAvgHG = fineScoreCount > 0 ? (fineSumHG / fineScoreCount).toFixed(2) : "-";
+      const fineAvgAG = fineScoreCount > 0 ? (fineSumAG / fineScoreCount).toFixed(2) : "-";
+
+      const lgMatchHomeRate = lgMatchCount > 0 ? (lgMatchHomeWin / lgMatchCount) * 100 : 0;
+      const lgMatchDrawRate = lgMatchCount > 0 ? (lgMatchDraw / lgMatchCount) * 100 : 0;
+      const lgMatchAwayRate = lgMatchCount > 0 ? (lgMatchAwayWin / lgMatchCount) * 100 : 0;
+      const lgMatchHdWinRate = lgMatchCount > 0 ? (lgMatchHdWin / lgMatchCount) * 100 : 0;
+      const lgMatchFavRate = isHomeFav ? lgMatchHomeRate : lgMatchAwayRate;
+      const lgMatchDogRate = isHomeFav ? lgMatchAwayRate : lgMatchHomeRate;
+      const lgMatchAvgHG = lgMatchScoreCount > 0 ? (lgMatchSumHG / lgMatchScoreCount).toFixed(2) : "-";
+      const lgMatchAvgAG = lgMatchScoreCount > 0 ? (lgMatchSumAG / lgMatchScoreCount).toFixed(2) : "-";
+
+      const lgAllHomeRate = lgAllCount > 0 ? (lgAllHomeWin / lgAllCount) * 100 : 0;
+      const lgAllDrawRate = lgAllCount > 0 ? (lgAllDraw / lgAllCount) * 100 : 0;
+      const lgAllAwayRate = lgAllCount > 0 ? (lgAllAwayWin / lgAllCount) * 100 : 0;
+      const lgAllAvgTotal = lgAllScoreCount > 0 ? ((lgAllSumHG + lgAllSumAG) / lgAllScoreCount).toFixed(2) : "-";
+
+      const precJudgment = buildPrecisionJudgment(cur, {
+        isHomeFav,
+        baseFavRate: favWinRateNum,
+        fineCount,
+        fineFavRate,
+        fineDogRate,
+        fineDrawRate,
+        fineHdWinRate,
+        lgMatchCount,
+        lgMatchFavRate,
+        lgMatchDogRate,
+        lgMatchDrawRate,
+        lgMatchHdWinRate,
+        lgAllCount,
+        lgAllHomeRate,
+        lgAllAwayRate,
+        lgAllDrawRate,
+        lgAllAvgTotal
+      });
+
+      const precisionStats = {
+        fineCount,
+        fineSummary: fineCount >= 5
+          ? `홈승 ${fineHomeRate.toFixed(1)}% | 무 ${fineDrawRate.toFixed(1)}% | 원정승 ${fineAwayRate.toFixed(1)}% | 핸승 ${fineHdWinRate.toFixed(1)}% (평균 ${fineAvgHG}:${fineAvgAG})`
+          : `표본 부족 (${fineCount}건)`,
+        lgMatchCount,
+        lgMatchSummary: lgMatchCount >= 5
+          ? `홈승 ${lgMatchHomeRate.toFixed(1)}% | 무 ${lgMatchDrawRate.toFixed(1)}% | 원정승 ${lgMatchAwayRate.toFixed(1)}% | 핸승 ${lgMatchHdWinRate.toFixed(1)}% (평균 ${lgMatchAvgHG}:${lgMatchAvgAG})`
+          : `표본 부족 (${lgMatchCount}건)`,
+        lgAllCount,
+        lgAllSummary: lgAllCount >= 10
+          ? `홈승 ${lgAllHomeRate.toFixed(1)}% | 무 ${lgAllDrawRate.toFixed(1)}% | 원정승 ${lgAllAwayRate.toFixed(1)}% (평균 ${lgAllAvgTotal}골)`
+          : `표본 부족 (${lgAllCount}건)`,
+        judgment: precJudgment
+      };
+
+      let precisionLines = [];
+      if (fineCount >= 5) {
+        precisionLines.push(`  ■ 초정밀 배당 매칭 (무±0.15 / 핸디±0.20 : ${fineCount}건)\n    - ${precisionStats.fineSummary}`);
+      } else {
+        precisionLines.push(`  ■ 초정밀 배당 매칭 : 표본 부족 (${fineCount}건)`);
+      }
+      if (cur.l) {
+        if (lgMatchCount >= 5) {
+          precisionLines.push(`  ■ 동일 리그 [${cur.l}] 유사배당 (${lgMatchCount}건)\n    - ${precisionStats.lgMatchSummary}`);
+        } else {
+          precisionLines.push(`  ■ 동일 리그 [${cur.l}] 유사배당 : 표본 부족 (${lgMatchCount}건)`);
+        }
+        if (lgAllCount >= 10) {
+          precisionLines.push(`  ■ [${cur.l}] 리그 전체 성향 (${lgAllCount}건)\n    - ${precisionStats.lgAllSummary}`);
+        }
+      }
+      precisionLines.push(`  ★ 정밀 보정 AI 판단 ▶ ${precJudgment.headline}`);
+
+      const precisionSection =
+`\n------------------------------------------
+🎯 [4-2. 정밀 배당 & 동일 리그 보정 분석]
+${precisionLines.join("\n")}`;
 
       const dbNameString = isTotoMode ? "⚽ 승무패 전용 과거 DB" : "■ 과거 22,000건 일반 DB";
       const titleSuffix = isTotoMode ? "[⚽ 승무패 모드]" : "[V2.0]";
@@ -1157,12 +1784,12 @@ ${dbNameString} 중 [동일 조건 매칭] : ${matchCount}건 분석됨
   - 1점차 핸디무 [핸무 (${cur.hd}배)] : ${rateHdDraw}% (${cntHdDraw}회)
   ★ 고배당 노림수 ▶ ${highYieldRec}
 ------------------------------------------
-${trapSection}${scoreSection}`;
+${trapSection}${scoreSection}${precisionSection}`;
 
       createDraggableWindow(cur, reportText, {
         rW, rX, rY, rZ, rHnd, rateDraw, rateHdDraw, isTrap, diff, favTeam,
         pickW_Name, pickW_Odd, pickY_Name, pickY_Odd, highYieldRec, genRec, hndRec,
-        isHomeFav, oppHnd, scoreStats
+        isHomeFav, oppHnd, scoreStats, precisionStats, isTotoMode
       }, titleSuffix);
     }
 
@@ -1171,6 +1798,12 @@ ${trapSection}${scoreSection}`;
       const winId = 'win_' + Date.now();
       topZIndex++;
       windowCascadeCount = (windowCascadeCount + 1) % 5;
+
+      windowMatchContext[winId] = {
+        cur: cur,
+        diff: parseFloat(stats.diff),
+        isTotoMode: Boolean(stats.isTotoMode)
+      };
 
       const initTop = 75 + (windowCascadeCount * 25);
       const initLeft = 14 + (windowCascadeCount * 10);
@@ -1188,7 +1821,10 @@ ${trapSection}${scoreSection}`;
       winEl.innerHTML = `
         <div class="window-header" id="header_${winId}">
           <span>📊 ${cur.hT} vs ${cur.aT} ${titleSuffix}</span>
-          <button class="btn-close-x" onclick="closeWindow('${winId}')">✕</button>
+          <div class="win-header-btns">
+            <button class="btn-min-win" onclick="toggleMinimizeWindow('${winId}')" title="접기/펼치기">—</button>
+            <button class="btn-close-x" onclick="closeWindow('${winId}')">✕</button>
+          </div>
         </div>
         <div class="window-body">
           <div class="report-stat-text">${statText}</div>
@@ -1210,6 +1846,12 @@ ${trapSection}${scoreSection}`;
           </div>
         </div>
         <div class="window-footer">
+          <div class="win-flt-grid">
+            <button class="btn-win-flt" onclick="applyMatchToFilter('${winId}', false, false)" style="background:#2563eb;">🔍 7개조건 검색</button>
+            <button class="btn-win-flt" onclick="applyMatchToFilter('${winId}', true, false)" style="background:#7c3aed;">🏟️ 동일리그+7개조건</button>
+            <button class="btn-win-flt" onclick="applyMatchToFilter('${winId}', false, true)" style="background:#0f766e;">🎯 7개+과대(±0.5)</button>
+            <button class="btn-win-flt" onclick="applyMatchToFilter('${winId}', true, true)" style="background:#0369a1;">🎯 리그+7개+과대(±0.5)</button>
+          </div>
           <button class="btn-close-win" onclick="closeWindow('${winId}')">확인 (이 창 닫기)</button>
         </div>
       `;
@@ -1336,26 +1978,32 @@ ${trapSection}${scoreSection}`;
       const cleanH = cleanTeamName(cur.hT);
       const cleanA = cleanTeamName(cur.aT);
       const ss = stats.scoreStats;
+      const ps = stats.precisionStats;
       const scorePromptLine = (ss && ss.count > 0)
-        ? `- 과거 유사 경기 스코어 통계(${ss.count}건): 평균 홈 ${ss.avgHG}골 vs 원정 ${ss.avgAG}골(합계 ${ss.avgTotal}골), 1점차 접전 비율 ${ss.rateOneGoal}%, 2.5오버 ${ss.rateOver25}%, 최다 출현 스코어 [${ss.topScoresStr}], TOP3 승무패 비중 [${ss.top3WdlStr}]`
+        ? `- 과거 유사 경기 스코어 통계(${ss.count}건): 평균 홈 ${ss.avgHG}골 vs 원정 ${ss.avgAG}골(합계 ${ss.avgTotal}골), 1점차 접전 비율 ${ss.rateOneGoal}%, 2골차이상 완승 ${ss.rateFavTwoPlus}%, 2.5오버 ${ss.rateOver25}%, 최다 출현 스코어 [${ss.topScoresStr}], TOP3 승무패 비중 [${ss.top3WdlStr}]${ss.verdict ? `\n- 스코어·체급 AI 1차 판단: ${ss.verdict.headline} (${ss.verdict.detail})` : ''}`
         : `- 과거 유사 경기 스코어 통계: 스코어 데이터 없음`;
+      const precisionPromptLine = ps
+        ? `- 정밀 배당(무·핸디포함, ${ps.fineCount}건): ${ps.fineSummary}\n- 동일 리그(${cur.l}) 유사배당(${ps.lgMatchCount}건): ${ps.lgMatchSummary} | 리그 전체(${ps.lgAllCount}건): ${ps.lgAllSummary}\n- 정밀 보정 1차 판단: ${ps.judgment.headline}`
+        : '';
 
       const prompt = 
 `당신은 전 세계 축구 리그의 모든 스쿼드를 꿰뚫고 있는 프로 스포츠 베팅 수석 애널리스트입니다.
 아래 경기 데이터와 외신 기사를 분석하여, 결장 선수가 '핵심 주전'인지 '단순 벤치/후보'인지 분별하고 최종 베팅 결론을 내려주세요.
 만약 오즈메이커 함정 경고가 있다면 정배당을 무조건 버리고 플핸이나 무승부를 추천해야 합니다.
-또한 과거 유사 경기의 스코어 통계(평균 득실점, 1점차 접전 비율, 다득점 여부, 최다 출현 스코어, TOP3 승무패 비중)도 함께 참고하여 핸디캡/무승부 유불리와 예상 스코어 흐름을 결론에 반영하세요.
+단, 초정밀 배당(무·핸디배당 포함)과 동일 리그 내 통계, 배당·득실점 체급에서 다른 신호가 나온 경우에는 이를 정밀하게 비교해 반영하세요.
 
 [경기 정보]
 - 경기: ${cleanH} vs ${cleanA} (${cur.l})
+- 배당: 홈 ${cur.h} | 무 ${cur.d} | 원정 ${cur.a} (핸디 ${cur.o}: 승 ${cur.hp} / 무 ${cur.hd} / 패 ${cur.ha})
 - 22,000건 통계 요약: 일반 우세 ${stats.genRec}, 핸디 우세 ${stats.hndRec}, 무승부 확률 ${stats.rateDraw}%
 ${scorePromptLine}
-- 오즈메이커 함정 여부: ${stats.isTrap ? '🚨 함정 경고 (+'+stats.diff+'% 과대평가됨! 정배 탈락 ➔ '+stats.oppHnd+' 추천)' : '적정 배당'}
+${precisionPromptLine}
+- 오즈메이커 함정 여부: ${stats.isTrap ? '🚨 함정 경고 (+'+stats.diff+'% 과대평가됨! 정배 탈락 ➔ '+stats.oppHnd+' 추천)' : '적정 배당 ('+stats.diff+'%)'}
 - 수집된 텍스트: ${newsCorpus.slice(0, 500) || '특이 외신 기사 없음'}
 
 [답변 형식 (한국어로 명확히 작성)]
 [선수 판독]: 기사에 언급된 결장자가 팀의 '핵심 주전'인지 '단순 후보'인지 1문장으로 명확히 구분
-[전력 평가]: 실질적인 전력 누수 영향도 및 스코어 성향 1문장
+[전력 평가]: 실질적인 전력 누수 영향도 및 정밀배당·동일리그 성향 1문장
 [최종 추천]: 1순위 추천 픽(함정 발생 시 정배 탈락시키고 플핸 or 무승부 추천!)과 확신도(%), 고배당/예상 스코어 노림수
 [총평]: 핵심 근거 2줄 요약`;
 
@@ -1375,8 +2023,8 @@ ${scorePromptLine}
         const parts = (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts) || [];
         const aiText = parts.filter(p => !p.thought && p.text).map(p => p.text).join('\n').trim();
         if (aiText) {
-          pickEl.innerText = `★ 구글 Gemini 실시간 결장·스코어 판독 완료`;
-          subEl.innerHTML = `<b>실시간 최신 전력·스코어 융합 분석 완료</b>`;
+          pickEl.innerText = `★ 구글 Gemini 실시간 결장·정밀·스코어 판독 완료`;
+          subEl.innerHTML = `<b>실시간 최신 전력·정밀배당·리그 융합 분석 완료</b>`;
           summaryEl.innerText = aiText;
         } else {
           renderV2RuleVerdict(cur, stats, homeKeyInjury, awayKeyInjury, winId);
@@ -1452,9 +2100,15 @@ ${scorePromptLine}
         } else if (over25Rate <= 35.0) {
           reasonList.push(`저득점(언더 ${(100 - over25Rate).toFixed(1)}%)`);
           summaryText += ` 과거 유사 경기 평균 득점이 ${ss.avgTotal}골의 저득점 수비전 성향이어서 [${ss.topScoresStr}] 같은 빡빡한 스코어 흐름이 예상됩니다.`;
-        } else {
-          summaryText += ` (참고 스코어 통계 ${ss.count}건 평균 ${ss.avgHG}:${ss.avgAG} / TOP3 비중: ${ss.top3WdlStr})`;
+        } else if (ss.verdict) {
+          summaryText += ` [${ss.verdict.headline}]`;
         }
+      }
+
+      const ps = stats.precisionStats;
+      if (ps && ps.judgment && (ps.judgment.shiftType === "up" || ps.judgment.shiftType === "down" || ps.judgment.shiftType === "mixed")) {
+        reasonList.push(`정밀·리그 보정(${ps.judgment.shiftVal >= 0 ? "+" : ""}${ps.judgment.shiftVal.toFixed(1)}%p)`);
+        summaryText += ` ${ps.judgment.headline}`;
       }
 
       pickEl.innerText = `★ 최종 주력: ${bestPick}`;
@@ -1465,6 +2119,7 @@ ${scorePromptLine}
     function closeWindow(winId) {
       const el = document.getElementById(winId);
       if (el) el.remove();
+      delete windowMatchContext[winId];
     }
 
     function makeDraggable(element, handle) {
@@ -1472,6 +2127,7 @@ ${scorePromptLine}
       let startX, startY, initialLeft, initialTop;
 
       function onPointerDown(e) {
+        if (e.target && e.target.closest && e.target.closest('button')) return;
         isDragging = true;
         startX = e.clientX || (e.touches && e.touches[0].clientX);
         startY = e.clientY || (e.touches && e.touches[0].clientY);
