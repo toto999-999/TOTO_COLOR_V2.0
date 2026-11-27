@@ -112,8 +112,9 @@
     
     .window-footer { padding: 8px 12px; background: #ffffff; border-top: 1px solid #e2e8f0; text-align: right; display: flex; flex-direction: column; gap: 5px; }
     .win-flt-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; }
-    .btn-win-flt { height: 33px; color: #ffffff; border: none; border-radius: 6px; font-size: 11.5px; font-weight: 800; cursor: pointer; }
-    .btn-close-win { width: 100%; height: 36px; background: #334155; color: #ffffff; border: none; border-radius: 6px; font-size: 13.5px; font-weight: 700; cursor: pointer; }
+    .btn-win-flt { height: 32px; color: #ffffff; border: none; border-radius: 6px; font-size: 11.5px; font-weight: 800; cursor: pointer; }
+    .btn-win-flt-full { width: 100%; height: 33px; color: #ffffff; border: none; border-radius: 6px; font-size: 12px; font-weight: 800; cursor: pointer; }
+    .btn-close-win { width: 100%; height: 35px; background: #334155; color: #ffffff; border: none; border-radius: 6px; font-size: 13.5px; font-weight: 700; cursor: pointer; }
 
     .ai-modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 3000; justify-content: center; align-items: center; padding: 20px; }
     .ai-modal-card { background: #ffffff; border-radius: 14px; padding: 20px; width: 100%; max-width: 380px; box-shadow: 0 10px 25px rgba(0,0,0,0.25); }
@@ -342,6 +343,12 @@
       let n = parseFloat(Number(val).toFixed(digits));
       if (Object.is(n, -0) || n === 0) n = 0;
       return (n > 0 ? "+" : "") + n.toFixed(digits);
+    }
+
+    function formatPlainDiff(val, digits = 1) {
+      let n = parseFloat(Number(val).toFixed(digits));
+      if (Object.is(n, -0) || n === 0) n = 0;
+      return n.toFixed(digits);
     }
 
     function setSelectValueSafe(selectId, val) {
@@ -1008,10 +1015,10 @@
           if (needDiffFilter) {
             const diffVal = metrics.diff;
             if (fltDiff !== null && !isNaN(fltDiff)) {
-              if (diffVal.toFixed(1) !== fltDiff.toFixed(1)) continue;
+              if (formatPlainDiff(diffVal, 1) !== formatPlainDiff(fltDiff, 1)) continue;
             }
             if (diffRange !== null) {
-              const roundedDiff = parseFloat(diffVal.toFixed(1));
+              const roundedDiff = parseFloat(formatPlainDiff(diffVal, 1));
               if (roundedDiff < diffRange.min || roundedDiff > diffRange.max) continue;
             }
           }
@@ -1157,7 +1164,7 @@
       document.getElementById('filterMatchListContainer').innerHTML = "<div style='text-align:center;padding:30px;color:#94a3b8;'>조건을 선택하고 검색하세요.</div>";
     }
 
-    function applyMatchToFilter(winId, withSameLeague, withDiffRange) {
+    function applyMatchToFilter(winId, withSameLeague, diffMode) {
       const ctx = windowMatchContext[winId];
       if (!ctx) return;
       const cur = ctx.cur;
@@ -1182,11 +1189,19 @@
         document.getElementById('fltC').value = cur.l;
       }
 
-      if (withDiffRange && ctx.diff !== null && ctx.diff !== undefined && !isNaN(ctx.diff)) {
-        const dNum = parseFloat(ctx.diff);
-        const minD = (dNum - 0.5).toFixed(1);
-        const maxD = (dNum + 0.5).toFixed(1);
-        document.getElementById('fltDiffRange').value = `${minD}~${maxD}`;
+      const targetDiff = (ctx.exactDiff !== null && ctx.exactDiff !== undefined && !isNaN(ctx.exactDiff))
+        ? ctx.exactDiff
+        : ctx.diff;
+
+      if (targetDiff !== null && targetDiff !== undefined && !isNaN(targetDiff)) {
+        const dNum = parseFloat(targetDiff);
+        if (diffMode === 'range') {
+          const minD = formatPlainDiff(dNum - 0.5, 1);
+          const maxD = formatPlainDiff(dNum + 0.5, 1);
+          document.getElementById('fltDiffRange').value = `${minD}~${maxD}`;
+        } else if (diffMode === 'exact') {
+          document.getElementById('fltDiff').value = formatPlainDiff(dNum, 1);
+        }
       }
 
       // ★ 팝업창을 닫지 않고 그대로 유지하면서 뒤쪽 필터 탭으로 전환 + 검색 실행
@@ -1610,6 +1625,7 @@
       const impliedProb = ((1 / favOdd) * 100).toFixed(1);
       const diffNum = parseFloat(impliedProb) - parseFloat(favActualRate);
       const diff = diffNum.toFixed(1);
+      const exactDiffRaw = ((1 / favOdd) * 100) - favWinRateNum;
       const oppHnd = isHomeFav ? `원정 플핸 (${cur.ha}배)` : `홈 플핸 (${cur.hp}배)`;
 
       let trapSection = "";
@@ -1787,7 +1803,7 @@ ${dbNameString} 중 [동일 조건 매칭] : ${matchCount}건 분석됨
 ${trapSection}${scoreSection}${precisionSection}`;
 
       createDraggableWindow(cur, reportText, {
-        rW, rX, rY, rZ, rHnd, rateDraw, rateHdDraw, isTrap, diff, favTeam,
+        rW, rX, rY, rZ, rHnd, rateDraw, rateHdDraw, isTrap, diff, exactDiffRaw, favTeam,
         pickW_Name, pickW_Odd, pickY_Name, pickY_Odd, highYieldRec, genRec, hndRec,
         isHomeFav, oppHnd, scoreStats, precisionStats, isTotoMode
       }, titleSuffix);
@@ -1802,6 +1818,7 @@ ${trapSection}${scoreSection}${precisionSection}`;
       windowMatchContext[winId] = {
         cur: cur,
         diff: parseFloat(stats.diff),
+        exactDiff: stats.exactDiffRaw,
         isTotoMode: Boolean(stats.isTotoMode)
       };
 
@@ -1847,11 +1864,12 @@ ${trapSection}${scoreSection}${precisionSection}`;
         </div>
         <div class="window-footer">
           <div class="win-flt-grid">
-            <button class="btn-win-flt" onclick="applyMatchToFilter('${winId}', false, false)" style="background:#2563eb;">🔍 7개조건 검색</button>
-            <button class="btn-win-flt" onclick="applyMatchToFilter('${winId}', true, false)" style="background:#7c3aed;">🏟️ 동일리그+7개조건</button>
-            <button class="btn-win-flt" onclick="applyMatchToFilter('${winId}', false, true)" style="background:#0f766e;">🎯 7개+과대(±0.5)</button>
-            <button class="btn-win-flt" onclick="applyMatchToFilter('${winId}', true, true)" style="background:#0369a1;">🎯 리그+7개+과대(±0.5)</button>
+            <button class="btn-win-flt" onclick="applyMatchToFilter('${winId}', false, 'none')" style="background:#2563eb;">🔍 7개조건 검색</button>
+            <button class="btn-win-flt" onclick="applyMatchToFilter('${winId}', true, 'none')" style="background:#7c3aed;">🏟️ 동일리그+7개조건</button>
+            <button class="btn-win-flt" onclick="applyMatchToFilter('${winId}', false, 'range')" style="background:#0f766e;">🎯 7개+과대(±0.5)</button>
+            <button class="btn-win-flt" onclick="applyMatchToFilter('${winId}', true, 'range')" style="background:#0369a1;">🎯 리그+7개+과대(±0.5)</button>
           </div>
+          <button class="btn-win-flt-full" onclick="applyMatchToFilter('${winId}', true, 'exact')" style="background:#dc2626;">📌 동일리그 + 7개 + 동일과대(%) 검색</button>
           <button class="btn-close-win" onclick="closeWindow('${winId}')">확인 (이 창 닫기)</button>
         </div>
       `;
